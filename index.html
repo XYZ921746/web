@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ElainaChat Mod · 以插件为核心的 AI 角色聊天应用</title>
+<meta name="description" content="ElainaChat Mod：程序本体只有文字聊天与 Agent 能力，角色呈现与界面全部交给可装可卸的扩展包。自带 API Key 直连服务商，开源（GPLv3）。">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<!-- ── 顶部导航：改站点名 / 菜单项在这里 ───────────────────────────── -->
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="./">
+      <span class="brand-mark">EC</span>
+      <span>ElainaChat Mod</span>
+    </a>
+    <nav class="nav">
+      <a class="nav-link" href="#features">特性</a>
+      <a class="nav-link" href="#mods">扩展包</a>
+      <a class="nav-link" href="./store/">插件商店</a>
+      <a class="btn btn--sm btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── Hero：标题、简介、按钮 ──────────────────────────────────── -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">v1.3.1 · GPLv3 · 开源</p>
+      <h1>以插件为核心的<br>AI 角色聊天应用</h1>
+      <p class="lede">程序本体只有文字聊天 + Agent 能力。角色怎么呈现、界面长什么样，全部交给可装可卸的扩展包 —— 想要就装，不想要就删。</p>
+      <div class="hero-actions">
+        <a class="btn btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载安卓版 APK</a>
+        <a class="btn btn--ghost" href="https://github.com/XYZ921746/ElainaChat-mod">电脑版（克隆仓库）</a>
+      </div>
+      <ul class="meta">
+        <li>纯净版约 10.8 MB</li>
+        <li>6 个扩展包</li>
+        <li>自带 API Key 直连，无作者网关</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── 特性 ────────────────────────────────────────────────────── -->
+  <section class="section" id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>为什么是「Mod 优先」</h2>
+        <p>大多数聊天应用把花哨功能焊死在主程序里 —— 你不用也得装着，卸不掉，坏了还会拖垮整个应用。这里的取舍相反。</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <h3>清单驱动</h3>
+          <p>加载器只认 manifest.json，不硬编码任何插件名。新增功能 = 加一个目录，不用碰主程序。</p>
+        </article>
+        <article class="card">
+          <h3>失败隔离</h3>
+          <p>插件的加载与初始化都包在 try/catch 里，一个坏插件只会被标记出错，其余照常运行。</p>
+        </article>
+        <article class="card">
+          <h3>资源与代码分离</h3>
+          <p>立绘、背景图这类公共资源被多个界面共用；卸载某个界面不会把公共资源一起带走。</p>
+        </article>
+        <article class="card">
+          <h3>BYOK 直连</h3>
+          <p>请求从你的设备直接发给服务商。没有作者网关、没有共享套餐、没有内置密钥。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 扩展包 ──────────────────────────────────────────────────── -->
+  <section class="section" id="mods">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>扩展包</h2>
+        <p>当前共 6 个，分「界面」与「公共资源」两类。<a href="./store/">到插件商店查看全部 →</a></p>
+      </div>
+      <div class="grid">
+        <article class="card mod-card">
+          <div class="mod-head"><h3 class="mod-name">Galgame 界面</h3><span class="tag tag--accent">界面</span></div>
+          <p class="mod-desc">全屏沉浸式剧情界面：场景背景 + 立绘 + 打字机对话框，与主界面共用同一份对话数据。</p>
+          <p class="mod-dep">依赖：elaina-avatar、scene-backgrounds</p>
+        </article>
+        <article class="card mod-card">
+          <div class="mod-head"><h3 class="mod-name">Live2D 视频通话</h3><span class="tag tag--accent">界面</span></div>
+          <p class="mod-desc">全屏视频通话界面：实时渲染、口型随真实音量、鼠标跟随、AI 表情与动作驱动。</p>
+          <p class="mod-dep">依赖：live2d-models</p>
+        </article>
+        <article class="card mod-card">
+          <div class="mod-head"><h3 class="mod-name">桌宠</h3><span class="tag tag--accent">界面</span></div>
+          <p class="mod-desc">悬浮桌宠：立绘 + 聊天气泡，回复时自动切换表情。</p>
+          <p class="mod-dep">依赖：elaina-avatar</p>
+        </article>
+        <article class="card mod-card">
+          <div class="mod-head"><h3 class="mod-name">Live2D 引擎与模型</h3><span class="tag">资源</span></div>
+          <p class="mod-desc">Live2D 运行引擎与模型资源，含模型管理界面（上传 / 重命名 / 删除）。</p>
+        </article>
+        <article class="card mod-card">
+          <div class="mod-head"><h3 class="mod-name">伊蕾娜立绘与情绪</h3><span class="tag">资源</span></div>
+          <p class="mod-desc">9 张立绘 + 情绪识别，被剧情界面与桌宠共用。不单独提供界面。</p>
+        </article>
+        <article class="card mod-card">
+          <div class="mod-head"><h3 class="mod-name">场景背景图</h3><span class="tag">资源</span></div>
+          <p class="mod-desc">31 张场景背景图（城市 / 室内 / 雪景等），供剧情界面与视频通话共用。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 双端 ────────────────────────────────────────────────────── -->
+  <section class="section" id="platforms">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>电脑版 / 安卓版</h2>
+        <p>聊天与界面两端同构，但「能操作什么」是互补的。</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <h3>电脑版（Web）</h3>
+          <ul class="steps">
+            <li>克隆仓库，双击 <strong>启动.bat</strong>（零依赖、零构建，需 Node.js ≥ 20）</li>
+            <li>浏览器打开 <strong>http://127.0.0.1:4173</strong></li>
+            <li>Agent 可读写电脑文件、执行本机命令</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>安卓版（APK）</h3>
+          <ul class="steps">
+            <li>到 Releases 下载 <strong>lite-debug.apk</strong>（约 10.8 MB）</li>
+            <li>允许「安装未知来源应用」后安装</li>
+            <li>Agent 可操作手机：点击 / 滑动 / 输入 / 截图 / 读通知</li>
+          </ul>
+        </article>
+      </div>
+      <p class="notice">APK 是「纯净版」——只含程序本体，不含任何插件与图片资源；那些按需下载并在应用内安装。</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── 页脚 ────────────────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="wrap">
+    <p>ElainaChat Mod · 基于 <a href="https://github.com/shuixinggangzheng/ElainaChat-Open">shuixinggangzheng/ElainaChat-Open</a>（MIT）二次开发，以 GPLv3 发布。</p>
+    <p>项目处于测试状态，可能存在未知问题。</p>
+    <p>
+      <a href="https://github.com/XYZ921746/ElainaChat-mod">源码</a> ·
+      <a href="./store/">插件商店</a> ·
+      <a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a> ·
+      <a href="https://github.com/XYZ921746">个人主页</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

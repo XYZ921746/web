@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>插件商店 · ElainaChat Mod</title>
+<meta name="description" content="ElainaChat Mod 的扩展包列表：全屏剧情界面、Live2D 视频通话、桌宠，以及它们依赖的公共资源包。">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- ── 顶部导航（与首页一致，注意这里的相对路径是 ../） ───────────── -->
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../">
+      <span class="brand-mark">EC</span>
+      <span>ElainaChat Mod</span>
+    </a>
+    <nav class="nav">
+      <a class="nav-link" href="../#features">特性</a>
+      <a class="nav-link" href="../#mods">扩展包</a>
+      <a class="nav-link" href="./">插件商店</a>
+      <a class="btn btn--sm btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">插件商店</p>
+      <h1>扩展包</h1>
+      <p class="lede">程序本体不含这些功能，按需下载安装。装完在 <strong>设置 → 插件</strong> 里打开对应开关才会生效。</p>
+    </div>
+  </section>
+
+  <!-- ── 安装说明 ────────────────────────────────────────────────── -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>怎么安装</h2>
+        <p>下载 zip 后<strong>不要解压</strong>，按下面任一方式装进去。</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <h3>应用内上传（推荐，手机也能用）</h3>
+          <ul class="steps">
+            <li>下载需要的 <strong>.zip</strong></li>
+            <li>打开程序 → <strong>设置 → 插件 → 上传安装</strong> → 选中那个 zip</li>
+            <li>在列表里打开对应的开关</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>丢进目录（仅电脑版）</h3>
+          <ul class="steps">
+            <li>把 zip 直接放进 <strong>mods/</strong> 目录</li>
+            <li>在 <strong>设置 → 插件</strong> 点「重新扫描」</li>
+            <li>服务端会自动解压，不用重启</li>
+          </ul>
+        </article>
+      </div>
+      <p class="notice">安装完的 zip 会被自动清理 —— 所以「删掉插件目录」就是有效的卸载方式，不会被重新装回来。</p>
+    </div>
+  </section>
+
+  <!-- ── 扩展包列表：由 store/index.json 渲染 ────────────────────── -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>可用扩展包</h2>
+        <p>列表来自 <a href="./index.json">index.json</a>，要增删插件改那份 JSON 即可，本页不用动。</p>
+      </div>
+      <div class="grid" id="store-list">
+        <p class="loading">正在读取 index.json…</p>
+      </div>
+      <noscript><p class="notice">当前浏览器禁用了 JavaScript，无法自动列出插件。可直接到 <a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">Releases</a> 下载。</p></noscript>
+      <p class="notice" id="store-error" hidden></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>ElainaChat Mod · 以 GPLv3 发布。</p>
+    <p>
+      <a href="../">首页</a> ·
+      <a href="https://github.com/XYZ921746/ElainaChat-mod">源码</a> ·
+      <a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a> ·
+      <a href="https://github.com/XYZ921746">个人主页</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  var listEl = document.getElementById('store-list');
+  var errEl = document.getElementById('store-error');
+
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function cardHtml(p, fallbackUrl) {
+    var kind = p.kind === 'resource' ? '资源' : '界面';
+    var deps = (p.depends && p.depends.length)
+      ? '<p class="mod-dep">依赖：' + p.depends.map(esc).join('、') + '</p>'
+      : '';
+    return '<article class="card mod-card">'
+      + '<div class="mod-head">'
+      + '<h3 class="mod-name">' + esc(p.name) + '</h3>'
+      + '<span class="tag tag--accent">' + kind + '</span>'
+      + '</div>'
+      + '<p class="mod-desc">' + esc(p.description) + '</p>'
+      + deps
+      + '<div class="mod-foot">'
+      + '<span class="mod-ver">' + (p.version ? 'v' + esc(p.version) : '') + '</span>'
+      + '<a class="btn btn--primary btn--sm" href="' + esc(p.downloadUrl || fallbackUrl) + '"'
+      + ' target="_blank" rel="noopener">下载 zip</a>'
+      + '</div>'
+      + '</article>';
+  }
+
+  fetch('index.json', { cache: 'no-cache' })
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      var plugins = (data && data.plugins) || [];
+      if (!plugins.length) throw new Error('索引里没有插件');
+      listEl.innerHTML = plugins.map(function (p) {
+        return cardHtml(p, data.releases);
+      }).join('');
+    })
+    .catch(function (e) {
+      listEl.hidden = true;
+      errEl.hidden = false;
+      errEl.textContent = '插件列表加载失败（' + e.message + '）。'
+        + '若你是用 file:// 直接打开的页面，请改用本地 http 服务；'
+        + '也可以直接到 Releases 页面下载。';
+    });
+})();
+</script>
+
+</body>
+</html>
