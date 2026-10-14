@@ -1,7 +1,15 @@
 {
   "comment": "由 scripts/pack-assets.mjs 生成。上传到 GitHub Releases 后，把下载链接填到下面。",
-  "generatedAt": "2026-10-14T04:01:02.447Z",
+  "generatedAt": "2026-10-14T23:01:18.553Z",
   "assets": [
+    {
+      "kind": "mod",
+      "id": "birthday",
+      "version": "1.0.0",
+      "file": "birthday-1.0.0.zip",
+      "sizeBytes": 23331,
+      "downloadUrl": ""
+    },
     {
       "kind": "mod",
       "id": "elaina-avatar",
