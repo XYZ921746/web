@@ -1,0 +1,54 @@
+{
+  "comment": "由 scripts/pack-assets.mjs 生成。上传到 GitHub Releases 后，把下载链接填到下面。",
+  "generatedAt": "2026-10-14T04:01:02.447Z",
+  "assets": [
+    {
+      "kind": "mod",
+      "id": "elaina-avatar",
+      "version": "1.0.0",
+      "file": "elaina-avatar-1.0.0.zip",
+      "sizeBytes": 10644088,
+      "downloadUrl": ""
+    },
+    {
+      "kind": "mod",
+      "id": "galgame",
+      "version": "1.0.0",
+      "file": "galgame-1.0.0.zip",
+      "sizeBytes": 15281,
+      "downloadUrl": ""
+    },
+    {
+      "kind": "mod",
+      "id": "live2d",
+      "version": "1.0.0",
+      "file": "live2d-1.0.0.zip",
+      "sizeBytes": 50917,
+      "downloadUrl": ""
+    },
+    {
+      "kind": "mod",
+      "id": "live2d-models",
+      "version": "1.0.0",
+      "file": "live2d-models-1.0.0.zip",
+      "sizeBytes": 240024,
+      "downloadUrl": ""
+    },
+    {
+      "kind": "mod",
+      "id": "pet",
+      "version": "1.0.0",
+      "file": "pet-1.0.0.zip",
+      "sizeBytes": 12450,
+      "downloadUrl": ""
+    },
+    {
+      "kind": "mod",
+      "id": "scene-backgrounds",
+      "version": "1.0.0",
+      "file": "scene-backgrounds-1.0.0.zip",
+      "sizeBytes": 7586244,
+      "downloadUrl": ""
+    }
+  ]
+}

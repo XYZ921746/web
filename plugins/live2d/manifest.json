@@ -1,0 +1,12 @@
+{
+  "id": "live2d",
+  "name": "Live2D 视频通话",
+  "version": "1.0.0",
+  "description": "全屏视频通话界面：Live2D 模型 + 口型同步 + AI 表情/动作/情绪驱动。依赖「Live2D 引擎与模型」。",
+  "entry": "register.js",
+  "styles": ["style.css"],
+  "defaultEnabled": true,
+  "after": ["live2d-models"],
+  "hidden": false,
+  "scripts": ["index.js", "settings-panel.js"]
+}

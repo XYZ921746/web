@@ -1,0 +1,95 @@
+<section>
+    <div class="modal-label flex items-center gap-2"><span class="text-pink-500">✦</span> Live2D 视频通话</div>
+    <p class="text-[11px] text-indigo-300 leading-relaxed mb-3">
+        这里只负责**用哪个模型**与通话时的表现。模型的上传/重命名/删除都在
+        「Live2D 引擎与模型」的设置里管理 —— 那是资源包的地盘，
+        视频通话只是它的消费方（这样卸载视频通话不会把模型一起带走）。
+    </p>
+    <div class="space-y-3">
+        <div>
+            <label class="text-xs text-indigo-500 mb-1 block">选择模型</label>
+            <!-- 模型选择：左边 2×2 图片网格，右边选中模型的详情与操作（2026-10，用户要求）。
+                 · 一眼看见 4 个模型；超过 4 个时网格内部滚动：右侧常驻细滚动条。
+                 · 可视高度 = 两行 + 52px：第三行露出约一半（名字都能看到），
+                   滚一下就能看清 —— 不用说明也知道下面还有。
+                 · 右侧详情区随选中项更新：名字、表情/动作/体积、打开模型文件夹。 -->
+            <div class="flex gap-3 items-stretch">
+                <div id="settingLive2DModelGrid"
+                     class="grid grid-cols-2 gap-2 content-start overflow-y-auto scroll-soft pr-1 flex-1 min-w-0"
+                     style="max-height:calc(2 * 158px + 56px);scrollbar-width:thin;scrollbar-gutter:stable">
+                </div>
+                <!-- 右侧：选中模型的详情 + 操作（随选择更新） -->
+                <div id="settingLive2DModelDetail"
+                     class="flex-none w-40 flex flex-col gap-2 rounded-xl border border-white/60 bg-white/40 p-2.5">
+                    <div id="settingLive2DModelDetailName"
+                         class="text-xs font-semibold text-indigo-800 break-words leading-snug">（未选择）</div>
+                    <div id="settingLive2DModelDetailInfo"
+                         class="text-[11px] text-indigo-400 leading-relaxed flex-1">选一个模型看详情。</div>
+                    <div class="flex flex-col gap-1.5">
+                        <button id="settingLive2DManage" class="btn-secondary text-[11px] whitespace-nowrap" type="button"
+                            title="打开「Live2D 引擎与模型」的设置（上传/重命名/删除）">📦 管理模型</button>
+                    </div>
+                </div>
+            </div>
+            <div id="settingLive2DModelEmpty" class="hidden text-[11px] text-indigo-400 py-3 text-center">
+                还没有模型 —— 点「📦 管理模型」去上传一个。
+            </div>
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-indigo-100">
+            <div class="text-xs font-semibold text-indigo-700 mb-1"><span class="text-pink-500">✦</span> 鼠标跟随</div>
+            <div class="text-[11px] text-indigo-400 mb-2">视频通话时，角色的头部与视线会跟着鼠标轻轻转动。</div>
+            <label class="flex items-center gap-1.5 text-xs text-indigo-700 cursor-pointer">
+                <input id="settingMouseFollow" type="checkbox" class="accent-pink-500"> 开启鼠标跟随
+            </label>
+            <p class="text-[11px] text-indigo-300 leading-relaxed mt-1">关闭后模型不会跟随鼠标（头部、眼睛都保持不动）。</p>
+
+            <div id="settingMouseFollowScaleWrap" class="mt-3">
+                <div class="flex items-center justify-between mb-1">
+                    <label class="text-xs text-indigo-500">跟随幅度</label>
+                    <span id="mouseFollowScaleLabel" class="text-xs font-medium text-pink-600">×1.0</span>
+                </div>
+                <input id="settingMouseFollowScale" type="range" min="0" max="10" step="1" value="10" class="custom-slider">
+                <div class="flex items-center gap-2 mt-2">
+                    <span class="text-[11px] text-indigo-400 whitespace-nowrap">手动输入倍率</span>
+                    <input id="settingMouseFollowScaleNum" type="number" min="0" max="100" step="1" value="10"
+                        class="modal-input text-sm" style="width:84px;padding:6px 8px">
+                    <span id="mouseFollowScaleHint" class="text-[11px] text-indigo-300 flex-1 leading-snug"></span>
+                </div>
+                <p class="text-[11px] text-indigo-300 leading-relaxed mt-1.5">
+                    滑块 0-10 是标准范围，10 = 原始幅度（×1.0）。不同模型的敏感度差别很大，同样的设置有的几乎不动、有的一下转到底，先在这个范围内找到合适的档位。<br>
+                    右侧输入框可以填更大的数字（最大 100，约 10 倍）解锁更高幅度。
+                    <b>头部转动幅度受模型自身参数上限限制</b>（多数模型是 ±30，约 ×1.5 就到顶），再往上由「身体跟随」补足：
+                    ×1.0 时身体不动，×3.0 时身体转到该模型的上限。若模型没有绑定身体角度参数，超过上限后就不会再有变化。
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-indigo-100">
+            <div class="text-xs font-semibold text-indigo-700 mb-1"><span class="text-pink-500">✦</span> 背景</div>
+            <!-- ★ 2026-10 移除了预设渐变与纯色色块（用户要求）：
+                 那些是"为了填满画面"的临时方案，而真正想要的背景是**图**。
+                 现在只留上传图片 + 清除；场景背景图从资源包取。
+                 ★ 提示文案里点名了资源包 —— 用户不知道去哪儿找图时，
+                   这里要能告诉他"装一个背景相关 mod"。 -->
+            <div class="text-[11px] text-indigo-400 mb-2 leading-relaxed">
+                上传一张图片作为通话背景（本地保存，不会上传）。
+                想要现成的场景背景，可以安装带背景资源的扩展包
+                （例如「场景背景图」，Galgame 界面用的那批图就是它提供的）。
+            </div>
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <span class="flex items-center gap-2 whitespace-nowrap min-w-0">
+                    <label class="text-xs text-indigo-500 flex-none">图片</label>
+                    <input id="settingLive2DBgImage" type="file" accept="image/*" class="modal-input text-sm min-w-0 file:mr-2 file:rounded-lg file:border-0 file:bg-indigo-100 file:px-3 file:py-1 file:text-indigo-600 file:cursor-pointer">
+                </span>
+                <button id="settingLive2DBgClear" class="btn-secondary text-xs whitespace-nowrap flex-none" type="button">清除背景</button>
+            </div>
+            <!-- 场景背景图选择（由「场景背景图」资源包提供；装了才显示） -->
+            <div id="live2dBgScenesWrap" class="hidden mt-3">
+                <div class="text-[11px] text-indigo-400 mb-2">或从「场景背景图」里选一张：</div>
+                <div id="live2dBgScenes" class="flex flex-wrap gap-2"></div>
+            </div>
+        </div>
+        <button id="settingLive2DTest" class="btn-secondary text-xs" type="button">打开视频通话测试</button>
+    </div>
+</section>
