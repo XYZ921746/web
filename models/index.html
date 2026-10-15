@@ -67,6 +67,15 @@
       <p class="notice" id="model-error" hidden></p>
       <p class="notice">模型是二进制资源，按项目惯例<strong>走 Release 分发、不进 git 历史</strong>（改一次就多存一整份）。
         模型素材的著作权属于各自作者 —— 卡上的「用途」标签就是这条记录声明的使用范围，商用前请按它来。</p>
+
+      <div class="card disclaimer">
+        <h3>免责声明</h3>
+        <p>模型区收录的都是各自作者<strong>免费分享</strong>的作品。素材著作权属原作者，这里只做展示与下载入口，
+          <strong>不主张任何权利</strong>，也不代表作者的立场。请按卡上的「用途」标签使用：未经授权不要商用、转售或冒充作者。</p>
+        <p>如果你就是作者、不希望自己的作品被收录，或对署名方式有异议，请
+          <a href="https://github.com/XYZ921746/web/issues" target="_blank" rel="noopener">开一条 issue</a> 告诉我们 ——
+          我们会<strong>立刻下架或改署名</strong>。尊重原作者，模型才有人愿意继续做。</p>
+      </div>
     </div>
   </section>
 
@@ -113,18 +122,35 @@
   function cardHtml(m) {
     var official = m.kind !== 'community';
     var usage = USAGE[m.usage];
-    var author = m.author
-      ? (m.authorUrl
-        ? '<a href="' + esc(m.authorUrl) + '" target="_blank" rel="noopener">' + esc(m.author) + '</a>'
-        : esc(m.author))
+
+    /* 作者：支持 authors[{name,url}] 多作者，也兼容单个 author/authorUrl */
+    var authors = (m.authors && m.authors.length)
+      ? m.authors
+      : (m.author ? [{ name: m.author, url: m.authorUrl }] : []);
+    var NUM = ['①', '②', '③', '④'];
+    var author = authors.length
+      ? authors.map(function (a, i) {
+        if (!a.url) return esc(a.name || '未署名');
+        /* 没给名字的多作者，用「作者主页 ①/②」编号区分，避免两个链接长得一样 */
+        var label = a.name || (authors.length > 1 ? '作者主页 ' + NUM[i] : '作者主页');
+        return '<a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(label) + '</a>';
+      }).join(' · ')
       : '未署名';
+
+    /* 视频：单个 videoUrl 或多条 videoUrls[] */
+    var videos = [];
+    if (m.videoUrl) videos.push(m.videoUrl);
+    if (Array.isArray(m.videoUrls)) videos = videos.concat(m.videoUrls);
+
     var extra = '';
     if (m.readmeUrl) {
       extra += '<a class="btn btn--ghost btn--sm" href="' + esc(m.readmeUrl) + '" target="_blank" rel="noopener">README</a>';
     }
-    if (m.videoUrl) {
-      extra += '<a class="btn btn--ghost btn--sm" href="' + esc(m.videoUrl) + '" target="_blank" rel="noopener">演示视频</a>';
-    }
+    extra += videos.map(function (url, i) {
+      var label = videos.length > 1 ? '视频 ' + (i + 1) : '演示视频';
+      return '<a class="btn btn--ghost btn--sm" href="' + esc(url) + '" target="_blank" rel="noopener">' + label + '</a>';
+    }).join('');
+
     return '<article class="card mod-card">'
       + '<div class="mod-head">'
       + '<h3 class="mod-name">' + esc(m.name) + '</h3>'

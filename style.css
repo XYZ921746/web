@@ -391,6 +391,10 @@ img { max-width: 100%; }
 }
 .notice[hidden] { display: none; }
 .notice a { color: inherit; text-decoration: underline; }
+/* 免责声明块：整幅卡片，跟在列表下面 */
+.disclaimer { margin-top: 24px; }
+.disclaimer h3 { color: var(--pixso-warn); }
+.disclaimer p + p { margin-top: 8px; }
 .loading { color: var(--text-muted); font-size: 14px; }
 
 /* ── 十、页脚 ─────────────────────────────────────────────────────────── */

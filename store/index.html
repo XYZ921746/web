@@ -95,7 +95,8 @@
       <noscript><p class="notice">当前浏览器禁用了 JavaScript，无法自动列出插件。可直接到 <a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">Releases</a> 下载。</p></noscript>
       <p class="notice" id="store-error" hidden></p>
       <p class="notice">卡上的「用途」与「授权」按各条记录声明：纯代码插件按项目许可给 GPLv3；
-        带素材的扩展包（立绘、背景图、Live2D 运行库）<strong>素材权利属各自原作者</strong>，商用前请自行确认。</p>
+        带素材的扩展包（立绘、背景图、Live2D 运行库）<strong>素材权利属各自原作者</strong>，商用前请自行确认。
+        这些素材都是原作者免费分享的，这里只做展示与分发入口；原作者如有异议，请开 issue 联系我们，会立刻下架或改署名。</p>
     </div>
   </section>
 
@@ -142,11 +143,16 @@
       ? '<p class="mod-dep">依赖：' + p.depends.map(esc).join('、') + '</p>'
       : '';
     var usage = USAGE[p.usage];
-    var author = p.author
-      ? (p.authorUrl
-        ? '<a href="' + esc(p.authorUrl) + '" target="_blank" rel="noopener">' + esc(p.author) + '</a>'
-        : esc(p.author))
-      : '';
+    /* 作者：与模型区同一套字段 —— authors[{name,url}] 多作者，兼容单个 author/authorUrl */
+    var authors = (p.authors && p.authors.length)
+      ? p.authors
+      : (p.author ? [{ name: p.author, url: p.authorUrl }] : []);
+    var NUM = ['①', '②', '③', '④'];
+    var author = authors.map(function (a, i) {
+      if (!a.url) return esc(a.name || '未署名');
+      var label = a.name || (authors.length > 1 ? '作者主页 ' + NUM[i] : '作者主页');
+      return '<a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(label) + '</a>';
+    }).join(' · ');
     var extra = '';
     if (p.readmeUrl) {
       extra += '<a class="btn btn--ghost btn--sm" href="' + esc(p.readmeUrl) + '" target="_blank" rel="noopener">README</a>';
