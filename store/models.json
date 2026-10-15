@@ -1,5 +1,5 @@
 {
-  "comment": "Live2D 模型区索引。手工维护：上架一个模型就在 models 里加一条。zipUrl 必须指向模型 zip 的直链 —— 模型是二进制，按项目惯例不进 git 历史（改一次就多存一整份），一律走 Release 分发。第三方投稿走 submitUrl 的表单，审核通过后由维护者把 zip 传到 Release，再把直链登记到这里。",
+  "comment": "Live2D 模型区索引。手工维护：上架一个模型就在 models 里加一条。zipUrl 必须指向模型 zip 的直链 —— 模型是二进制，按项目惯例不进 git 历史（改一次就多存一整份），一律走 Release 分发。第三方投稿走 submitUrl 的表单，审核通过后由维护者把 zip 传到 Release，再把直链登记到这里。\n可选展示字段（缺省就不显示，卡片不会空一块）：author 作者名 / authorUrl 作者主页 / usage 用途（commercial 可商用、noncommercial 仅限非商用、no-commercial 禁止商用、ask 商用需授权）/ license 授权说明（显示在用途标签旁）/ videoUrl 演示视频 / readmeUrl README 文件链接。README 的小文件（纯文本）可以放进本仓库 store/models/<id>/README.md，再把它的 GitHub 链接填进 readmeUrl；zip 本身仍然走 Release。",
   "updatedAt": "2026-10-15T00:00:00.000Z",
   "submitUrl": "https://github.com/XYZ921746/web/issues/new?template=model-submission.yml",
   "usage": "下载 zip 后在应用里「设置 → Live2D 模型 → 上传新模型」装上；zip 的根目录就是模型名那一层。",
@@ -9,6 +9,10 @@
       "name": "伊蕾娜·默认",
       "kind": "official",
       "author": "ElainaChat Mod",
+      "authorUrl": "https://github.com/XYZ921746",
+      "usage": "ask",
+      "license": "素材权利属原作者，仅个人使用",
+      "readmeUrl": "https://github.com/XYZ921746/web/blob/main/store/models/elaina-default/README.md",
       "description": "内置默认模型，随 APK 一并分发；这里提供单独的 zip，方便电脑版直接安装。",
       "zipUrl": "https://github.com/XYZ921746/ElainaChat-mod/releases/download/v1.2.0-open/live2d-elaina-default.zip",
       "sizeBytes": 2241761
@@ -18,6 +22,10 @@
       "name": "deepseek",
       "kind": "official",
       "author": "ElainaChat Mod",
+      "authorUrl": "https://github.com/XYZ921746",
+      "usage": "ask",
+      "license": "素材权利属原作者，仅个人使用",
+      "readmeUrl": "https://github.com/XYZ921746/web/blob/main/store/models/deepseek/README.md",
       "description": "内置的 DeepSeek 鲸鱼娘模型，随 APK 一并分发；这里提供单独的 zip，方便电脑版直接安装。",
       "zipUrl": "https://github.com/XYZ921746/ElainaChat-mod/releases/download/v1.2.0-open/live2d-deepseek.zip",
       "sizeBytes": 3226689

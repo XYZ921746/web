@@ -15,14 +15,13 @@
 <header class="site-header">
   <div class="wrap header-inner">
     <a class="brand" href="../">
-      <span class="brand-mark">EC</span>
+      <img class="brand-mark" src="../brand.png" width="30" height="30" alt="">
       <span>ElainaChat Mod</span>
     </a>
     <div class="header-right">
       <nav class="nav">
         <a class="nav-link" href="../#features">特性</a>
-        <a class="nav-link" href="../#mods">扩展包</a>
-        <a class="nav-link" href="../models/">模型</a>
+        <a class="nav-link" href="../models/">live2d</a>
         <a class="nav-link" href="./">插件商店</a>
         <a class="btn btn--sm btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
       </nav>
@@ -87,13 +86,16 @@
     <div class="wrap">
       <div class="section-head">
         <h2>可用扩展包</h2>
-        <p>列表来自 <a href="./index.json">index.json</a>，要增删插件改那份 JSON 即可，本页不用动。</p>
+        <p>列表来自 <a href="./index.json">index.json</a>，要增删插件改那份 JSON 即可，本页不用动。
+          作者、用途（可否商用）、README 与演示视频同样是那条记录里的可选字段。</p>
       </div>
       <div class="grid" id="store-list">
         <p class="loading">正在读取 index.json…</p>
       </div>
       <noscript><p class="notice">当前浏览器禁用了 JavaScript，无法自动列出插件。可直接到 <a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">Releases</a> 下载。</p></noscript>
       <p class="notice" id="store-error" hidden></p>
+      <p class="notice">卡上的「用途」与「授权」按各条记录声明：纯代码插件按项目许可给 GPLv3；
+        带素材的扩展包（立绘、背景图、Live2D 运行库）<strong>素材权利属各自原作者</strong>，商用前请自行确认。</p>
     </div>
   </section>
 
@@ -123,6 +125,14 @@
     });
   }
 
+  /* 用途标签：文案与配色由 usage 决定 —— 编辑 index.json 即可，页面不用改 */
+  var USAGE = {
+    commercial: { label: '可商用', cls: 'tag--ok' },
+    noncommercial: { label: '仅限非商用', cls: '' },
+    'no-commercial': { label: '禁止商用', cls: 'tag--warn' },
+    ask: { label: '商用需授权', cls: 'tag--warn' }
+  };
+
   function cardHtml(p, fallbackUrl) {
     var isResource = p.kind === 'resource';
     var kind = isResource ? '资源' : '界面';
@@ -131,17 +141,37 @@
     var deps = (p.depends && p.depends.length)
       ? '<p class="mod-dep">依赖：' + p.depends.map(esc).join('、') + '</p>'
       : '';
+    var usage = USAGE[p.usage];
+    var author = p.author
+      ? (p.authorUrl
+        ? '<a href="' + esc(p.authorUrl) + '" target="_blank" rel="noopener">' + esc(p.author) + '</a>'
+        : esc(p.author))
+      : '';
+    var extra = '';
+    if (p.readmeUrl) {
+      extra += '<a class="btn btn--ghost btn--sm" href="' + esc(p.readmeUrl) + '" target="_blank" rel="noopener">README</a>';
+    }
+    if (p.videoUrl) {
+      extra += '<a class="btn btn--ghost btn--sm" href="' + esc(p.videoUrl) + '" target="_blank" rel="noopener">演示视频</a>';
+    }
     return '<article class="card mod-card">'
       + '<div class="mod-head">'
       + '<h3 class="mod-name">' + esc(p.name) + '</h3>'
       + '<span class="' + tagCls + '">' + kind + '</span>'
       + '</div>'
       + '<p class="mod-desc">' + esc(p.description) + '</p>'
+      + (author ? '<p class="mod-dep">作者：' + author + '</p>' : '')
       + deps
+      + (usage
+        ? '<p class="mod-usage"><span class="tag ' + usage.cls + '">' + usage.label + '</span>'
+          + (p.license ? '<span>' + esc(p.license) + '</span>' : '') + '</p>'
+        : '')
       + '<div class="mod-foot">'
       + '<span class="mod-ver">' + (p.version ? 'v' + esc(p.version) : '') + '</span>'
+      + '<div class="mod-actions">' + extra
       + '<a class="btn btn--primary btn--sm" href="' + esc(p.downloadUrl || fallbackUrl) + '"'
       + ' target="_blank" rel="noopener">下载 zip</a>'
+      + '</div>'
       + '</div>'
       + '</article>';
   }

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Live2D 模型区 · ElainaChat Mod</title>
-<meta name="description" content="ElainaChat Mod 的 Live2D 模型区：下载模型 zip，在应用里「设置 → Live2D 模型 → 上传新模型」装上即可；第三方作者也可以投稿自己的模型。">
+<title>Live2D 模型 · ElainaChat Mod</title>
+<meta name="description" content="ElainaChat Mod 的 Live2D 模型区：下载模型 zip，在应用里「设置 → Live2D 模型 → 上传新模型」装上即可。每个模型都标明作者、用途（可否商用）与 README；第三方作者也可以投稿。">
 <link rel="stylesheet" href="../style.css">
 <!-- 外观切换：与首页共用，路径是 ../ -->
 <script src="../theme.js"></script>
@@ -15,14 +15,13 @@
 <header class="site-header">
   <div class="wrap header-inner">
     <a class="brand" href="../">
-      <span class="brand-mark">EC</span>
+      <img class="brand-mark" src="../brand.png" width="30" height="30" alt="">
       <span>ElainaChat Mod</span>
     </a>
     <div class="header-right">
       <nav class="nav">
         <a class="nav-link" href="../#features">特性</a>
-        <a class="nav-link" href="../#mods">扩展包</a>
-        <a class="nav-link" href="./">模型</a>
+        <a class="nav-link" href="./">live2d</a>
         <a class="nav-link" href="../store/">插件商店</a>
         <a class="btn btn--sm btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
       </nav>
@@ -42,10 +41,11 @@
 
   <section class="hero">
     <div class="wrap">
-      <p class="eyebrow">模型区</p>
-      <h1>Live2D 模型</h1>
+      <p class="eyebrow">Live2D 模型</p>
+      <h1>模型</h1>
       <p class="lede">能装进「视频通话」的 Live2D 模型。下载 zip，再在应用里
-        <strong>设置 → Live2D 模型 → 上传新模型</strong> 装上即可 —— 手机端也一样。</p>
+        <strong>设置 → Live2D 模型 → 上传新模型</strong> 装上即可 —— 手机端也一样。
+        每个模型都标明作者与用途，点「README」看它自己的说明。</p>
       <div class="hero-actions">
         <a class="btn btn--primary" href="./submit/">投稿自己的模型</a>
         <a class="btn btn--ghost" href="../store/">到插件商店</a>
@@ -57,7 +57,8 @@
     <div class="wrap">
       <div class="section-head">
         <h2>可用模型</h2>
-        <p>列表来自 <a href="../store/models.json">store/models.json</a>，上架模型只改那份 JSON，本页不用动。</p>
+        <p>列表来自 <a href="../store/models.json">store/models.json</a>，上架模型只改那份 JSON，本页不用动。
+          作者主页、演示视频、用途（可否商用）与 README 都是那条记录里的可选字段。</p>
       </div>
       <div class="grid" id="model-list">
         <p class="loading">正在读取 models.json…</p>
@@ -65,7 +66,7 @@
       <noscript><p class="notice">当前浏览器禁用了 JavaScript，无法自动列出模型。可直接到 <a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">Releases</a> 下载模型 zip。</p></noscript>
       <p class="notice" id="model-error" hidden></p>
       <p class="notice">模型是二进制资源，按项目惯例<strong>走 Release 分发、不进 git 历史</strong>（改一次就多存一整份）。
-        模型素材的著作权属于各自作者 —— 用在自己项目里之前，请先看投稿时标注的授权方式。</p>
+        模型素材的著作权属于各自作者 —— 卡上的「用途」标签就是这条记录声明的使用范围，商用前请按它来。</p>
     </div>
   </section>
 
@@ -76,9 +77,9 @@
     <p>ElainaChat Mod · 以 GPLv3 发布。</p>
     <p>
       <a href="../">首页</a> ·
-      <a href="../store/">插件商店</a> ·
       <a href="./submit/">模型投稿</a> ·
-      <a href="https://github.com/XYZ921746/ElainaChat-mod">源码</a> ·
+      <a href="../store/submit/">插件投稿</a> ·
+      <a href="../store/">插件商店</a> ·
       <a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
     </p>
   </div>
@@ -100,20 +101,46 @@
   function size(bytes) {
     return bytes ? (bytes / 1048576).toFixed(1) + ' MB' : '';
   }
+
+  /* 用途标签：文案与配色由 usage 决定 —— 数据里写的是哪个，卡上就显示哪个 */
+  var USAGE = {
+    commercial: { label: '可商用', cls: 'tag--ok' },
+    noncommercial: { label: '仅限非商用', cls: '' },
+    'no-commercial': { label: '禁止商用', cls: 'tag--warn' },
+    ask: { label: '商用需授权', cls: 'tag--warn' }
+  };
+
   function cardHtml(m) {
-    /* kind 缺省当作官方内置；第三方投稿标成「投稿」并换成中性标签色 */
     var official = m.kind !== 'community';
-    var meta = size(m.sizeBytes) || (m.version ? 'v' + esc(m.version) : '');
+    var usage = USAGE[m.usage];
+    var author = m.author
+      ? (m.authorUrl
+        ? '<a href="' + esc(m.authorUrl) + '" target="_blank" rel="noopener">' + esc(m.author) + '</a>'
+        : esc(m.author))
+      : '未署名';
+    var extra = '';
+    if (m.readmeUrl) {
+      extra += '<a class="btn btn--ghost btn--sm" href="' + esc(m.readmeUrl) + '" target="_blank" rel="noopener">README</a>';
+    }
+    if (m.videoUrl) {
+      extra += '<a class="btn btn--ghost btn--sm" href="' + esc(m.videoUrl) + '" target="_blank" rel="noopener">演示视频</a>';
+    }
     return '<article class="card mod-card">'
       + '<div class="mod-head">'
       + '<h3 class="mod-name">' + esc(m.name) + '</h3>'
       + '<span class="tag' + (official ? ' tag--accent' : '') + '">' + (official ? '官方' : '投稿') + '</span>'
       + '</div>'
       + '<p class="mod-desc">' + esc(m.description) + '</p>'
-      + '<p class="mod-dep">作者：' + esc(m.author || '未署名') + '</p>'
+      + '<p class="mod-dep">作者：' + author + '</p>'
+      + (usage
+        ? '<p class="mod-usage"><span class="tag ' + usage.cls + '">' + usage.label + '</span>'
+          + (m.license ? '<span>' + esc(m.license) + '</span>' : '') + '</p>'
+        : '')
       + '<div class="mod-foot">'
-      + '<span class="mod-ver">' + meta + '</span>'
+      + '<span class="mod-ver">' + (size(m.sizeBytes) || (m.version ? 'v' + esc(m.version) : '')) + '</span>'
+      + '<div class="mod-actions">' + extra
       + '<a class="btn btn--primary btn--sm" href="' + esc(m.zipUrl) + '" target="_blank" rel="noopener">下载 zip</a>'
+      + '</div>'
       + '</div>'
       + '</article>';
   }
