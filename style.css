@@ -395,6 +395,14 @@ img { max-width: 100%; }
 .disclaimer { margin-top: 24px; }
 .disclaimer h3 { color: var(--pixso-warn); }
 .disclaimer p + p { margin-top: 8px; }
+.disclaimer ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.disclaimer li { margin: 5px 0; }
+.disclaimer strong { color: var(--text); font-weight: 650; }
 .loading { color: var(--text-muted); font-size: 14px; }
 
 /* ── 十、页脚 ─────────────────────────────────────────────────────────── */

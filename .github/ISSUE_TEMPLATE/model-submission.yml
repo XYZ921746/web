@@ -39,8 +39,8 @@ body:
     id: license
     attributes:
       label: 授权方式
-      description: 允许别人怎么使用与再分发
-      placeholder: 例如：仅个人使用 / CC BY-NC 4.0 / 已获原作者授权
+      description: 允许别人怎么使用与再分发。模型区常见的是「仅限本项目使用」—— 本站不代你授予任何权利，写清楚我们才会照抄上架
+      placeholder: 例如：仅限本项目使用 / 仅个人使用 / CC BY-NC 4.0 / 已获原作者授权
     validations:
       required: true
 

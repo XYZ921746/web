@@ -68,13 +68,29 @@
       <p class="notice">模型是二进制资源，按项目惯例<strong>走 Release 分发、不进 git 历史</strong>（改一次就多存一整份）。
         模型素材的著作权属于各自作者 —— 卡上的「用途」标签就是这条记录声明的使用范围，商用前请按它来。</p>
 
-      <div class="card disclaimer">
-        <h3>免责声明</h3>
-        <p>模型区收录的都是各自作者<strong>免费分享</strong>的作品。素材著作权属原作者，这里只做展示与下载入口，
-          <strong>不主张任何权利</strong>，也不代表作者的立场。请按卡上的「用途」标签使用：未经授权不要商用、转售或冒充作者。</p>
-        <p>如果你就是作者、不希望自己的作品被收录，或对署名方式有异议，请
-          <a href="https://github.com/XYZ921746/web/issues" target="_blank" rel="noopener">开一条 issue</a> 告诉我们 ——
-          我们会<strong>立刻下架或改署名</strong>。尊重原作者，模型才有人愿意继续做。</p>
+      <!-- 完整条款（插件商店那页的素材说明也指到这里，所以给个锚点） -->
+      <div class="card disclaimer" id="terms">
+        <h3>免责声明与使用条款</h3>
+        <p><strong>一、权利归属。</strong>模型区收录的模型与相关素材，著作权及其他相关权利属于各自作者。
+          本项目<strong>不主张任何权利</strong>，收录行为<strong>不构成授权、转让或代理</strong>，也不代表作者立场或背书。
+          程序本身的代码另按 GPLv3 发布（见仓库 LICENSE），与素材权利无关。</p>
+        <p><strong>二、使用范围。</strong></p>
+        <ul>
+          <li>这些模型是作者<strong>免费分享</strong>的，可在<strong>本项目内个人使用</strong>：装进视频通话、自己玩、自己改都行。</li>
+          <li><strong>不得</strong>商用、转售、二次打包分发到其他应用或项目、去掉署名后转发，或冒充作者发布。</li>
+          <li>需要超出上述范围的使用（例如商用），请<strong>自行取得原作者许可</strong> —— 许可与否完全由原作者决定，
+            本项目无权代其授予，也不代其收取任何费用。</li>
+          <li>若原作者对某个模型另有声明，<strong>以原作者的声明为准</strong>。</li>
+        </ul>
+        <p><strong>三、免责。</strong>模型与素材由作者提供，本项目只做展示与下载入口，
+          不对其可用性、完整性、合法性作任何担保。下载与使用的风险由使用者自行承担；
+          使用者超出上述范围使用所产生的纠纷与责任，与本项目无关。</p>
+        <p><strong>四、侵权处理。</strong>如果你是权利人，认为这里收录的作品侵犯了你的权益：请到
+          <a href="https://github.com/XYZ921746/web/issues" target="_blank" rel="noopener">web 仓库开一条 issue</a>
+          （或通过仓库里公开的联系方式）说明作品与你的诉求。我们会<strong>在核实后立即下架或按你的要求改署名</strong>，
+          不需要你出具复杂的证明材料。</p>
+        <p><strong>五、滥用举报。</strong>如果发现有人拿这里的模型去商用、转售或冒充作者，欢迎告知。
+          除下架外，我们会在项目内公示说明，并保留采取进一步措施的权利。</p>
       </div>
     </div>
   </section>
@@ -111,8 +127,10 @@
     return bytes ? (bytes / 1048576).toFixed(1) + ' MB' : '';
   }
 
-  /* 用途标签：文案与配色由 usage 决定 —— 数据里写的是哪个，卡上就显示哪个 */
+  /* 用途标签：文案与配色由 usage 决定 —— 数据里写的是哪个，卡上就显示哪个。
+     ask 只在**第三方许可证不由我们说了算**时用（如 live2d-models 里的 Cubism SDK）。 */
   var USAGE = {
+    'project-only': { label: '仅限本项目使用', cls: 'tag--warn' },
     commercial: { label: '可商用', cls: 'tag--ok' },
     noncommercial: { label: '仅限非商用', cls: '' },
     'no-commercial': { label: '禁止商用', cls: 'tag--warn' },

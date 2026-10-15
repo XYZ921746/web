@@ -94,9 +94,12 @@
       </div>
       <noscript><p class="notice">当前浏览器禁用了 JavaScript，无法自动列出插件。可直接到 <a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">Releases</a> 下载。</p></noscript>
       <p class="notice" id="store-error" hidden></p>
-      <p class="notice">卡上的「用途」与「授权」按各条记录声明：纯代码插件按项目许可给 GPLv3；
-        带素材的扩展包（立绘、背景图、Live2D 运行库）<strong>素材权利属各自原作者</strong>，商用前请自行确认。
-        这些素材都是原作者免费分享的，这里只做展示与分发入口；原作者如有异议，请开 issue 联系我们，会立刻下架或改署名。</p>
+      <p class="notice">「用途」与「授权」按各条记录声明。<strong>带素材的扩展包</strong>（立绘、背景图、生日内容）与
+        Live2D 模型<strong>仅限本项目内个人使用</strong> —— 不得商用、转售、二次分发到其他项目，或去署名后冒充作者；
+        纯代码插件是 GPLv3（GPL 不允许附加限制，所以它们保留「可商用」）；Live2D 运行库则受 Live2D Inc. 条款约束。
+        素材权利属各自原作者，本项目<strong>不主张任何权利</strong>，只做展示与分发入口。权利人如有异议，请在
+        <a href="https://github.com/XYZ921746/web/issues" target="_blank" rel="noopener">仓库开 issue</a>，我们会立即下架或改署名。
+        完整条款见 <a href="../models/#terms">模型区 · 免责声明与使用条款</a>。</p>
     </div>
   </section>
 
@@ -126,8 +129,10 @@
     });
   }
 
-  /* 用途标签：文案与配色由 usage 决定 —— 编辑 index.json 即可，页面不用改 */
+  /* 用途标签：文案与配色由 usage 决定 —— 编辑 index.json 即可，页面不用改。
+     ask 只在**第三方许可证不由我们说了算**时用（如 live2d-models 里的 Cubism SDK）。 */
   var USAGE = {
+    'project-only': { label: '仅限本项目使用', cls: 'tag--warn' },
     commercial: { label: '可商用', cls: 'tag--ok' },
     noncommercial: { label: '仅限非商用', cls: '' },
     'no-commercial': { label: '禁止商用', cls: 'tag--warn' },
