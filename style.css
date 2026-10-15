@@ -320,6 +320,21 @@ img { max-width: 100%; }
   gap: var(--gap);
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 }
+/* 亮点卡（比较大，且左上角带图）排成两列，不要「三列 + 一张落单」 */
+.grid--2 { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+
+/* 卡片左上角的小图 + 标题（图片是装饰，标题已经承载语义，所以 alt 留空） */
+.card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.card-head h3 { margin: 0; }
+.card-thumb {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border-radius: 12px;
+  object-fit: cover;
+  background: var(--surface-2);
+  box-shadow: 0 2px 8px rgba(67, 47, 36, 0.14), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
 .card {
   background: var(--surface);
   border: 1px solid var(--border);

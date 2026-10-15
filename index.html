@@ -60,30 +60,45 @@
     </div>
   </section>
 
-  <!-- ── 特性 ────────────────────────────────────────────────────── -->
+  <!-- ── 项目亮点（相对原版项目改了什么） ────────────────────────── -->
   <section class="section" id="features">
     <div class="wrap">
       <div class="section-head">
-        <h2>为什么是「Mod 优先」</h2>
-        <p>大多数聊天应用把花哨功能焊死在主程序里 —— 你不用也得装着，卸不掉，坏了还会拖垮整个应用。这里的取舍相反。
-          扩展包本身在 <a href="./store/">插件商店</a> 里，可以装、可以卸。</p>
+        <h2>项目亮点</h2>
+        <p>本项目在原版项目的基础上进行的改进。</p>
       </div>
-      <div class="grid">
+      <div class="grid grid--2">
         <article class="card">
-          <h3>清单驱动</h3>
-          <p>加载器只认 manifest.json，不硬编码任何插件名。新增功能 = 加一个目录，不用碰主程序。</p>
+          <div class="card-head">
+            <img class="card-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20style%20illustration%2C%20a%20small%20wooden%20puzzle%20box%20with%20glowing%20magical%20plugin%20tiles%20and%20a%20witch%20hat%20resting%20on%20it%2C%20warm%20cream%20background%2C%20olive%20green%20and%20soft%20gold%20accents%2C%20clean%20flat%20vector%20art%2C%20soft%20shadows&image_size=square" width="48" height="48" alt="" loading="lazy">
+            <h3>mod 自定义功能</h3>
+          </div>
+          <p>想给项目加点功能，不用碰主程序 —— 用项目内提供的 <strong>插件开发 skill</strong> 写一个 mod 就行：
+            一个目录加一份清单，装、卸、开关都在设置里。</p>
         </article>
         <article class="card">
-          <h3>失败隔离</h3>
-          <p>插件的加载与初始化都包在 try/catch 里，一个坏插件只会被标记出错，其余照常运行。</p>
+          <div class="card-head">
+            <img class="card-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20style%20illustration%2C%20chat%20speech%20bubbles%20with%20a%20glowing%20stream%20of%20thought%20and%20a%20quill%20writing%20words%2C%20warm%20cream%20background%2C%20sage%20green%20and%20soft%20pink%20accents%2C%20clean%20flat%20vector%20art&image_size=square" width="48" height="48" alt="" loading="lazy">
+            <h3>对话优化</h3>
+          </div>
+          <p>新增了<strong>模型思考强度</strong>的控制（部分模型或中转可能有兼容问题），以及新开的
+            <strong>第三人称转述模式</strong>，让对话更加自然。</p>
         </article>
         <article class="card">
-          <h3>资源与代码分离</h3>
-          <p>立绘、背景图这类公共资源被多个界面共用；卸载某个界面不会把公共资源一起带走。</p>
+          <div class="card-head">
+            <img class="card-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20style%20illustration%2C%20a%20round%20alarm%20clock%20with%20a%20tiny%20broom%20and%20sparkles%20at%20sunrise%2C%20warm%20cream%20background%2C%20olive%20green%20and%20amber%20accents%2C%20clean%20flat%20vector%20art&image_size=square" width="48" height="48" alt="" loading="lazy">
+            <h3>定时任务</h3>
+          </div>
+          <p>通过定时任务，你和伊蕾娜做过的约定将会实现 —— 比如 7 点准时和你说早安，或者 30 分钟后提醒你喝水。</p>
         </article>
         <article class="card">
-          <h3>BYOK 直连</h3>
-          <p>请求从你的设备直接发给服务商。没有作者网关、没有共享套餐、没有内置密钥。</p>
+          <div class="card-head">
+            <img class="card-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20style%20illustration%2C%20a%20laptop%20and%20a%20smartphone%20linked%20by%20glowing%20command%20lines%2C%20a%20small%20witch%20hat%20and%20gears%2C%20warm%20cream%20background%2C%20olive%20green%20and%20teal%20accents%2C%20clean%20flat%20vector%20art&image_size=square" width="48" height="48" alt="" loading="lazy">
+            <h3>Agent 能力</h3>
+          </div>
+          <p>通过这个功能，电脑上可以陪你工作 —— 它知道你正在干什么，你愿意的话甚至可以让 AI 帮你干活；
+            手机端可以查看手机消息、操作手机（点击 / 滑动 / 输入 / 截图 / 读通知），全程<strong>不经过作者云端</strong>。
+            偶尔还会吃你的醋。</p>
         </article>
       </div>
     </div>
