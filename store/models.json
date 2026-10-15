@@ -1,0 +1,26 @@
+{
+  "comment": "Live2D 模型区索引。手工维护：上架一个模型就在 models 里加一条。zipUrl 必须指向模型 zip 的直链 —— 模型是二进制，按项目惯例不进 git 历史（改一次就多存一整份），一律走 Release 分发。第三方投稿走 submitUrl 的表单，审核通过后由维护者把 zip 传到 Release，再把直链登记到这里。",
+  "updatedAt": "2026-10-15T00:00:00.000Z",
+  "submitUrl": "https://github.com/XYZ921746/web/issues/new?template=model-submission.yml",
+  "usage": "下载 zip 后在应用里「设置 → Live2D 模型 → 上传新模型」装上；zip 的根目录就是模型名那一层。",
+  "models": [
+    {
+      "id": "elaina-default",
+      "name": "伊蕾娜·默认",
+      "kind": "official",
+      "author": "ElainaChat Mod",
+      "description": "内置默认模型，随 APK 一并分发；这里提供单独的 zip，方便电脑版直接安装。",
+      "zipUrl": "https://github.com/XYZ921746/ElainaChat-mod/releases/download/v1.2.0-open/live2d-elaina-default.zip",
+      "sizeBytes": 2241761
+    },
+    {
+      "id": "deepseek",
+      "name": "deepseek",
+      "kind": "official",
+      "author": "ElainaChat Mod",
+      "description": "内置的 DeepSeek 鲸鱼娘模型，随 APK 一并分发；这里提供单独的 zip，方便电脑版直接安装。",
+      "zipUrl": "https://github.com/XYZ921746/ElainaChat-mod/releases/download/v1.2.0-open/live2d-deepseek.zip",
+      "sizeBytes": 3226689
+    }
+  ]
+}

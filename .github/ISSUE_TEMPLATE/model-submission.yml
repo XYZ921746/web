@@ -1,0 +1,81 @@
+# Live2D 模型投稿表单
+#
+# 站点（GitHub Pages）是静态托管，没有服务端接收文件，所以投稿走这里：
+# 作者填表单 → 维护者把 zip 传到 web 仓库的 Release → 登记进 store/models.json。
+# 站点「模型投稿」区块里的按钮就指向本模板。
+name: Live2D 模型投稿
+description: 把你的 Live2D 模型投稿到模型区（不用会 git）
+title: "[模型投稿] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        投稿前请先确认两件事，否则这条 issue 只能退回：
+
+        1. **你有权分发这个模型** —— 自己做的，或已获得原作者授权；
+        2. **zip 的根目录就是模型名那一层**，且含 `.model3.json` + `.moc3`（Cubism 3）与纹理图。
+
+        模型是二进制，**不要直接传到本 issue**：先放到你自己的网盘或 Release，把链接填在下面。
+
+  - type: input
+    id: model-name
+    attributes:
+      label: 模型名
+      description: 会作为应用里的显示名（目录名即显示名，中文与空格都支持）
+      placeholder: 例如：伊蕾娜·默认
+    validations:
+      required: true
+
+  - type: input
+    id: author
+    attributes:
+      label: 作者 / 署名
+      description: 上架时展示的名字，可以是昵称
+      placeholder: 例如：@someone
+    validations:
+      required: true
+
+  - type: input
+    id: license
+    attributes:
+      label: 授权方式
+      description: 允许别人怎么使用与再分发
+      placeholder: 例如：仅个人使用 / CC BY-NC 4.0 / 已获原作者授权
+    validations:
+      required: true
+
+  - type: input
+    id: download-url
+    attributes:
+      label: 模型 zip 下载地址
+      description: 直链或网盘链接；zip 根目录应为模型名那一层
+      placeholder: https://…
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 模型说明
+      description: 一句话介绍，会显示在模型区的卡片上
+      placeholder: 例如：带 4 组表情与 2 个动作，适合视频通话。
+    validations:
+      required: true
+
+  - type: input
+    id: preview
+    attributes:
+      label: 预览图（可选）
+      description: 一张截图的链接；不填就显示模型名首字占位
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 投稿确认
+      options:
+        - label: 这个模型我有权分发，或已获得原作者授权
+          required: true
+        - label: zip 根目录是模型名那一层，且含 .model3.json / .moc3 / 纹理图
+          required: true
+        - label: 模型文件我已放在自己的网盘或 Release，而不是附在本 issue 里
+          required: true

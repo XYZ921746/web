@@ -2,13 +2,14 @@
    ElainaChat Mod · 站点样式（单文件，首页与插件商店共用）
    ── 想改配色 / 圆角 / 宽度：改下面 :root 里的变量即可 ──
 
-   ★ 2026-10 改版：**配色与组件语言全部改成应用（web/）那一套**，不再是独立的
-     「灰底 + 紫」网页外观 —— 站点是应用的对外门面，两边同一套视觉才对得上。
+   ★ 2026-10 改版：**配色与组件语言全部改成应用（web/）那一套** —— 站点是应用的
+     对外门面，两边同一套视觉才对得上。令牌直接照搬应用（web/index.html 的 :root
+     与 web/css/themes.css）。
 
-   令牌直接照搬应用（web/index.html 的 :root 与 web/css/themes.css）：
-     默认主题「暖米绿」(elaina)  ·  iOS 蓝  ·  陶土橙  ·  鼠尾草  ·  樱花桃
-   外加深色模式 —— 选择器结构与 themes.css **逐条对应**，包括那条容易踩坑的
-   特异性规则（深色 + 模板用双属性选择器，否则深色会把模板主色全部盖成 iOS 蓝）。
+   ★ 2026-10（第二次）：**取消颜色选择**，站点固定用应用的默认主题「暖米绿」，
+     不再提供 iOS 蓝 / 陶土橙 / 鼠尾草 / 樱花桃 那排色点 —— 所以这里只保留
+     默认主题的浅色与深色两份令牌，多主题的变量块已整段删掉。
+     深浅色仍可切换（跟随设备 / 浅色 / 深色），那是模式而不是配色，见 theme.js。
    ========================================================================== */
 
 /* ── 一、令牌层：默认主题「暖米绿」（与应用默认外观同源） ────────────── */
@@ -34,7 +35,7 @@
   /* 品牌色的半透明版（药丸按钮投影、标签底、导航悬停都用它） */
   --tpl-tint: rgba(167, 187, 108, 0.18);
 
-  /* 站点语义层：组件只认这几个名字，换主题时不用改组件 */
+  /* 站点语义层：组件只认这几个名字，改配色时不用动组件 */
   --text: var(--pixso-brown);
   --text-muted: var(--pixso-brown-soft);
   --border: var(--pixso-line);
@@ -65,87 +66,24 @@
   --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
 }
 
-/* ── 二、其余四套浅色模板（值取自 web/css/themes.css，未列出的沿用默认） ── */
-html[data-theme-template="ios"] {
-  --pixso-canvas: #dce2ea;
-  --pixso-cream: #f7f9fc;
-  --pixso-surface: #ffffff;
-  --pixso-panel: #e9eef5;
-  --pixso-panel-soft: #f3f6fa;
-  --pixso-brown: #253040;
-  --pixso-brown-soft: #566070;
-  --pixso-green: #7aa7f0;
-  --pixso-green-dark: #4f7cf0;
-  --pixso-orange: #007aff;
-  --pixso-line: #d5dce6;
-  --tpl-tint: rgba(0, 122, 255, 0.14);
-  --header-bg: rgba(247, 249, 252, 0.74);
-  --card-shadow: 0 8px 26px rgba(18, 30, 50, 0.08), 0 1px 2px rgba(18, 30, 50, 0.06);
-  --card-shadow-hover: 0 18px 46px rgba(18, 30, 50, 0.16), 0 2px 6px rgba(18, 30, 50, 0.08);
-}
-html[data-theme-template="claude"] {
-  --pixso-canvas: #e6ddd4;
-  --pixso-cream: #faf6f2;
-  --pixso-surface: #fffdfb;
-  --pixso-panel: #f0e9e2;
-  --pixso-panel-soft: #f6f1ec;
-  --pixso-brown: #3a2d24;
-  --pixso-brown-soft: #6d5a4d;
-  --pixso-green: #d97757;
-  --pixso-green-dark: #bf5f3f;
-  --pixso-orange: #d97757;
-  --pixso-line: #ded2c7;
-  --tpl-tint: rgba(217, 119, 87, 0.14);
-  --header-bg: rgba(250, 246, 242, 0.76);
-  --card-shadow: 0 8px 26px rgba(58, 45, 36, 0.08), 0 1px 2px rgba(58, 45, 36, 0.06);
-  --card-shadow-hover: 0 18px 46px rgba(58, 45, 36, 0.16), 0 2px 6px rgba(58, 45, 36, 0.08);
-}
-html[data-theme-template="sage"] {
-  --pixso-canvas: #d8e4dc;
-  --pixso-cream: #f6faf7;
-  --pixso-surface: #ffffff;
-  --pixso-panel: #e4eee8;
-  --pixso-panel-soft: #eef6f1;
-  --pixso-brown: #1e3529;
-  --pixso-brown-soft: #4e6b5a;
-  --pixso-green: #3fae87;
-  --pixso-green-dark: #25795a;
-  --pixso-orange: #3fae87;
-  --pixso-line: #cbdcd2;
-  --tpl-tint: rgba(63, 174, 135, 0.15);
-  --header-bg: rgba(246, 250, 247, 0.74);
-  --card-shadow: 0 8px 26px rgba(30, 53, 41, 0.08), 0 1px 2px rgba(30, 53, 41, 0.06);
-  --card-shadow-hover: 0 18px 46px rgba(30, 53, 41, 0.16), 0 2px 6px rgba(30, 53, 41, 0.08);
-}
-html[data-theme-template="sakura"] {
-  --pixso-canvas: #e6dade;
-  --pixso-cream: #fbf6f8;
-  --pixso-surface: #fffdfe;
-  --pixso-panel: #f2e8ec;
-  --pixso-panel-soft: #f8f1f4;
-  --pixso-brown: #402a34;
-  --pixso-brown-soft: #775863;
-  --pixso-green: #d97b93;
-  --pixso-green-dark: #c2607b;
-  --pixso-orange: #d97b93;
-  --pixso-line: #e0cdd4;
-  --tpl-tint: rgba(217, 123, 147, 0.14);
-  --header-bg: rgba(251, 246, 248, 0.76);
-  --card-shadow: 0 8px 26px rgba(64, 42, 52, 0.08), 0 1px 2px rgba(64, 42, 52, 0.06);
-  --card-shadow-hover: 0 18px 46px rgba(64, 42, 52, 0.16), 0 2px 6px rgba(64, 42, 52, 0.08);
-}
-
-/* ── 三、深色模式 ──────────────────────────────────────────────────────
-   基础深色块里的文字 / 警示 / 阴影是专门调过对比度的，**不跟模板跑**；
-   品牌色与底色由下面各模板的深色块覆盖。 */
-
+/* ── 二、深色模式 ──────────────────────────────────────────────────────
+   文字 / 警示 / 阴影是专门调过对比度的（深色下正文不是纯白，避免过硬），
+   底色与品牌色取应用深色版里「暖米绿」那一组。 */
 html[data-theme="dark"] {
   color-scheme: dark;
 
-  /* 正文与次要文字（深色下正文不是纯白，避免过硬） */
+  --pixso-canvas: #10140f;
+  --pixso-cream: #252c23;
+  --pixso-surface: #171c15;
+  --pixso-panel: #1c221b;
+  --pixso-panel-soft: #242b22;
   --pixso-brown: #dfe6f0;
   --pixso-brown-dark: #eef2f7;
   --pixso-brown-soft: #9aa4b6;
+  --pixso-green: #9db167;
+  --pixso-green-dark: #74873f;
+  --pixso-orange: #ff7d4d;
+  --pixso-line: #2f3a2e;
   --pixso-warn: #fbbf24;
   --pixso-warn-bg: rgba(251, 191, 36, 0.1);
   --pixso-warn-line: rgba(251, 191, 36, 0.35);
@@ -153,88 +91,13 @@ html[data-theme="dark"] {
   --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.3);
   --card-shadow-hover: 0 20px 48px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35);
 
-  /* 默认深色 = iOS 蓝那套（与应用一致；没选模板时由下面的 :not() 块接管为暖米绿） */
-  --pixso-canvas: #0d1015;
-  --pixso-cream: #232833;
-  --pixso-surface: #151a21;
-  --pixso-panel: #1a2029;
-  --pixso-panel-soft: #222833;
-  --pixso-green: #4f7cf0;
-  --pixso-green-dark: #3d6ae0;
-  --pixso-orange: #0a84ff;
-  --pixso-line: #2c3542;
-  --tpl-tint: rgba(10, 132, 255, 0.16);
+  --tpl-tint: rgba(157, 177, 103, 0.18);
   --glass: rgba(255, 255, 255, 0.07);
-  --header-bg: rgba(21, 26, 33, 0.74);
+  --header-bg: rgba(23, 28, 21, 0.74);
   --on-accent: #ffffff;
 }
 
-/* ★ 每套模板的深色版都要**单独写**，并用双属性选择器提升特异性 ——
-   否则同权重（0,1,1）下深色块排在模板块之后，会把所有模板的主色盖成同一套
-   （这正是应用里踩过的「深色下切主题完全失效」）。 */
-html[data-theme="dark"][data-theme-template="ios"] {
-  --pixso-canvas: #0d1015;
-  --pixso-cream: #232833;
-  --pixso-surface: #151a21;
-  --pixso-panel: #1a2029;
-  --pixso-panel-soft: #222833;
-  --pixso-green: #4f7cf0;
-  --pixso-green-dark: #3d6ae0;
-  --pixso-orange: #0a84ff;
-  --pixso-line: #2c3542;
-  --tpl-tint: rgba(10, 132, 255, 0.16);
-}
-html[data-theme="dark"][data-theme-template="claude"] {
-  --pixso-canvas: #14100c;
-  --pixso-cream: #2e241e;
-  --pixso-surface: #1d1713;
-  --pixso-panel: #241b16;
-  --pixso-panel-soft: #2d221c;
-  --pixso-green: #e08a6a;
-  --pixso-green-dark: #c96f4d;
-  --pixso-orange: #e08a6a;
-  --pixso-line: #3b2e26;
-  --tpl-tint: rgba(224, 138, 106, 0.16);
-}
-html[data-theme="dark"][data-theme-template="sage"] {
-  --pixso-canvas: #0c120e;
-  --pixso-cream: #202c22;
-  --pixso-surface: #131a15;
-  --pixso-panel: #18211a;
-  --pixso-panel-soft: #1f2b21;
-  --pixso-green: #4cc296;
-  --pixso-green-dark: #35916d;
-  --pixso-orange: #4cc296;
-  --pixso-line: #29392e;
-  --tpl-tint: rgba(76, 194, 150, 0.16);
-}
-html[data-theme="dark"][data-theme-template="sakura"] {
-  --pixso-canvas: #130e11;
-  --pixso-cream: #2d2228;
-  --pixso-surface: #1c1518;
-  --pixso-panel: #231a1f;
-  --pixso-panel-soft: #2c2126;
-  --pixso-green: #e58ba1;
-  --pixso-green-dark: #cf6c87;
-  --pixso-orange: #e58ba1;
-  --pixso-line: #3a2b33;
-  --tpl-tint: rgba(229, 139, 161, 0.16);
-}
-/* 默认模板（暖米绿）的深色版：它用「不设属性」表达，所以四条模板规则都盖不到它 */
-html[data-theme="dark"]:not([data-theme-template]) {
-  --pixso-canvas: #10140f;
-  --pixso-cream: #252c23;
-  --pixso-surface: #171c15;
-  --pixso-panel: #1c221b;
-  --pixso-panel-soft: #242b22;
-  --pixso-green: #9db167;
-  --pixso-green-dark: #74873f;
-  --pixso-orange: #ff7d4d;
-  --pixso-line: #2f3a2e;
-  --tpl-tint: rgba(157, 177, 103, 0.18);
-}
-
-/* ── 四、基础 ─────────────────────────────────────────────────────────── */
+/* ── 三、基础 ─────────────────────────────────────────────────────────── */
 * { box-sizing: border-box; }
 html {
   scroll-behavior: smooth;
@@ -263,7 +126,7 @@ img { max-width: 100%; }
   padding: 0 24px;
 }
 
-/* ── 五、顶部导航 ─────────────────────────────────────────────────────── */
+/* ── 四、顶部导航 ─────────────────────────────────────────────────────── */
 .site-header {
   position: sticky;
   top: 0;
@@ -324,39 +187,8 @@ img { max-width: 100%; }
   text-decoration: none;
 }
 
-/* 外观控件：主题模板圆点 + 三态胶囊（与应用顶栏同一套语言） */
+/* 外观控件：深浅色三态胶囊（与应用顶栏同一套语言、连体胶囊） */
 .appearance { display: flex; align-items: center; gap: 10px; }
-.tpl-dots {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 5px 9px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--glass);
-}
-.tpl-dot {
-  width: 15px;
-  height: 15px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: var(--surface-2);
-  cursor: pointer;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
-}
-/* 圆点本身就是配色样本，所以颜色写死在这里（不跟站点变量走） */
-.tpl-dot[data-tpl=""] { background: #a8b974; }        /* 暖米绿（默认，对应应用默认主题） */
-.tpl-dot[data-tpl="ios"] { background: #007aff; }
-.tpl-dot[data-tpl="claude"] { background: #d97757; }
-.tpl-dot[data-tpl="sage"] { background: #3fae87; }
-.tpl-dot[data-tpl="sakura"] { background: #d97b93; }
-.tpl-dot:hover { transform: scale(1.12); }
-.tpl-dot[aria-pressed="true"] {
-  transform: scale(1.1);
-  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--accent-deep);
-}
 .theme-capsule {
   display: inline-flex;
   align-items: center;
@@ -384,7 +216,7 @@ img { max-width: 100%; }
   box-shadow: 0 3px 10px var(--tpl-tint);
 }
 
-/* ── 六、按钮：药丸 + 柔渐变（与应用主按钮一致，不是纯色块） ───────────── */
+/* ── 五、按钮：药丸 + 柔渐变（与应用主按钮一致，不是纯色块） ───────────── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -424,7 +256,7 @@ img { max-width: 100%; }
 }
 .btn--sm { padding: 7px 14px; font-size: 13px; }
 
-/* ── 七、Hero ─────────────────────────────────────────────────────────── */
+/* ── 六、Hero ─────────────────────────────────────────────────────────── */
 .hero { padding: 76px 0 60px; }
 .eyebrow {
   display: inline-flex;
@@ -474,7 +306,7 @@ img { max-width: 100%; }
   background: var(--accent);
 }
 
-/* ── 八、区块 ─────────────────────────────────────────────────────────── */
+/* ── 七、区块 ─────────────────────────────────────────────────────────── */
 .section { padding: 56px 0; border-top: 1px solid var(--border); }
 .section-head { margin-bottom: 28px; }
 .section-head h2 {
@@ -483,8 +315,10 @@ img { max-width: 100%; }
   letter-spacing: -0.01em;
 }
 .section-head p { margin: 0; max-width: 680px; color: var(--text-muted); }
+/* 同一节里第二组小标题（如「模型区」下面再分「模型投稿」） */
+.section-head--sub { margin-top: 56px; }
 
-/* ── 九、卡片网格 ─────────────────────────────────────────────────────── */
+/* ── 八、卡片网格 ─────────────────────────────────────────────────────── */
 .grid {
   display: grid;
   gap: var(--gap);
@@ -505,8 +339,10 @@ img { max-width: 100%; }
 }
 .card h3 { margin: 0 0 8px; font-size: 16px; }
 .card p { margin: 0; font-size: 14px; color: var(--text-muted); }
+/* 卡片里紧跟正文的按钮 / 链接（投稿入口那几张卡） */
+.card .btn { margin-top: 14px; }
 
-/* 扩展包卡片 */
+/* 扩展包 / 模型卡片 */
 .mod-card { display: flex; flex-direction: column; gap: 10px; }
 .mod-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .mod-name { margin: 0; font-size: 16px; }
@@ -534,7 +370,7 @@ img { max-width: 100%; }
 }
 .tag--accent { background: var(--tpl-tint); color: var(--accent-deep); }
 
-/* ── 十、说明列表 / 提示条 ────────────────────────────────────────────── */
+/* ── 九、说明列表 / 提示条 ────────────────────────────────────────────── */
 .steps { margin: 0; padding-left: 20px; color: var(--text-muted); font-size: 15px; }
 .steps li { margin: 6px 0; }
 .steps strong { color: var(--text); font-weight: 650; }
@@ -550,7 +386,7 @@ img { max-width: 100%; }
 .notice a { color: inherit; text-decoration: underline; }
 .loading { color: var(--text-muted); font-size: 14px; }
 
-/* ── 十一、页脚 ───────────────────────────────────────────────────────── */
+/* ── 十、页脚 ─────────────────────────────────────────────────────────── */
 .site-footer {
   border-top: 1px solid var(--border);
   padding: 32px 0 48px;
@@ -559,11 +395,7 @@ img { max-width: 100%; }
 }
 .site-footer p { margin: 0 0 8px; }
 
-/* ── 十二、小屏 ───────────────────────────────────────────────────────── */
-@media (max-width: 860px) {
-  /* 模板圆点在窄屏收起来 —— 主题模式胶囊已经能覆盖主要需求 */
-  .tpl-dots { display: none; }
-}
+/* ── 十一、小屏 ───────────────────────────────────────────────────────── */
 @media (max-width: 620px) {
   /* 品牌区一行、导航 + 外观控件换到第二行，避免在手机上挤成一团 */
   .header-inner { flex-wrap: wrap; min-height: 0; padding: 10px 0; row-gap: 10px; }
@@ -572,4 +404,5 @@ img { max-width: 100%; }
   .nav-link { display: none; }  /* 小屏只留「下载」按钮，需要保留就别删这行 */
   .theme-capsule button { padding: 5px 9px; font-size: 12px; }
   .section { padding: 44px 0; }
+  .section-head--sub { margin-top: 44px; }
 }
