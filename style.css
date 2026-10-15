@@ -1,69 +1,261 @@
 /* ==========================================================================
-   ElainaChat Mod · 站点样式（单文件，两个页面共用）
+   ElainaChat Mod · 站点样式（单文件，首页与插件商店共用）
    ── 想改配色 / 圆角 / 宽度：改下面 :root 里的变量即可 ──
+
+   ★ 2026-10 改版：**配色与组件语言全部改成应用（web/）那一套**，不再是独立的
+     「灰底 + 紫」网页外观 —— 站点是应用的对外门面，两边同一套视觉才对得上。
+
+   令牌直接照搬应用（web/index.html 的 :root 与 web/css/themes.css）：
+     默认主题「暖米绿」(elaina)  ·  iOS 蓝  ·  陶土橙  ·  鼠尾草  ·  樱花桃
+   外加深色模式 —— 选择器结构与 themes.css **逐条对应**，包括那条容易踩坑的
+   特异性规则（深色 + 模板用双属性选择器，否则深色会把模板主色全部盖成 iOS 蓝）。
    ========================================================================== */
 
+/* ── 一、令牌层：默认主题「暖米绿」（与应用默认外观同源） ────────────── */
 :root {
-  /* 配色（浅色） */
-  --bg: #f7f7f9;
-  --surface: #ffffff;
-  --surface-2: #f1f1f5;
-  --header-bg: rgba(247, 247, 249, 0.85);
-  --text: #191920;
-  --text-muted: #63636f;
-  --border: rgba(20, 20, 30, 0.10);
-  --accent: #6d5ef0;
-  --accent-hover: #5b4ce0;
-  --accent-on: #ffffff;
-  --accent-soft: rgba(109, 94, 240, 0.10);
-  --accent-text: #4a3fd0;
-  --shadow: 0 1px 2px rgba(20, 20, 30, 0.05);
+  color-scheme: light;
 
-  /* 尺寸 */
-  --radius: 10px;
-  --radius-lg: 16px;
+  --pixso-canvas: #a8b974;
+  --pixso-cream: #f8f5f2;
+  --pixso-surface: #ffffff;
+  --pixso-panel: #e9ddda;
+  --pixso-panel-soft: #f1e8e5;
+  --pixso-brown: #4c3123;
+  --pixso-brown-soft: #765e52;
+  --pixso-green: #a7bb6c;
+  --pixso-green-dark: #738746;
+  --pixso-orange: #ff7d4d;
+  --pixso-line: #d9c7c0;
+  --pixso-warn: #b45309;
+  --pixso-warn-bg: rgba(255, 247, 237, 0.75);
+  --pixso-warn-line: #fed7aa;
+  --pixso-shadow: 0 24px 70px rgba(67, 47, 36, 0.18);
+
+  /* 品牌色的半透明版（药丸按钮投影、标签底、导航悬停都用它） */
+  --tpl-tint: rgba(167, 187, 108, 0.18);
+
+  /* 站点语义层：组件只认这几个名字，换主题时不用改组件 */
+  --text: var(--pixso-brown);
+  --text-muted: var(--pixso-brown-soft);
+  --border: var(--pixso-line);
+  --surface: var(--pixso-surface);
+  --surface-2: var(--pixso-panel-soft);
+  --accent: var(--pixso-green);
+  --accent-deep: var(--pixso-green-dark);
+  --on-accent: #ffffff;
+  --glass: rgba(255, 255, 255, 0.55);
+  --header-bg: rgba(252, 250, 247, 0.74);
+  --card-shadow: 0 8px 26px rgba(67, 47, 36, 0.08), 0 1px 2px rgba(67, 47, 36, 0.06);
+  --card-shadow-hover: 0 18px 46px rgba(67, 47, 36, 0.16), 0 2px 6px rgba(67, 47, 36, 0.08);
+
+  /* 页面底：照应用的聊天区处理 —— 柔白 + 品牌色光斑 + 暖米渐变。
+     光斑的纵向位置用 px 写死（不用 %）：% 是相对**整篇文档高度**解析的，
+     页面一长就会把光斑推到屏幕之外；px 才能稳定贴在页面顶部。 */
+  --page-bg:
+    radial-gradient(1100px 700px at 8% -140px, rgba(255, 255, 255, 0.88), transparent 62%),
+    radial-gradient(900px 620px at 104% 40px, var(--tpl-tint), transparent 64%),
+    linear-gradient(135deg, var(--pixso-cream) 0%, var(--pixso-panel-soft) 52%, var(--pixso-cream) 100%);
+
+  /* 尺寸 / 字体 */
+  --radius: 12px;
+  --radius-lg: 18px;
   --maxw: 1080px;
   --gap: 16px;
-
-  /* 字体 */
   --font: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
 }
 
-/* 深色：跟随系统。想改成手动切换，把这一段的选择器换成 :root[data-theme="dark"] 即可 */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f0f13;
-    --surface: #17171d;
-    --surface-2: #1f1f27;
-    --header-bg: rgba(15, 15, 19, 0.85);
-    --text: #e9e9ef;
-    --text-muted: #9a9aa8;
-    --border: rgba(233, 233, 239, 0.12);
-    --accent: #9186ff;
-    --accent-hover: #a49aff;
-    --accent-on: #0f0f13;
-    --accent-soft: rgba(145, 134, 255, 0.14);
-    --accent-text: #b7afff;
-    --shadow: none;
-  }
+/* ── 二、其余四套浅色模板（值取自 web/css/themes.css，未列出的沿用默认） ── */
+html[data-theme-template="ios"] {
+  --pixso-canvas: #dce2ea;
+  --pixso-cream: #f7f9fc;
+  --pixso-surface: #ffffff;
+  --pixso-panel: #e9eef5;
+  --pixso-panel-soft: #f3f6fa;
+  --pixso-brown: #253040;
+  --pixso-brown-soft: #566070;
+  --pixso-green: #7aa7f0;
+  --pixso-green-dark: #4f7cf0;
+  --pixso-orange: #007aff;
+  --pixso-line: #d5dce6;
+  --tpl-tint: rgba(0, 122, 255, 0.14);
+  --header-bg: rgba(247, 249, 252, 0.74);
+  --card-shadow: 0 8px 26px rgba(18, 30, 50, 0.08), 0 1px 2px rgba(18, 30, 50, 0.06);
+  --card-shadow-hover: 0 18px 46px rgba(18, 30, 50, 0.16), 0 2px 6px rgba(18, 30, 50, 0.08);
+}
+html[data-theme-template="claude"] {
+  --pixso-canvas: #e6ddd4;
+  --pixso-cream: #faf6f2;
+  --pixso-surface: #fffdfb;
+  --pixso-panel: #f0e9e2;
+  --pixso-panel-soft: #f6f1ec;
+  --pixso-brown: #3a2d24;
+  --pixso-brown-soft: #6d5a4d;
+  --pixso-green: #d97757;
+  --pixso-green-dark: #bf5f3f;
+  --pixso-orange: #d97757;
+  --pixso-line: #ded2c7;
+  --tpl-tint: rgba(217, 119, 87, 0.14);
+  --header-bg: rgba(250, 246, 242, 0.76);
+  --card-shadow: 0 8px 26px rgba(58, 45, 36, 0.08), 0 1px 2px rgba(58, 45, 36, 0.06);
+  --card-shadow-hover: 0 18px 46px rgba(58, 45, 36, 0.16), 0 2px 6px rgba(58, 45, 36, 0.08);
+}
+html[data-theme-template="sage"] {
+  --pixso-canvas: #d8e4dc;
+  --pixso-cream: #f6faf7;
+  --pixso-surface: #ffffff;
+  --pixso-panel: #e4eee8;
+  --pixso-panel-soft: #eef6f1;
+  --pixso-brown: #1e3529;
+  --pixso-brown-soft: #4e6b5a;
+  --pixso-green: #3fae87;
+  --pixso-green-dark: #25795a;
+  --pixso-orange: #3fae87;
+  --pixso-line: #cbdcd2;
+  --tpl-tint: rgba(63, 174, 135, 0.15);
+  --header-bg: rgba(246, 250, 247, 0.74);
+  --card-shadow: 0 8px 26px rgba(30, 53, 41, 0.08), 0 1px 2px rgba(30, 53, 41, 0.06);
+  --card-shadow-hover: 0 18px 46px rgba(30, 53, 41, 0.16), 0 2px 6px rgba(30, 53, 41, 0.08);
+}
+html[data-theme-template="sakura"] {
+  --pixso-canvas: #e6dade;
+  --pixso-cream: #fbf6f8;
+  --pixso-surface: #fffdfe;
+  --pixso-panel: #f2e8ec;
+  --pixso-panel-soft: #f8f1f4;
+  --pixso-brown: #402a34;
+  --pixso-brown-soft: #775863;
+  --pixso-green: #d97b93;
+  --pixso-green-dark: #c2607b;
+  --pixso-orange: #d97b93;
+  --pixso-line: #e0cdd4;
+  --tpl-tint: rgba(217, 123, 147, 0.14);
+  --header-bg: rgba(251, 246, 248, 0.76);
+  --card-shadow: 0 8px 26px rgba(64, 42, 52, 0.08), 0 1px 2px rgba(64, 42, 52, 0.06);
+  --card-shadow-hover: 0 18px 46px rgba(64, 42, 52, 0.16), 0 2px 6px rgba(64, 42, 52, 0.08);
 }
 
+/* ── 三、深色模式 ──────────────────────────────────────────────────────
+   基础深色块里的文字 / 警示 / 阴影是专门调过对比度的，**不跟模板跑**；
+   品牌色与底色由下面各模板的深色块覆盖。 */
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* 正文与次要文字（深色下正文不是纯白，避免过硬） */
+  --pixso-brown: #dfe6f0;
+  --pixso-brown-dark: #eef2f7;
+  --pixso-brown-soft: #9aa4b6;
+  --pixso-warn: #fbbf24;
+  --pixso-warn-bg: rgba(251, 191, 36, 0.1);
+  --pixso-warn-line: rgba(251, 191, 36, 0.35);
+  --pixso-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 6px 18px rgba(0, 0, 0, 0.3);
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: 0 20px 48px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35);
+
+  /* 默认深色 = iOS 蓝那套（与应用一致；没选模板时由下面的 :not() 块接管为暖米绿） */
+  --pixso-canvas: #0d1015;
+  --pixso-cream: #232833;
+  --pixso-surface: #151a21;
+  --pixso-panel: #1a2029;
+  --pixso-panel-soft: #222833;
+  --pixso-green: #4f7cf0;
+  --pixso-green-dark: #3d6ae0;
+  --pixso-orange: #0a84ff;
+  --pixso-line: #2c3542;
+  --tpl-tint: rgba(10, 132, 255, 0.16);
+  --glass: rgba(255, 255, 255, 0.07);
+  --header-bg: rgba(21, 26, 33, 0.74);
+  --on-accent: #ffffff;
+}
+
+/* ★ 每套模板的深色版都要**单独写**，并用双属性选择器提升特异性 ——
+   否则同权重（0,1,1）下深色块排在模板块之后，会把所有模板的主色盖成同一套
+   （这正是应用里踩过的「深色下切主题完全失效」）。 */
+html[data-theme="dark"][data-theme-template="ios"] {
+  --pixso-canvas: #0d1015;
+  --pixso-cream: #232833;
+  --pixso-surface: #151a21;
+  --pixso-panel: #1a2029;
+  --pixso-panel-soft: #222833;
+  --pixso-green: #4f7cf0;
+  --pixso-green-dark: #3d6ae0;
+  --pixso-orange: #0a84ff;
+  --pixso-line: #2c3542;
+  --tpl-tint: rgba(10, 132, 255, 0.16);
+}
+html[data-theme="dark"][data-theme-template="claude"] {
+  --pixso-canvas: #14100c;
+  --pixso-cream: #2e241e;
+  --pixso-surface: #1d1713;
+  --pixso-panel: #241b16;
+  --pixso-panel-soft: #2d221c;
+  --pixso-green: #e08a6a;
+  --pixso-green-dark: #c96f4d;
+  --pixso-orange: #e08a6a;
+  --pixso-line: #3b2e26;
+  --tpl-tint: rgba(224, 138, 106, 0.16);
+}
+html[data-theme="dark"][data-theme-template="sage"] {
+  --pixso-canvas: #0c120e;
+  --pixso-cream: #202c22;
+  --pixso-surface: #131a15;
+  --pixso-panel: #18211a;
+  --pixso-panel-soft: #1f2b21;
+  --pixso-green: #4cc296;
+  --pixso-green-dark: #35916d;
+  --pixso-orange: #4cc296;
+  --pixso-line: #29392e;
+  --tpl-tint: rgba(76, 194, 150, 0.16);
+}
+html[data-theme="dark"][data-theme-template="sakura"] {
+  --pixso-canvas: #130e11;
+  --pixso-cream: #2d2228;
+  --pixso-surface: #1c1518;
+  --pixso-panel: #231a1f;
+  --pixso-panel-soft: #2c2126;
+  --pixso-green: #e58ba1;
+  --pixso-green-dark: #cf6c87;
+  --pixso-orange: #e58ba1;
+  --pixso-line: #3a2b33;
+  --tpl-tint: rgba(229, 139, 161, 0.16);
+}
+/* 默认模板（暖米绿）的深色版：它用「不设属性」表达，所以四条模板规则都盖不到它 */
+html[data-theme="dark"]:not([data-theme-template]) {
+  --pixso-canvas: #10140f;
+  --pixso-cream: #252c23;
+  --pixso-surface: #171c15;
+  --pixso-panel: #1c221b;
+  --pixso-panel-soft: #242b22;
+  --pixso-green: #9db167;
+  --pixso-green-dark: #74873f;
+  --pixso-orange: #ff7d4d;
+  --pixso-line: #2f3a2e;
+  --tpl-tint: rgba(157, 177, 103, 0.18);
+}
+
+/* ── 四、基础 ─────────────────────────────────────────────────────────── */
 * { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
-
+html {
+  scroll-behavior: smooth;
+  /* 顶栏是 sticky 的，锚点跳转要留出它的高度，否则标题会被压在栏下 */
+  scroll-padding-top: 84px;
+}
 body {
   margin: 0;
-  background: var(--bg);
+  /* 不用 background-attachment: fixed —— 移动端普遍忽略它，桌面端长页面滚动时
+     逐帧重绘固定底图也要额外开销；渐变本身铺满整篇文档就够了 */
+  background: var(--page-bg);
+  background-color: var(--pixso-cream);
   color: var(--text);
   font: 16px/1.65 var(--font);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
-
-a { color: var(--accent-text); text-decoration: none; }
+a { color: var(--accent-deep); text-decoration: none; }
 a:hover { text-decoration: underline; }
-
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+img { max-width: 100%; }
 .wrap {
   width: 100%;
   max-width: var(--maxw);
@@ -71,13 +263,14 @@ a:hover { text-decoration: underline; }
   padding: 0 24px;
 }
 
-/* ── 顶部导航 ─────────────────────────────────────────────────────── */
+/* ── 五、顶部导航 ─────────────────────────────────────────────────────── */
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 20;
   background: var(--header-bg);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px) saturate(1.6);
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
   border-bottom: 1px solid var(--border);
 }
 .header-inner {
@@ -85,65 +278,175 @@ a:hover { text-decoration: underline; }
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 60px;
+  min-height: 64px;
+}
+/* 导航与外观控件同组，窄屏时整组换行到第二排（不会挤坏品牌区） */
+.header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 14px;
 }
 .brand {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   color: var(--text);
-  font-weight: 600;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 .brand:hover { text-decoration: none; }
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: var(--accent-on);
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--pixso-green), var(--pixso-green-dark));
+  color: #fff;
   font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 12px var(--tpl-tint);
 }
-.nav { display: flex; align-items: center; gap: 20px; font-size: 14px; }
-.nav a { color: var(--text-muted); }
-.nav a:hover { color: var(--text); text-decoration: none; }
+.nav { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.nav-link {
+  padding: 7px 13px;
+  border-radius: 999px;
+  color: var(--text-muted);
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.nav-link:hover {
+  background: var(--tpl-tint);
+  color: var(--text);
+  text-decoration: none;
+}
 
-/* ── 按钮 ─────────────────────────────────────────────────────────── */
+/* 外观控件：主题模板圆点 + 三态胶囊（与应用顶栏同一套语言） */
+.appearance { display: flex; align-items: center; gap: 10px; }
+.tpl-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--glass);
+}
+.tpl-dot {
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface-2);
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+/* 圆点本身就是配色样本，所以颜色写死在这里（不跟站点变量走） */
+.tpl-dot[data-tpl=""] { background: #a8b974; }        /* 暖米绿（默认，对应应用默认主题） */
+.tpl-dot[data-tpl="ios"] { background: #007aff; }
+.tpl-dot[data-tpl="claude"] { background: #d97757; }
+.tpl-dot[data-tpl="sage"] { background: #3fae87; }
+.tpl-dot[data-tpl="sakura"] { background: #d97b93; }
+.tpl-dot:hover { transform: scale(1.12); }
+.tpl-dot[aria-pressed="true"] {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--accent-deep);
+}
+.theme-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--glass);
+}
+.theme-capsule button {
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 11px;
+  background: transparent;
+  color: var(--text-muted);
+  font: 600 13px/1.4 var(--font);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+.theme-capsule button:hover { color: var(--text); }
+.theme-capsule button[aria-pressed="true"] {
+  background: linear-gradient(135deg, var(--pixso-green), var(--pixso-green-dark));
+  color: var(--on-accent);
+  box-shadow: 0 3px 10px var(--tpl-tint);
+}
+
+/* ── 六、按钮：药丸 + 柔渐变（与应用主按钮一致，不是纯色块） ───────────── */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 18px;
+  padding: 11px 20px;
   border: 1px solid transparent;
-  border-radius: var(--radius);
+  border-radius: 999px;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 650;
   cursor: pointer;
   white-space: nowrap;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease,
+    border-color 0.18s ease, color 0.18s ease;
 }
 .btn:hover { text-decoration: none; }
-.btn--primary { background: var(--accent); color: var(--accent-on); }
-.btn--primary:hover { background: var(--accent-hover); }
-.btn--ghost { background: var(--surface); border-color: var(--border); color: var(--text); }
-.btn--ghost:hover { border-color: var(--accent); color: var(--accent-text); }
-.btn--sm { padding: 6px 12px; font-size: 13px; }
+.btn--primary {
+  background: linear-gradient(135deg, var(--pixso-green), var(--pixso-green-dark));
+  color: var(--on-accent);
+  box-shadow: 0 6px 18px var(--tpl-tint), inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+.btn--primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px var(--tpl-tint); }
+.btn--primary:active { transform: translateY(0); }
+.btn--ghost {
+  background: var(--glass);
+  border-color: var(--border);
+  color: var(--text);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.btn--ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent-deep);
+  background: var(--tpl-tint);
+  transform: translateY(-1px);
+}
+.btn--sm { padding: 7px 14px; font-size: 13px; }
 
-/* ── Hero ────────────────────────────────────────────────────────── */
-.hero { padding: 72px 0 56px; }
+/* ── 七、Hero ─────────────────────────────────────────────────────────── */
+.hero { padding: 76px 0 60px; }
 .eyebrow {
-  margin: 0 0 12px;
-  color: var(--text-muted);
-  font: 13px/1.6 var(--mono);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  color: var(--pixso-orange);
+  font: 600 13px/1.6 var(--mono);
   letter-spacing: 0.04em;
+}
+.eyebrow::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--pixso-orange);
 }
 .hero h1 {
   margin: 0 0 16px;
   font-size: clamp(30px, 5vw, 46px);
   line-height: 1.2;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 .lede {
   margin: 0 0 28px;
@@ -171,13 +474,17 @@ a:hover { text-decoration: underline; }
   background: var(--accent);
 }
 
-/* ── 区块 ─────────────────────────────────────────────────────────── */
+/* ── 八、区块 ─────────────────────────────────────────────────────────── */
 .section { padding: 56px 0; border-top: 1px solid var(--border); }
 .section-head { margin-bottom: 28px; }
-.section-head h2 { margin: 0 0 8px; font-size: 26px; }
+.section-head h2 {
+  margin: 0 0 8px;
+  font-size: 26px;
+  letter-spacing: -0.01em;
+}
 .section-head p { margin: 0; max-width: 680px; color: var(--text-muted); }
 
-/* ── 卡片网格 ─────────────────────────────────────────────────────── */
+/* ── 九、卡片网格 ─────────────────────────────────────────────────────── */
 .grid {
   display: grid;
   gap: var(--gap);
@@ -188,7 +495,13 @@ a:hover { text-decoration: underline; }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 20px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--accent);
 }
 .card h3 { margin: 0 0 8px; font-size: 16px; }
 .card p { margin: 0; font-size: 14px; color: var(--text-muted); }
@@ -208,35 +521,36 @@ a:hover { text-decoration: underline; }
 }
 .mod-ver { color: var(--text-muted); font: 12px/1.6 var(--mono); }
 
+/* 标签：强调类用品牌色淡底，普通类用面板色（语义分工与页面上一致） */
 .tag {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 3px 9px;
   border-radius: 999px;
   background: var(--surface-2);
   color: var(--text-muted);
   font-size: 12px;
-  line-height: 1.6;
+  line-height: 1.5;
   white-space: nowrap;
 }
-.tag--accent { background: var(--accent-soft); color: var(--accent-text); }
+.tag--accent { background: var(--tpl-tint); color: var(--accent-deep); }
 
-/* ── 说明列表 / 提示条 ─────────────────────────────────────────────── */
+/* ── 十、说明列表 / 提示条 ────────────────────────────────────────────── */
 .steps { margin: 0; padding-left: 20px; color: var(--text-muted); font-size: 15px; }
 .steps li { margin: 6px 0; }
-.steps strong { color: var(--text); }
-
+.steps strong { color: var(--text); font-weight: 650; }
 .notice {
   margin: 16px 0 0;
-  padding: 12px 16px;
+  padding: 13px 18px;
   border-radius: var(--radius);
-  background: var(--accent-soft);
-  color: var(--accent-text);
+  background: var(--tpl-tint);
+  color: var(--accent-deep);
   font-size: 14px;
 }
-
+.notice[hidden] { display: none; }
+.notice a { color: inherit; text-decoration: underline; }
 .loading { color: var(--text-muted); font-size: 14px; }
 
-/* ── 页脚 ─────────────────────────────────────────────────────────── */
+/* ── 十一、页脚 ───────────────────────────────────────────────────────── */
 .site-footer {
   border-top: 1px solid var(--border);
   padding: 32px 0 48px;
@@ -245,9 +559,17 @@ a:hover { text-decoration: underline; }
 }
 .site-footer p { margin: 0 0 8px; }
 
-/* ── 小屏 ─────────────────────────────────────────────────────────── */
+/* ── 十二、小屏 ───────────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  /* 模板圆点在窄屏收起来 —— 主题模式胶囊已经能覆盖主要需求 */
+  .tpl-dots { display: none; }
+}
 @media (max-width: 620px) {
+  /* 品牌区一行、导航 + 外观控件换到第二行，避免在手机上挤成一团 */
+  .header-inner { flex-wrap: wrap; min-height: 0; padding: 10px 0; row-gap: 10px; }
   .hero { padding: 48px 0 36px; }
-  .nav { gap: 14px; }
-  .nav-link { display: none; }   /* 小屏只留「下载」按钮，需要保留就别删这行 */
+  .nav { gap: 4px; }
+  .nav-link { display: none; }  /* 小屏只留「下载」按钮，需要保留就别删这行 */
+  .theme-capsule button { padding: 5px 9px; font-size: 12px; }
+  .section { padding: 44px 0; }
 }

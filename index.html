@@ -6,6 +6,8 @@
 <title>ElainaChat Mod · 以插件为核心的 AI 角色聊天应用</title>
 <meta name="description" content="ElainaChat Mod：程序本体只有文字聊天与 Agent 能力，角色呈现与界面全部交给可装可卸的扩展包。自带 API Key 直连服务商，开源（GPLv3）。">
 <link rel="stylesheet" href="./style.css">
+<!-- 外观切换：在 head 里同步引入，绘制前先落地主题，避免刷新时闪一下默认配色 -->
+<script src="./theme.js"></script>
 </head>
 <body>
 
@@ -16,12 +18,29 @@
       <span class="brand-mark">EC</span>
       <span>ElainaChat Mod</span>
     </a>
-    <nav class="nav">
-      <a class="nav-link" href="#features">特性</a>
-      <a class="nav-link" href="#mods">扩展包</a>
-      <a class="nav-link" href="./store/">插件商店</a>
-      <a class="btn btn--sm btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
-    </nav>
+    <div class="header-right">
+      <nav class="nav">
+        <a class="nav-link" href="#features">特性</a>
+        <a class="nav-link" href="#mods">扩展包</a>
+        <a class="nav-link" href="./store/">插件商店</a>
+        <a class="btn btn--sm btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
+      </nav>
+      <!-- 外观控件：主题模板圆点 + 三态胶囊，与应用顶栏是同一套语言 -->
+      <div class="appearance">
+        <div class="tpl-dots" role="group" aria-label="主题模板">
+          <button type="button" class="tpl-dot" data-tpl="" title="暖米绿（默认）"></button>
+          <button type="button" class="tpl-dot" data-tpl="ios" title="iOS 蓝"></button>
+          <button type="button" class="tpl-dot" data-tpl="claude" title="陶土橙"></button>
+          <button type="button" class="tpl-dot" data-tpl="sage" title="鼠尾草"></button>
+          <button type="button" class="tpl-dot" data-tpl="sakura" title="樱花桃"></button>
+        </div>
+        <div class="theme-capsule" role="group" aria-label="主题模式">
+          <button type="button" data-mode="auto" title="跟随设备深浅色">跟随设备</button>
+          <button type="button" data-mode="light" title="始终使用浅色">浅色</button>
+          <button type="button" data-mode="dark" title="始终使用深色">深色</button>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -30,7 +49,7 @@
   <!-- ── Hero：标题、简介、按钮 ──────────────────────────────────── -->
   <section class="hero">
     <div class="wrap">
-      <p class="eyebrow">v1.3.1 · GPLv3 · 开源</p>
+      <p class="eyebrow">v1.3.1-mod · GPLv3 · 开源</p>
       <h1>以插件为核心的<br>AI 角色聊天应用</h1>
       <p class="lede">程序本体只有文字聊天 + Agent 能力。角色怎么呈现、界面长什么样，全部交给可装可卸的扩展包 —— 想要就装，不想要就删。</p>
       <div class="hero-actions">
@@ -39,7 +58,8 @@
       </div>
       <ul class="meta">
         <li>纯净版约 10.8 MB</li>
-        <li>6 个扩展包</li>
+        <li>7 个扩展包，全部可装可卸</li>
+        <li>多套主题 + 深色模式（可跟随系统）</li>
         <li>自带 API Key 直连，无作者网关</li>
       </ul>
     </div>
@@ -78,7 +98,7 @@
     <div class="wrap">
       <div class="section-head">
         <h2>扩展包</h2>
-        <p>当前共 6 个，分「界面」与「公共资源」两类。<a href="./store/">到插件商店查看全部 →</a></p>
+        <p>当前共 7 个，分「界面」与「公共资源」两类。<a href="./store/">到插件商店查看全部 →</a></p>
       </div>
       <div class="grid">
         <article class="card mod-card">
@@ -95,6 +115,10 @@
           <div class="mod-head"><h3 class="mod-name">桌宠</h3><span class="tag tag--accent">界面</span></div>
           <p class="mod-desc">悬浮桌宠：立绘 + 聊天气泡，回复时自动切换表情。</p>
           <p class="mod-dep">依赖：elaina-avatar</p>
+        </article>
+        <article class="card mod-card">
+          <div class="mod-head"><h3 class="mod-name">星屑之日（10.17 生日）</h3><span class="tag tag--accent">界面</span></div>
+          <p class="mod-desc">10 月 17 日伊蕾娜生日隐藏模式：开场彩蛋、生日主题、生日面板与 23:59 告别，并向 system 提示词追加生日补充。</p>
         </article>
         <article class="card mod-card">
           <div class="mod-head"><h3 class="mod-name">Live2D 引擎与模型</h3><span class="tag">资源</span></div>

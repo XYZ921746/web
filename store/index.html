@@ -6,6 +6,8 @@
 <title>插件商店 · ElainaChat Mod</title>
 <meta name="description" content="ElainaChat Mod 的扩展包列表：全屏剧情界面、Live2D 视频通话、桌宠，以及它们依赖的公共资源包。">
 <link rel="stylesheet" href="../style.css">
+<!-- 外观切换：与首页共用，路径是 ../ -->
+<script src="../theme.js"></script>
 </head>
 <body>
 
@@ -16,12 +18,29 @@
       <span class="brand-mark">EC</span>
       <span>ElainaChat Mod</span>
     </a>
-    <nav class="nav">
-      <a class="nav-link" href="../#features">特性</a>
-      <a class="nav-link" href="../#mods">扩展包</a>
-      <a class="nav-link" href="./">插件商店</a>
-      <a class="btn btn--sm btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
-    </nav>
+    <div class="header-right">
+      <nav class="nav">
+        <a class="nav-link" href="../#features">特性</a>
+        <a class="nav-link" href="../#mods">扩展包</a>
+        <a class="nav-link" href="./">插件商店</a>
+        <a class="btn btn--sm btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
+      </nav>
+      <!-- 外观控件：主题模板圆点 + 三态胶囊，与应用顶栏是同一套语言 -->
+      <div class="appearance">
+        <div class="tpl-dots" role="group" aria-label="主题模板">
+          <button type="button" class="tpl-dot" data-tpl="" title="暖米绿（默认）"></button>
+          <button type="button" class="tpl-dot" data-tpl="ios" title="iOS 蓝"></button>
+          <button type="button" class="tpl-dot" data-tpl="claude" title="陶土橙"></button>
+          <button type="button" class="tpl-dot" data-tpl="sage" title="鼠尾草"></button>
+          <button type="button" class="tpl-dot" data-tpl="sakura" title="樱花桃"></button>
+        </div>
+        <div class="theme-capsule" role="group" aria-label="主题模式">
+          <button type="button" data-mode="auto" title="跟随设备深浅色">跟随设备</button>
+          <button type="button" data-mode="light" title="始终使用浅色">浅色</button>
+          <button type="button" data-mode="dark" title="始终使用深色">深色</button>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -106,14 +125,17 @@
   }
 
   function cardHtml(p, fallbackUrl) {
-    var kind = p.kind === 'resource' ? '资源' : '界面';
+    var isResource = p.kind === 'resource';
+    var kind = isResource ? '资源' : '界面';
+    /* 标签配色与首页一致：界面用品牌色淡底，资源用中性面板色 */
+    var tagCls = isResource ? 'tag' : 'tag tag--accent';
     var deps = (p.depends && p.depends.length)
       ? '<p class="mod-dep">依赖：' + p.depends.map(esc).join('、') + '</p>'
       : '';
     return '<article class="card mod-card">'
       + '<div class="mod-head">'
       + '<h3 class="mod-name">' + esc(p.name) + '</h3>'
-      + '<span class="tag tag--accent">' + kind + '</span>'
+      + '<span class="' + tagCls + '">' + kind + '</span>'
       + '</div>'
       + '<p class="mod-desc">' + esc(p.description) + '</p>'
       + deps
