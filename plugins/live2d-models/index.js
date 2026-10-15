@@ -86,12 +86,16 @@
 
     /** 引擎基址：本插件声明 server.static 的 /live2d/vendor（见 manifest） */
     function vendorBase() {
-        // APK 里引擎与模型一样随包分发，走 WebView 静态资源 —— 与 Web 同一条 URL。
+        // 电脑版：服务端按 manifest 的 server.static 把 /live2d/vendor/ 映射到插件目录。
+        // APK：没有服务端，这条静态路由不存在 → HEAD 探测会 404，自动走下面的回落。
         return '/live2d/vendor/';
     }
-    /** 引擎的宿主兜底基址：仓库本体不带插件时，引擎在 web/vendor/（软件本体）。
-     *  ensureEngine 按插件基址先试，404 时逐个回落到这里 —— 插件 zip 里
-     *  带不带 vendor 都能工作（2026-10 插件改走 Releases 分发后的衔接）。 */
+    /** 工厂里的 host。引擎函数定义在工厂**之外**（注册之前就要能用），但它们需要
+     *  host.assetUrl() 来解析"插件自己目录"——APK 上引擎随插件包分发，宿主不再附带。
+     *  工厂一进来就把它存下来（见 register 回调的第一行）。 */
+    let hostRef = null;
+    /** 引擎回落基址（电脑版）：仓库本体不带插件时，引擎在 web/vendor/（软件本体）。
+     *  ★ APK 不走这里 —— 那边宿主没有引擎了，改从插件自己目录取，见注入循环。 */
     function vendorFallbackBase() {
         return '/vendor/';
     }
@@ -131,15 +135,20 @@
             if (!window.Live2D) {
                 window.Live2D = { version: 'placeholder-cubism4-only', createLive2DModel: null };
             }
-            // 逐个注入：★ 插件基址 404 时回落宿主 /vendor/（仓库本体不带插件时
-            //  引擎在宿主；打包 zip 时带上 vendor 则永远走第一个，不会触发回落）。
+            // 逐个注入：先试插件声明的静态基址，404 再回落。
+            // ★★ 2026-10：回落分支在两端不同 —— 电脑版回落到宿主 /vendor/（软件本体，
+            //   插件缺失时兜底）；**APK 上宿主不再附带引擎**，改从**插件自己目录**取，
+            //   地址由 host.assetUrl() 解析（别自己拼 /mods/<id>/…：id 与安装目录名可能不同）。
             for (const f of ENGINE_FILES) {
                 const primary = vendorBase() + f;
                 try {
                     const probe = await fetch(primary, { method: 'HEAD' });
                     if (probe.ok) { await injectScript(primary); continue; }
                 } catch (e) { /* 探测失败就走回落 */ }
-                await injectScript(vendorFallbackBase() + f);
+                const fallback = (isNative() && hostRef && typeof hostRef.assetUrl === 'function')
+                    ? hostRef.assetUrl('vendor/' + f)
+                    : vendorFallbackBase() + f;
+                await injectScript(fallback);
             }
             if (!window.PIXI) throw new Error('PIXI 未就绪（脚本加载了但没挂到 window）');
             if (!window.Live2DCubismCore) throw new Error('Live2DCubismCore 未就绪');
@@ -165,6 +174,8 @@
 
     if (window.ElainaMods && typeof window.ElainaMods.register === 'function') {
         window.ElainaMods.register(MOD_ID, function (host) {
+            // 引擎函数定义在工厂之外，但它们要能解析"插件自己目录"（APK 上引擎随插件包走）
+            hostRef = host;
             host.log('引擎与模型资源接口就绪（引擎基址 ' + vendorBase() + '）');
 
             // ---- 设置：模型管理（独立成窗，2026-10 从「Live2D 视频通话」搬来）----
