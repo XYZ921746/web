@@ -315,8 +315,6 @@ img { max-width: 100%; }
   letter-spacing: -0.01em;
 }
 .section-head p { margin: 0; max-width: 680px; color: var(--text-muted); }
-/* 同一节里第二组小标题（如「模型区」下面再分「模型投稿」） */
-.section-head--sub { margin-top: 56px; }
 
 /* ── 八、卡片网格 ─────────────────────────────────────────────────────── */
 .grid {
@@ -404,5 +402,4 @@ img { max-width: 100%; }
   .nav-link { display: none; }  /* 小屏只留「下载」按钮，需要保留就别删这行 */
   .theme-capsule button { padding: 5px 9px; font-size: 12px; }
   .section { padding: 44px 0; }
-  .section-head--sub { margin-top: 44px; }
 }

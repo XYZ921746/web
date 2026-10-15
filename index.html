@@ -22,7 +22,7 @@
       <nav class="nav">
         <a class="nav-link" href="#features">特性</a>
         <a class="nav-link" href="#mods">扩展包</a>
-        <a class="nav-link" href="#models">模型</a>
+        <a class="nav-link" href="./models/">模型</a>
         <a class="nav-link" href="./store/">插件商店</a>
         <a class="btn btn--sm btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
       </nav>
@@ -127,53 +127,7 @@
           <p class="mod-desc">31 张场景背景图（城市 / 室内 / 雪景等），供剧情界面与视频通话共用。</p>
         </article>
       </div>
-    </div>
-  </section>
-
-  <!-- ── Live2D 模型区 + 模型投稿 ──────────────────────────────────── -->
-  <section class="section" id="models">
-    <div class="wrap">
-      <div class="section-head">
-        <h2>Live2D 模型区</h2>
-        <p>能装进视频通话的 Live2D 模型。下载 zip，再在应用里 <strong>设置 → Live2D 模型 → 上传新模型</strong> 装上即可。
-          列表来自 <a href="./store/models.json">store/models.json</a>，加模型只改那份 JSON，本页不用动。</p>
-      </div>
-      <div class="grid" id="model-list">
-        <p class="loading">正在读取 models.json…</p>
-      </div>
-      <noscript><p class="notice">当前浏览器禁用了 JavaScript，无法自动列出模型。可直接到 <a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">Releases</a> 下载模型 zip。</p></noscript>
-      <p class="notice" id="model-error" hidden></p>
-
-      <div class="section-head section-head--sub">
-        <h2>模型投稿</h2>
-        <p>第三方作者也可以把自己做的模型放上来。走 GitHub 表单，不用会 git；审核通过后作为 web 仓库的 Release 资源上架，并登记进上面的列表。</p>
-      </div>
-      <div class="grid">
-        <article class="card">
-          <h3>① 填投稿表单</h3>
-          <ul class="steps">
-            <li>点下面的按钮打开 GitHub 投稿表单（需要一个 GitHub 账号）</li>
-            <li>填模型名、作者、授权方式，以及<strong>模型 zip 的下载地址</strong></li>
-            <li>模型动辄几 MB，<strong>别直接贴在 issue 里</strong>：先传到自己的网盘或 Release，贴链接就行</li>
-          </ul>
-          <a class="btn btn--primary btn--sm" href="https://github.com/XYZ921746/web/issues/new?template=model-submission.yml" target="_blank" rel="noopener">打开投稿表单</a>
-        </article>
-        <article class="card">
-          <h3>② 模型怎么打包</h3>
-          <ul class="steps">
-            <li>zip 的<strong>根目录就是模型名那一层</strong>（解压出来是「模型名/…」，不是一堆散文件）</li>
-            <li>必须含 <strong>.model3.json</strong> + <strong>.moc3</strong>（Cubism 3）与纹理图</li>
-            <li>中文名、空格都支持；放一张 <strong>icon.png</strong> 就有缩略图，没有就显示名字首字</li>
-          </ul>
-        </article>
-        <article class="card">
-          <h3>③ 为什么不能直接传文件</h3>
-          <p>站点是 GitHub Pages <strong>静态托管，没有服务端接收文件</strong>，所以做不了「网页里选个文件直接上传」。
-            现在的通道是：表单投稿 → 维护者把 zip 传到 Release → 登记进模型区。
-            要做网页直传，得另起一个小后端（GitHub App / Worker 代提交），代价是多维护一个服务与一份凭据，暂不做。</p>
-        </article>
-      </div>
-      <p class="notice">模型是二进制：按项目惯例<strong>不进 git 历史</strong>（改一次就多存一整份），一律走 Release 分发 —— 这也是投稿先交下载地址、而不是直接塞进仓库的原因。模型素材的著作权属于各自作者。</p>
+      <p class="notice">Live2D 模型不在这里 —— 它们是二进制资源，走 <a href="./models/">模型区</a> 下载与投稿。</p>
     </div>
   </section>
 
@@ -215,66 +169,13 @@
     <p>项目处于测试状态，可能存在未知问题。</p>
     <p>
       <a href="https://github.com/XYZ921746/ElainaChat-mod">源码</a> ·
+      <a href="./models/">模型区</a> ·
       <a href="./store/">插件商店</a> ·
       <a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a> ·
       <a href="https://github.com/XYZ921746">个人主页</a>
     </p>
   </div>
 </footer>
-
-<!-- ── 模型区列表：数据来自 store/models.json（与插件商店同一套做法） ── -->
-<script>
-(function () {
-  'use strict';
-  var listEl = document.getElementById('model-list');
-  var errEl = document.getElementById('model-error');
-  if (!listEl || !errEl) return;
-
-  function esc(v) {
-    return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-    });
-  }
-  function size(bytes) {
-    return bytes ? (bytes / 1048576).toFixed(1) + ' MB' : '';
-  }
-  function cardHtml(m) {
-    /* kind 缺省当作官方内置；第三方投稿标成「投稿」并换成中性标签色 */
-    var official = m.kind !== 'community';
-    var meta = size(m.sizeBytes) || (m.version ? 'v' + esc(m.version) : '');
-    return '<article class="card mod-card">'
-      + '<div class="mod-head">'
-      + '<h3 class="mod-name">' + esc(m.name) + '</h3>'
-      + '<span class="tag' + (official ? ' tag--accent' : '') + '">' + (official ? '官方' : '投稿') + '</span>'
-      + '</div>'
-      + '<p class="mod-desc">' + esc(m.description) + '</p>'
-      + '<p class="mod-dep">作者：' + esc(m.author || '未署名') + '</p>'
-      + '<div class="mod-foot">'
-      + '<span class="mod-ver">' + meta + '</span>'
-      + '<a class="btn btn--primary btn--sm" href="' + esc(m.zipUrl) + '" target="_blank" rel="noopener">下载 zip</a>'
-      + '</div>'
-      + '</article>';
-  }
-
-  fetch('store/models.json', { cache: 'no-cache' })
-    .then(function (r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
-    .then(function (data) {
-      var models = (data && data.models) || [];
-      if (!models.length) throw new Error('模型索引里还没有条目');
-      listEl.innerHTML = models.map(cardHtml).join('');
-    })
-    .catch(function (e) {
-      listEl.hidden = true;
-      errEl.hidden = false;
-      errEl.textContent = '模型列表加载失败（' + e.message + '）。'
-        + '用 file:// 直接打开页面时读不到 JSON，请改用本地 http 服务；'
-        + '也可以先到 Releases 看看。';
-    });
-})();
-</script>
 
 </body>
 </html>

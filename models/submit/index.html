@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>模型投稿 · ElainaChat Mod</title>
+<meta name="description" content="把自己的 Live2D 模型投稿到 ElainaChat Mod 模型区：走 GitHub 表单，不用会 git；审核通过后作为 Release 资源上架。">
+<link rel="stylesheet" href="../../style.css">
+<!-- 外观切换：与首页共用，路径是 ../../ -->
+<script src="../../theme.js"></script>
+</head>
+<body>
+
+<!-- ── 顶部导航（与首页一致，相对路径是 ../../） ──────────────────── -->
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../../">
+      <span class="brand-mark">EC</span>
+      <span>ElainaChat Mod</span>
+    </a>
+    <div class="header-right">
+      <nav class="nav">
+        <a class="nav-link" href="../../#features">特性</a>
+        <a class="nav-link" href="../../#mods">扩展包</a>
+        <a class="nav-link" href="../">模型</a>
+        <a class="nav-link" href="../../store/">插件商店</a>
+        <a class="btn btn--sm btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
+      </nav>
+      <!-- 外观控件：深浅色三态胶囊。配色固定为应用的默认主题「暖米绿」，不再提供色点选择 -->
+      <div class="appearance">
+        <div class="theme-capsule" role="group" aria-label="主题模式">
+          <button type="button" data-mode="auto" title="跟随设备深浅色">跟随设备</button>
+          <button type="button" data-mode="light" title="始终使用浅色">浅色</button>
+          <button type="button" data-mode="dark" title="始终使用深色">深色</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">模型投稿</p>
+      <h1>把你的模型放上来</h1>
+      <p class="lede">第三方作者也能投稿 —— 走 GitHub 表单，不用会 git；审核通过后作为
+        web 仓库的 Release 资源上架，并登记进<a href="../">模型区</a>。</p>
+      <div class="hero-actions">
+        <a class="btn btn--primary" href="https://github.com/XYZ921746/web/issues/new?template=model-submission.yml" target="_blank" rel="noopener">打开投稿表单</a>
+        <a class="btn btn--ghost" href="../">回模型区</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>怎么投稿</h2>
+        <p>三步：填表单 → 维护者把 zip 传到 Release → 登记进模型区。模型文件不用经过你以外的任何人。</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <h3>① 填投稿表单</h3>
+          <ul class="steps">
+            <li>点上面的按钮打开 GitHub 投稿表单（需要一个 GitHub 账号）</li>
+            <li>填模型名、作者、授权方式，以及<strong>模型 zip 的下载地址</strong></li>
+            <li>模型动辄几 MB，<strong>别直接贴在 issue 里</strong>：先传到自己的网盘或 Release，贴链接就行</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>② 模型怎么打包</h3>
+          <ul class="steps">
+            <li>zip 的<strong>根目录就是模型名那一层</strong>（解压出来是「模型名/…」，不是一堆散文件）</li>
+            <li>必须含 <strong>.model3.json</strong> + <strong>.moc3</strong>（Cubism 3）与纹理图</li>
+            <li>中文名、空格都支持；放一张 <strong>icon.png</strong> 就有缩略图，没有就显示名字首字</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>③ 为什么不能直接传文件</h3>
+          <p>站点是 GitHub Pages <strong>静态托管，没有服务端接收文件</strong>，所以做不了「网页里选个文件直接上传」。
+            要做到网页直传，得另起一个小后端（GitHub App / Worker 代提交），代价是多维护一个服务与一份凭据，暂不做。</p>
+        </article>
+      </div>
+      <p class="notice">投稿前请确认：<strong>你有权分发这个模型</strong>（自己做的，或已获原作者授权）。
+        模型素材的著作权属于各自作者，上架时会一并标注你的署名与授权方式。</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>ElainaChat Mod · 以 GPLv3 发布。</p>
+    <p>
+      <a href="../../">首页</a> ·
+      <a href="../">模型区</a> ·
+      <a href="../../store/">插件商店</a> ·
+      <a href="https://github.com/XYZ921746/ElainaChat-mod">源码</a> ·
+      <a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
