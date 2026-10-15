@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>插件投稿 · ElainaChat Mod</title>
+<meta name="description" content="把自己的插件（Mod）投稿到 ElainaChat Mod 插件商店：走 GitHub 表单，不用会 git；审核通过后上架，应用内「插件市场」即可安装。">
+<link rel="stylesheet" href="../../style.css">
+<!-- 外观切换：与首页共用，路径是 ../../ -->
+<script src="../../theme.js"></script>
+</head>
+<body>
+
+<!-- ── 顶部导航（与首页一致，相对路径是 ../../） ──────────────────── -->
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../../">
+      <span class="brand-mark">EC</span>
+      <span>ElainaChat Mod</span>
+    </a>
+    <div class="header-right">
+      <nav class="nav">
+        <a class="nav-link" href="../../#features">特性</a>
+        <a class="nav-link" href="../../#mods">扩展包</a>
+        <a class="nav-link" href="../../models/">模型</a>
+        <a class="nav-link" href="../">插件商店</a>
+        <a class="btn btn--sm btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
+      </nav>
+      <!-- 外观控件：深浅色三态胶囊。配色固定为应用的默认主题「暖米绿」，不再提供色点选择 -->
+      <div class="appearance">
+        <div class="theme-capsule" role="group" aria-label="主题模式">
+          <button type="button" data-mode="auto" title="跟随设备深浅色">跟随设备</button>
+          <button type="button" data-mode="light" title="始终使用浅色">浅色</button>
+          <button type="button" data-mode="dark" title="始终使用深色">深色</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">插件投稿</p>
+      <h1>把你的插件放上来</h1>
+      <p class="lede">第三方作者也能投稿 —— 走 GitHub 表单，不用会 git；审核通过后上架
+        web 仓库的 <a href="../">插件商店</a>，应用内「插件市场」就能装。</p>
+      <div class="hero-actions">
+        <a class="btn btn--primary" href="https://github.com/XYZ921746/web/issues/new?template=mod-submission.yml" target="_blank" rel="noopener">打开投稿表单</a>
+        <a class="btn btn--ghost" href="https://github.com/XYZ921746/ElainaChat-mod/blob/main/skills/插件开发指南/SKILL.md" target="_blank" rel="noopener">插件开发指南</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>怎么投稿</h2>
+        <p>三步：填表单 → 维护者打包上架 → 应用里能装。源码放在 web 仓库的 <strong>plugins/&lt;id&gt;/</strong>，
+          打包产物放在 <strong>store/packages/&lt;id&gt;-&lt;版本&gt;.zip</strong>，索引就是 <a href="../index.json">store/index.json</a>。</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <h3>① 填投稿表单</h3>
+          <ul class="steps">
+            <li>点上面的按钮打开 GitHub 投稿表单（需要一个 GitHub 账号）</li>
+            <li>填插件 id、显示名、版本、依赖，以及<strong>授权方式与源码地址</strong></li>
+            <li>再贴一个<strong>zip 下载地址</strong>：先传到自己的网盘或 Release，<strong>别把 zip 贴在 issue 里</strong></li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>② 插件怎么打包</h3>
+          <ul class="steps">
+            <li>插件 = 一个目录 + 一份 <strong>manifest.json</strong>；宿主不认识任何具体插件，加功能不用碰主程序</li>
+            <li>清单里<strong>显式写 id</strong>（它就是身份），并声明自己占用哪些 API 前缀与静态地址</li>
+            <li>zip 的<strong>根目录直接是文件</strong>（不要把整个插件目录再套一层）</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>③ 上架后会怎样</h3>
+          <ul class="steps">
+            <li>维护者把 zip 放进 <strong>store/packages/</strong>，并在 <strong>store/index.json</strong> 登记一条</li>
+            <li>应用里 <strong>设置 → 插件 → ✦ 插件市场</strong> 立刻能看到，点安装即用</li>
+            <li>插件<strong>默认关闭</strong>，装完要自己打开开关 —— 它改动界面，不该在你不知情时生效</li>
+          </ul>
+        </article>
+      </div>
+      <p class="notice">站点是 GitHub Pages <strong>静态托管，没有服务端接收文件</strong>，所以做不了「网页里选个文件直接上传」——
+        通道就是上面的表单。要做到网页直传，得另起一个小后端（GitHub App / Worker 代提交），
+        代价是多维护一个服务与一份凭据，暂不做。</p>
+      <p class="notice">投稿前请确认：<strong>代码与资源你有权分发</strong>（或已获授权），并愿意公开源码地址。
+        <strong>安装插件 = 信任它的代码</strong>（它在页面同源环境里运行），所以上架会看源码；
+        另外手机（APK）上没有服务端，声明了 <strong>server</strong> 那半边的功能要能在缺失时降级。</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>ElainaChat Mod · 以 GPLv3 发布。</p>
+    <p>
+      <a href="../../">首页</a> ·
+      <a href="../">插件商店</a> ·
+      <a href="../../models/submit/">模型投稿</a> ·
+      <a href="https://github.com/XYZ921746/ElainaChat-mod">源码</a> ·
+      <a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

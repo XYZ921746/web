@@ -1,0 +1,122 @@
+# 插件（Mod）投稿表单
+#
+# 站点（GitHub Pages）是静态托管，没有服务端接收文件，所以投稿走这里：
+# 作者填表单 → 维护者把 zip 放进 web 仓库的 store/packages/ 并登记 store/index.json。
+# 插件商店页「投稿插件」按钮就指向本模板。
+name: 插件（Mod）投稿
+description: 把你的插件投稿到插件商店（不用会 git）
+title: "[插件投稿] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        投稿前请先确认三件事，否则这条 issue 只能退回：
+
+        1. **代码与资源你有权分发**，并愿意提供源码地址；
+        2. **清单里显式写了 id**，且没有占用宿主的 API 前缀与静态地址（撞名会被拒绝装载）；
+        3. **zip 的根目录直接是文件**（不要多套一层插件目录），大二进制（Live2D 模型等）不要打进去。
+
+        zip 请放在你自己的网盘或 Release，**不要直接传到本 issue**，把链接填在下面即可。
+
+        插件骨架与生命周期说明见
+        [`skills/插件开发指南`](https://github.com/XYZ921746/ElainaChat-mod/blob/main/skills/%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/SKILL.md)。
+
+  - type: input
+    id: mod-id
+    attributes:
+      label: 插件 id
+      description: manifest.json 里的 id，小写字母 / 数字 / 连字符，例如 my-mod
+      placeholder: my-mod
+    validations:
+      required: true
+
+  - type: input
+    id: mod-name
+    attributes:
+      label: 显示名
+      description: 应用插件列表与商店里展示的名字
+      placeholder: 例如：我的插件
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: 版本号
+      description: 打包产物会命名成 <id>-<版本>.zip，所以请用纯版本号
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 类型
+      description: 界面（提供可见界面）还是资源（只提供资源/接口，不单独提供界面）
+      options:
+        - ui 界面
+        - resource 资源
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: depends
+    attributes:
+      label: 依赖（可选）
+      description: 需要先装好的插件 id，多个用逗号分隔；没有就留空
+      placeholder: elaina-avatar, scene-backgrounds
+
+  - type: input
+    id: author
+    attributes:
+      label: 作者 / 署名
+      description: 上架时展示的名字，可以是昵称
+      placeholder: 例如：@someone
+    validations:
+      required: true
+
+  - type: input
+    id: license-source
+    attributes:
+      label: 授权方式与源码地址
+      description: 允许别人怎么使用与再分发；以及在哪里能看到源码
+      placeholder: 例如：MIT · https://github.com/you/my-mod
+    validations:
+      required: true
+
+  - type: input
+    id: download-url
+    attributes:
+      label: 插件 zip 下载地址
+      description: 直链或网盘链接。zip 根目录直接是文件
+      placeholder: https://…
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 插件说明
+      description: 一句话介绍，会显示在商店卡片上
+      placeholder: 例如：在顶栏加一个按钮，一键把当前对话导出成图片。
+    validations:
+      required: true
+
+  - type: input
+    id: preview
+    attributes:
+      label: 预览图（可选）
+      description: 一张截图的链接
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 投稿确认
+      options:
+        - label: 代码与资源我有权分发（或已获授权），并会提供源码地址
+          required: true
+        - label: 清单里显式写了 id，且没有占用宿主的 API 前缀与静态地址
+          required: true
+        - label: zip 根目录直接是文件，没有多套一层目录；大二进制（模型等）没有打进去
+          required: true
