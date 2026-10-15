@@ -80,8 +80,8 @@ body:
     id: license-source
     attributes:
       label: 授权方式与源码地址
-      description: 允许别人怎么使用与再分发（例如「仅限本项目使用」或某个开源许可），以及在哪里能看到源码
-      placeholder: 例如：仅限本项目使用 · https://github.com/you/my-mod
+      description: 允许别人怎么使用以及在哪里能看到源码
+      placeholder: 例如：MIT · https://github.com/you/my-mod
     validations:
       required: true
 
