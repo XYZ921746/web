@@ -330,6 +330,70 @@ html[data-theme="dark"] .birthday-chat-decor::after {
 .bd-panel-btn-main { border-color: transparent; background: linear-gradient(135deg, #6d6aa8, #4f4d85); color: #fff; }
 
 /* ============================================================================
+ *  三·五、故事引导 + 情景演绎入场
+ *         （生日面板 →「与伊蕾娜一起过生日」）
+ *
+ *  ★ 骨架复用生日面板：同样的 .bd-panel-head / .bd-panel-body / .bd-panel-btn，
+ *    所以这里只写"故事引导特有的那几块"（立绘、正文、好感度条）。
+ * ========================================================================== */
+
+.bd-story-body { text-align: center; }
+
+.bd-story-avatar {
+    max-height: min(26vh, 200px);
+    max-width: 62%;
+    object-fit: contain;
+    object-position: bottom center;
+    filter: drop-shadow(0 10px 26px rgba(44, 42, 69, .26));
+    /* 与彩蛋同一手法：底部柔化，避免人像被硬切一刀 */
+    -webkit-mask-image: linear-gradient(180deg, #000 80%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 80%, transparent 100%);
+}
+
+.bd-story-lines { margin-top: 12px; text-align: left; }
+.bd-story-lines p {
+    margin: 0 0 10px;
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--pixso-brown);
+}
+.bd-story-lines p:last-child { margin-bottom: 0; }
+
+/* 好感度：数值 + 进度条（这套数值是插件自己的，见 index.js 的说明） */
+.bd-story-affinity { margin: 16px 0 2px; }
+.bd-story-affinity-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--pixso-brown-soft);
+}
+.bd-story-affinity-row b { font-size: 17px; line-height: 1; color: var(--pixso-orange); }
+.bd-story-affinity-bar {
+    height: 6px;
+    margin-top: 7px;
+    border-radius: 999px;
+    background: rgba(184, 147, 74, .18);
+    overflow: hidden;
+}
+.bd-story-affinity-bar i {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #6d6aa8, #b8934a);
+    transition: width .5s ease;
+}
+
+.bd-story-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+/* ============================================================================
  *  四、结束彩蛋（23:59 告别）
  * ========================================================================== */
 
@@ -394,6 +458,8 @@ html[data-theme="dark"] .bd-panel-meta {
     .bd-egg-line { font-size: 15px; }
     .bd-egg-avatar { max-height: min(30vh, 220px); }
     .bd-choice { padding: 9px 18px; font-size: 13px; }
+    .bd-story-avatar { max-height: min(22vh, 170px); }
+    .bd-story-lines p { font-size: 13px; }
     .bd-farewell-card { padding: 22px 18px; }
     .bd-farewell-line { font-size: 14px; }
 }

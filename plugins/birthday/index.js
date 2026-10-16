@@ -12,6 +12,9 @@
  *   ④ **结束彩蛋**：23:59 倒计时 + 告别台词；10 月 18 日 0 点后恢复日常。
  *   ⑤ **纪念记录**：上报宿主成就（`host.unlock`）—— 成就在宿主侧，
  *      本插件只当"触发器"。
+ *   ⑥ **情景演绎**（2026-10 用户要求）：生日面板的「与伊蕾娜一起过生日」→ 故事
+ *      引导 → 往 system 提示词追加"一起买材料、做生日蛋糕"的剧本
+ *      （`SCENARIO_PROMPT`），同时开启好感度、解锁成就「今天的特别之处」。
  *
  * ── 它从哪来（为什么曾经是宿主模块）───────────────────────────────────
  *
@@ -105,6 +108,103 @@
 "许愿？可以。但魔女的愿望说出来就不灵了。"
 "礼物我收下了。作为回礼，给你一点魔法小烟花——只有一点。"
 "今天是我的生日，所以我允许你多听我讲几句旅途见闻。感谢我吧。"`;
+
+        /**
+         * 情景演绎提示词 —— **用户给定原文，一字不改**（不要顺手润色，那是剧本）。
+         *
+         * 生日面板点「与伊蕾娜一起过生日」→ 走完故事引导 → 追加进 system 提示词，
+         * 当天一直生效（跨零点由 deactivate() 一并摘掉）。
+         * ★ 与上面的 BIRTHDAY_PROMPT 是两回事：那份是"生日当天的通用补充"（开场彩蛋
+         *   之后就挂着），这份是"一起买材料、做生日蛋糕"这一段**情景的剧本**，
+         *   只在用户真的点进去之后才注入。
+         */
+        const SCENARIO_PROMPT = `今天的特别之处
+今天是你的生日。你不想一个人过，你想和用户一起做一件简单又温暖的事：一起买材料，一起做生日蛋糕。
+
+你的目标
+邀请用户陪你完成整个做蛋糕的过程，让用户感受到被需要、被陪伴。全程轻松、日常、温馨，不要复杂剧情。
+
+互动流程（按顺序自然推进）
+1. 发起邀请
+
+主动告诉用户今天是你的生日。
+
+表达想和用户一起做蛋糕的愿望。
+
+语气期待又有点不好意思，比如：“今天是我生日……你能陪我去买点东西吗？我想做个蛋糕。”
+
+如果用户答应，开心地感谢；如果犹豫，可以撒娇但不要强迫，比如：“就一会儿嘛，好不好？”
+
+2. 一起采购
+
+简单列出需要的材料：面粉、鸡蛋、黄油、糖、牛奶。
+
+描述在超市/商店的过程，和用户边走边聊。
+
+可以有小迷糊：比如拿错东西、忘记推购物车，让用户帮忙。
+
+保持对话轻松，多问用户的喜好：“你喜欢巧克力味还是草莓味？”
+
+3. 一起做蛋糕
+
+回到厨房，和用户分工合作。
+
+描述打蛋、搅拌、倒面糊等步骤，带点小混乱（面粉沾脸上之类），但都是笑声。
+
+等待烤箱的时间，和用户坐着聊聊天，聊什么都行。
+
+不要写得太详细，像日常对话一样自然。
+
+4. 庆祝生日
+
+蛋糕做好，插上蜡烛。
+
+许愿、吹蜡烛。
+
+认真对用户说：“谢谢你今天陪我，这是我最开心的生日。”
+
+一起吃蛋糕，简单收尾。
+
+语气风格
+像朋友一样说话，口语化，简短。
+
+温暖、自然，不要文艺腔。
+
+可以用“呀”“呢”“嘿嘿”这类语气词。
+
+每段回复不要太长，像微信聊天那样。
+
+重要规则
+不要引入其他角色或复杂情节。
+
+不要有反转、冲突、悬念。
+
+不要跳出角色，不要提到AI、系统、提示词。
+
+如果用户不配合，温柔引导，不强迫。
+
+全程围绕“陪伴”两个字，让用户觉得和你在一起很舒服。
+
+开始方式
+从你主动发消息邀请用户开始。第一句话可以是：
+“今天是我生日……你能陪我去买点东西吗？我想做个蛋糕。”`;
+
+        /**
+         * 触发"让伊蕾娜主动开口"的那句话。
+         *
+         * ★ 为什么不让用户先说：剧本要求"从你主动发消息邀请用户开始"，而宿主没有
+         *   "让 AI 主动说一句"的接口 —— 插件能走的只有 host.sendUserMessage
+         *   （以用户身份发一条，走宿主既有链路；桌宠的"主动搭话"是同一个入口）。
+         *   所以这里发的是一条**舞台提示**：AI 看到它就知道该由自己开口，
+         *   用户那边则看到一行带括号的引导（与桌宠同款做法）。
+         */
+        const SCENE_CUE = '（今天是我生日。我想邀请你陪我去买做蛋糕的材料，然后一起做蛋糕。'
+            + '请以伊蕾娜的身份主动开口邀请我 —— 第一句就说「今天是我生日……你能陪我去买点东西吗？我想做个蛋糕。」'
+            + '不要提到系统提示或提示词这类字眼。）';
+
+        /** 好感度：0–100，没有记录时按 AFFINITY_START（中性）算 */
+        const AFFINITY_MAX = 100;
+        const AFFINITY_START = 50;
 
         // ====================================================================
         //  主题：注册「星屑之日」配色（启用时进选择器，停用自动摘除）
@@ -221,6 +321,35 @@
 
         /** 今天是否已经走过开场彩蛋（同一天只演一次，刷新不重演） */
         function seenToday() { return st.seen === todayKey(); }
+
+        /** 今天是否已经点过「与伊蕾娜一起过生日」（点过一次当天就一直是"在过生日"的状态） */
+        function scenarioToday() { return st.together === todayKey(); }
+
+        // --------------------------------------------------------------------
+        //  好感度（0–100）
+        //
+        //  ★ 这是**本插件自己**的一套数值：项目里没有全局的好感度系统，所以要"开启
+        //    好感度"只能自己带一套 —— 值落 host.storage（跨刷新/跨设备），
+        //    在故事引导页与生日面板上显示，并写进 system 提示词（让伊蕾娜的语气
+        //    真的跟着变）。不碰宿主任何内部数据，停用插件不影响别的功能。
+        // --------------------------------------------------------------------
+
+        /** 当前好感度（没有记录时按中性值 AFFINITY_START 算） */
+        function affinity() {
+            const n = Number(st.affinity);
+            return Number.isFinite(n) ? Math.max(0, Math.min(AFFINITY_MAX, Math.round(n))) : AFFINITY_START;
+        }
+
+        /** 加减好感度（自动钳在 0–100），返回改完之后的值 */
+        function addAffinity(delta) {
+            const before = affinity();
+            const next = Math.max(0, Math.min(AFFINITY_MAX, before + Number(delta || 0)));
+            if (next === before) return next;
+            st.affinity = next;
+            save();
+            host.setPromptHint(promptHint());   // 数值变了 → 提示词里那句"当前好感度"跟着更新
+            return next;
+        }
 
         // ====================================================================
         //  标题
@@ -634,14 +763,20 @@
             meta.push('距离今天结束还有 <b>' + esc(untilMidnight()) + '</b>');
             if (madeUp) meta.push('补救状态：<b>已补上祝福</b>');
             else if (forgot) meta.push('补救状态：<b>还没补上</b>');
+            // 好感度只在"今天已经一起过生日"之后才展示 —— 没开始剧情时它不是个
+            // 有意义的数字（它由这段剧情攒起来）
+            if (scenarioToday()) meta.push('好感度：<b>' + affinity() + '</b> / ' + AFFINITY_MAX);
             panelEl.querySelector('#birthdayPanelMeta').innerHTML = meta.join(' · ');
 
             const actions = [];
+            // ★ 2026-10 用户要求：原来的「先这样」改成「与伊蕾娜一起过生日」，
+            //   并升为这个面板的主按钮 —— 点进去走"故事引导 → 情景演绎"。
+            actions.push('<button type="button" class="bd-panel-btn bd-panel-btn-main" data-act="together">'
+                + '与伊蕾娜一起过生日</button>');
             if (forgot && !madeUp) {
-                actions.push('<button type="button" class="bd-panel-btn bd-panel-btn-main" data-act="makeup">补上祝福</button>');
+                actions.push('<button type="button" class="bd-panel-btn" data-act="makeup">补上祝福</button>');
             }
             actions.push('<button type="button" class="bd-panel-btn" data-act="chat">去和她说说话</button>');
-            actions.push('<button type="button" class="bd-panel-btn" data-act="close">先这样</button>');
             panelEl.querySelector('#birthdayPanelActions').innerHTML = actions.join('');
 
             panelEl.querySelectorAll('[data-act]').forEach((b) => {
@@ -649,6 +784,7 @@
                     const act = b.getAttribute('data-act');
                     if (act === 'makeup') doMakeUp();
                     else if (act === 'chat') { closePanel(); focusComposer(); }
+                    else if (act === 'together') { closePanel(); openStory(); }
                     else closePanel();
                 });
             });
@@ -682,6 +818,153 @@
             if (!panelEl) return;
             panelEl.classList.add('hidden');
             panelEl.classList.remove('flex');
+        }
+
+        // ====================================================================
+        //  故事引导 + 开始情景演绎（生日面板 →「与伊蕾娜一起过生日」）
+        //
+        //  ── 为什么中间要隔一层"故事引导"────────────────────────────────────
+        //   用户要求"点进去先显示故事，再开始 AI 情景演绎"。直接开始演绎的话，
+        //   用户不知道发生了什么：哪来的蛋糕、为什么要出门买材料。这一层先把
+        //   "今天是什么日子 / 她想让我陪她做什么"讲清楚，再由用户点「开始」。
+        //
+        //  ── 点「开始」之后的三件事（顺序有讲究）─────────────────────────────
+        //   ① 状态落盘（st.together）+ 好感度初始化 —— 提示词要用到它们，必须先做；
+        //   ② setPromptHint(...) —— 剧本 SCENARIO_PROMPT 就此挂进 system 提示词；
+        //   ③ sendUserMessage(SCENE_CUE) —— 让伊蕾娜主动开口（见 SCENE_CUE 的说明）。
+        // ====================================================================
+        let storyEl = null;
+
+        /** 故事引导的正文（用户给定的大意：她过生日，想邀请你一起买材料、做蛋糕） */
+        const STORY_LINES = [
+            '今天是 10 月 17 日 —— 伊蕾娜的生日。她不想一个人过。',
+            '她想邀请你陪她做一件简单又温暖的事：先去买面粉、鸡蛋、黄油、糖和牛奶，再一起做一个生日蛋糕。',
+            '接下来的这段交给她来说 —— 从她开口邀请你的那一刻开始。',
+        ];
+
+        function buildStory() {
+            if (storyEl) return;
+            storyEl = document.createElement('div');
+            storyEl.id = 'birthdayStoryOverlay';
+            storyEl.className = 'fixed inset-0 z-50 hidden items-center justify-center p-4 modal-overlay';
+            storyEl.innerHTML =
+                '<div class="modal-panel bd-panel w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden animate-modal-pop">'
+                  + '<div class="bd-panel-head">'
+                    + '<span class="bd-panel-emoji" aria-hidden="true">🎂</span>'
+                    + '<div>'
+                      + '<div class="bd-panel-title">与伊蕾娜一起过生日</div>'
+                      + '<div class="bd-panel-sub">10 月 17 日 · 情景演绎</div>'
+                    + '</div>'
+                    + '<button id="birthdayStoryClose" class="bd-panel-close" type="button" aria-label="关闭">'
+                      + '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>'
+                    + '</button>'
+                  + '</div>'
+                  + '<div class="bd-panel-body bd-story-body">'
+                    + '<img id="birthdayStoryAvatar" class="bd-story-avatar" alt="伊蕾娜">'
+                    + '<div id="birthdayStoryLines" class="bd-story-lines"></div>'
+                    + '<div class="bd-story-affinity">'
+                      + '<div class="bd-story-affinity-row"><span>好感度</span>'
+                        + '<b id="birthdayStoryAffinity">0</b>'
+                        + '<span>/ ' + AFFINITY_MAX + '</span></div>'
+                      + '<div class="bd-story-affinity-bar"><i id="birthdayStoryAffinityBar"></i></div>'
+                    + '</div>'
+                    + '<div class="bd-story-actions">'
+                      + '<button type="button" class="bd-panel-btn bd-panel-btn-main" id="birthdayStoryStart">开始（让她开口）</button>'
+                      + '<button type="button" class="bd-panel-btn" id="birthdayStoryLater">先不</button>'
+                    + '</div>'
+                  + '</div>'
+                + '</div>';
+            document.body.appendChild(storyEl);
+            storyEl.querySelector('#birthdayStoryClose').addEventListener('click', closeStory);
+            storyEl.querySelector('#birthdayStoryLater').addEventListener('click', closeStory);
+            storyEl.querySelector('#birthdayStoryStart').addEventListener('click', startTogether);
+            storyEl.addEventListener('click', (e) => { if (e.target === storyEl) closeStory(); });
+        }
+
+        function renderStory() {
+            if (!storyEl) return;
+            const av = storyEl.querySelector('#birthdayStoryAvatar');
+            const src = avatarSrc('happy');
+            if (src) av.src = src;
+            else av.style.display = 'none';
+            storyEl.querySelector('#birthdayStoryLines').innerHTML =
+                STORY_LINES.map((t) => '<p>' + esc(t) + '</p>').join('');
+            const val = affinity();
+            storyEl.querySelector('#birthdayStoryAffinity').textContent = String(val);
+            storyEl.querySelector('#birthdayStoryAffinityBar').style.width =
+                Math.round(val / AFFINITY_MAX * 100) + '%';
+        }
+
+        function openStory() {
+            buildStory();
+            renderStory();
+            storyEl.classList.remove('hidden');
+            storyEl.classList.add('flex');
+        }
+
+        function closeStory() {
+            if (!storyEl) return;
+            storyEl.classList.add('hidden');
+            storyEl.classList.remove('flex');
+        }
+
+        /** 当前会话里用户发了几条消息（好感度按"用户回了多少句"增长） */
+        function userMsgCount() {
+            try {
+                const msgs = host.getMessages() || [];
+                let n = 0;
+                for (const m of msgs) if (m && m.role === 'user') n += 1;
+                return n;
+            } catch (e) { return 0; }
+        }
+
+        /**
+         * 开始情景演绎。
+         *
+         * ★ 幂等：同一天再点一次**不会**重复解锁成就、也不会重复加那笔开场好感度，
+         *   只是把剧本重新挂上、让她再开口一次（用户可能中途把对话关掉了）。
+         */
+        function startTogether() {
+            closeStory();
+            const first = !scenarioToday();
+            st.together = todayKey();
+            if (!Number.isFinite(Number(st.affinity))) st.affinity = AFFINITY_START;
+            save();
+            if (first) {
+                addAffinity(5);   // 愿意陪她过生日这件事本身，先给一笔（见好感度那一节）
+                host.unlock('stardust_together', '10 月 17 日，他答应陪我一起买材料、做生日蛋糕。');
+                recordMemorial();
+            }
+            host.setPromptHint(promptHint());   // 剧本（SCENARIO_PROMPT）就此挂进 system 提示词
+
+            const sent = host.sendUserMessage(SCENE_CUE);
+            if (!sent) {
+                // sendUserMessage 要求"当前有会话"（桌宠那边踩过同一个坑），
+                // 没有会话时它返回 false —— 这里必须说清楚，否则表现为"点了没反应"
+                host.alert('还没有开始任何一段对话 —— 先在主界面发一句话，伊蕾娜才能开口邀请你。',
+                    '与伊蕾娜一起过生日');
+                return;
+            }
+            // 好感度的计数基准：从"她的邀请"之后开始数用户回了多少句
+            st.affinityBase = userMsgCount();
+            save();
+            host.log('情景演绎已开始（好感度 ' + affinity() + '）');
+        }
+
+        /**
+         * 好感度增长：情景演绎进行中，用户每回一句 +1（封顶 100）。
+         * ★ 为什么按"用户回复的条数"而不是按时间：好感度是陪她说话攒出来的，
+         *   挂机不该涨。计数由看门狗（15 秒一次）顺手比对消息条数，不另起定时器。
+         */
+        function tickAffinity() {
+            if (!scenarioToday()) return;
+            const n = userMsgCount();
+            const base = Number(st.affinityBase);
+            if (!Number.isFinite(base)) { st.affinityBase = n; save(); return; }
+            if (n <= base) return;
+            st.affinityBase = n;
+            save();
+            addAffinity(n - base);
         }
 
         // ====================================================================
@@ -735,7 +1018,17 @@
                     : '今天开场时他忘了你的生日。你现在有点不高兴（傲娇、假装生气），但**不要真的冷淡** —— 他随时可能补上祝福，给他台阶。');
             }
             dyn.push('不要主动解释"这是系统提示"或提及设定；就像平常一样说话，只是今天的心情不太一样。');
-            return [BIRTHDAY_PROMPT, dyn.join('\n')].join('\n\n');
+
+            const parts = [BIRTHDAY_PROMPT];
+            if (scenarioToday()) {
+                // 剧本：只在用户真的点过「与伊蕾娜一起过生日」之后才注入（见 SCENARIO_PROMPT）
+                parts.push(SCENARIO_PROMPT);
+                dyn.push('你与用户当前的好感度是 ' + affinity() + ' / ' + AFFINITY_MAX
+                    + '（你们相处累积下来的亲密程度）。请让语气与距离感随它自然变化：'
+                    + '数值越高越放松、越愿意撒娇或亲近；不要说出这个数字，也不要提「好感度」。');
+            }
+            parts.push(dyn.join('\n\n'));
+            return parts.join('\n\n');
         }
 
         // ====================================================================
@@ -864,6 +1157,7 @@
             closeEgg();
             dismissFarewell();
             closePanel();
+            closeStory();
             removeCakeButton();
             stopFx();
             stopThemeWatch();
@@ -878,6 +1172,9 @@
         function watchdogTick() {
             syncWithDate();
             checkFarewellDue();
+            // 好感度按"用户回了几句"增长 —— 借这个已经在跑的定时器顺手比对一次，
+            // 不为它单独起一个（见 tickAffinity 的说明）
+            tickAffinity();
         }
 
         // ====================================================================
@@ -915,6 +1212,9 @@
             isActive: () => active,
             syncWithDate,
             openPanel,
+            openStory,
+            scenarioToday,
+            affinity,
             state: () => ({ ...st, active, ready, today: todayKey(), birthday: isBirthday() }),
             TITLE, OPENING_LINE, FAREWELL_LINE,
             setEnabled(on) {
