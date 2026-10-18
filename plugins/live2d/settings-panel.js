@@ -1,12 +1,12 @@
 /* ============================================================================
  * Live2D 设置面板的行为（从宿主 app-07-init.js 搬来）
  *
- * ★ 为什么整段包成 init(host) 函数：
+ * 为什么整段包成 init(host) 函数：
  *   原代码在宿主里是**顶层立即执行**的（一堆 document.getElementById(...).addEventListener），
  *   那时面板 HTML 已在 index.html 里。搬进插件后 HTML 由插槽在**被点开时**才插入 DOM ——
  *   顶层执行会全部拿到 null。所以这里只定义、不执行，由 register.js 在渲染完成后调用。
  *
- * ★ 宿主全局已换成 host API（showCustomAlert → host.alert，window.confirm → host.confirm）：
+ * 宿主全局已换成 host API（showCustomAlert → host.alert，window.confirm → host.confirm）：
  *   插件不该直接摸宿主内部实现，否则宿主重构就会悄悄弄坏插件。
  * ========================================================================== */
 function initLive2DSettingsPanel(host) {
@@ -14,7 +14,7 @@ function initLive2DSettingsPanel(host) {
 
     // ===== Live2D 设置：模型列表 / 上传 / 测试 =====
     let live2dModelList = [];   // 最近一次拉到的模型列表，重命名时要用
-    // 服务端返回的可能不是 JSON（例如服务还是旧版本时，/api/live2d/rename 落到静态处理器返回纯文本 "Not found"）。
+    // 服务端返回的可能不是 JSON。
     // 直接 res.json() 会抛 "Unexpected token 'N'..."，用户完全看不懂，所以这里统一兜一层。
     async function readJsonSafe(res) {
         const text = await res.text();
@@ -27,7 +27,7 @@ function initLive2DSettingsPanel(host) {
         };
     }
     /**
-     * 模型选择：2×2 图片网格（2026-10，用户要求）。
+     * 模型选择：2×2 图片网格。
      *
      * 每格 = 模型图片（来自「Live2D 引擎与模型」的资源）+ 下方名字；
      * 悬停出原生 tooltip 显示详情；选中的一格带「已选择」角标与描边。
@@ -80,9 +80,9 @@ function initLive2DSettingsPanel(host) {
                     ? ' border-pink-500 bg-pink-50/70'
                     : ' border-white/60 bg-white/50 hover:border-indigo-300') + '"'
                 + ' style="padding:0">'
-                // ★ 图片区**固定高度**（128px），不用 aspect-square ——
+                // 图片区**固定高度**（128px），不用 aspect-square ——
                 //   aspect-square 在半宽容器里会把格子撑到近 300px 高，
-                //   2×2 变成一大行，一眼只能看见 2 个（实测踩到）。
+                //   2×2 变成一大行，一眼只能看见 2 个。
                 //   固定高 + object-cover：任何图片都正好填满，四格恒定两行。
                 //   128px：用户反馈 96px 时"模型看不全"（模型是立绘，越高越看得清脸）。
                 + '<span class="block w-full bg-white/60 overflow-hidden" style="height:128px">' + img + '</span>'
@@ -101,7 +101,7 @@ function initLive2DSettingsPanel(host) {
         const detailName = document.getElementById('settingLive2DModelDetailName');
         const detailInfo = document.getElementById('settingLive2DModelDetailInfo');
         /** 右侧详情区跟随选中项（默认显示当前选中的那个）。
-         *  ★「打开文件夹」按钮已删（2026-10 用户要求）：管理动作统一收进
+         * 「打开文件夹」按钮已删：管理动作统一收进
          *    「📦 管理模型」，详情区只读、不放操作，界面更简单。 */
         const showDetail = (m) => {
             if (!m) {
@@ -142,7 +142,7 @@ function initLive2DSettingsPanel(host) {
         });
     }
 
-    // ★ 2026-10：模型的上传 / 重命名 / 删除**已搬到「Live2D 引擎与模型」**（用户要求）。
+    // 2026-10：模型的上传 / 重命名 / 删除**已搬到「Live2D 引擎与模型」**（用户要求）。
     //   这里是『用哪个模型』的界面；模型是那个资源包的资产 ——
     //   视频通话只是消费方，卸载它不该把模型一起带走。
     document.getElementById("settingLive2DManage")?.addEventListener("click", () => {
@@ -156,7 +156,7 @@ function initLive2DSettingsPanel(host) {
     });
 
     // ===== 背景（图片 + 场景背景图资源包） =====
-    // ★ 2026-10 移除了预设渐变 / 纯色 / 自定义颜色（用户要求）：那些是『填满画面』的
+    // 2026-10 移除了预设渐变 / 纯色 / 自定义颜色（用户要求）：那些是『填满画面』的
     //   临时方案，真正想要的背景是图。现在只留上传图片 + 从资源包里挑 + 清除。
     let bgToastTimer = null;
     function bgToast(msg) {

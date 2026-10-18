@@ -108,7 +108,7 @@
        让加载器把它标记为 ready（供其他插件检查依赖是否就绪）。 */
     if (window.ElainaMods && typeof window.ElainaMods.register === 'function') {
         window.ElainaMods.register(MOD_ID, function (host) {
-            // ★ 用宿主给的真实安装位置覆盖约定路径。
+            // 用宿主给的真实安装位置覆盖约定路径。
             //   这是"接口在、图却 404"的正面修法：id 与目录名不一致时
             //   （历史上装成过 elaina-avatar-1.0.0/），约定路径是错的，
             //   而 host.assetBase() 来自清单归一化后的 id，永远指向真实位置。

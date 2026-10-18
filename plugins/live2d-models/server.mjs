@@ -39,7 +39,7 @@ const MODEL_NAME_MAX = 60;
 const WIN_RESERVED = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i;
 
 export function register(ctx) {
-    // ★ staticDir 必须在装载期调用：它把「URL /live2d/models → 本插件 models/」
+    // staticDir 必须在装载期调用：它把「URL /live2d/models → 本插件 models/」
     //   登记给宿主，之后静态服务才知道该从哪读。返回的是绝对路径。
     const MODELS_DIR = ctx.staticDir('/live2d/models');
     ctx.log('模型目录：' + MODELS_DIR);
@@ -147,7 +147,7 @@ export function register(ctx) {
                     /**
                      * 缩略图：**优先用模型自带的图标**，其次用模型的脸（贴图）。
                      *
-                     * ★ 图标是模型自带的，但**命名没有统一约定** —— 实测两个内置模型：
+                     * 图标是模型自带的，但**命名没有统一约定** —— 实测两个内置模型：
                      *     deepseek/icon.png · 伊蕾娜·默认/ico_lss.png
                      *   所以不能只认 "icon.png"（第一版就是这样，第二个模型靠"任意 png 兜底"
                      *   才碰巧选中）。这里按**可靠性从高到低**挑：
@@ -233,7 +233,7 @@ export function register(ctx) {
             return ctx.json(res, 413, { ok: false, message: `压缩包超过 ${Math.round(MAX_UPLOAD / 1024 / 1024)}MB 上限` });
         }
         try {
-            // ★ 不传 allowScripts：模型是**数据**，不该带可执行代码。
+            // 不传 allowScripts：模型是**数据**，不该带可执行代码。
             //   默认黑名单会拦掉 .js/.html 等 —— 这正是我们要的
             //   （mod 的 zip 才需要 allowScripts，走的是 server/mods.mjs 那条路）。
             const { files, blocked } = readZip(Buffer.concat(chunks));

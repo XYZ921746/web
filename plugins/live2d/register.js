@@ -39,9 +39,9 @@
 
         // ---- ⓪ 先启动实现主体 ----
         //
-        // ★ 注册点只有一个（本文件）。index.js 与 settings-panel.js 都**不**自己注册 ——
+        // 注册点只有一个（本文件）。index.js 与 settings-panel.js 都**不**自己注册 ——
         //   pendingRegistrations 是 Map，两个文件都调 register 的话后注册的会覆盖前一个，
-        //   结果是"插件 ready，但只有一半装配生效"（实测踩到：要么没界面、要么没实现）。
+        //   结果是"插件 ready，但只有一半装配生效"。
         //   它们只暴露 init 函数，由这里按顺序调用。
         if (typeof window.__live2dInitCore === 'function') {
             window.__live2dInitCore(host);
@@ -52,7 +52,7 @@
 
         // ---- ① 设置：独立成窗（不占主设置的分栏）----
         //
-        // ★ 2026-10 从 settings.tabs 改成 settings.modal（用户要求）：
+        // 2026-10 从 settings.tabs 改成 settings.modal（用户要求）：
         //   插件设置全堆在主设置里，插件一多就会堆一排分栏（外观/角色/对话/…/Live2D/插件），
         //   难找也难看。改成独立弹窗后，从插件卡片的齿轮按钮进入。
         //   render(container) 的契约与原来一样，所以面板代码不用改。

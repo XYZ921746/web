@@ -1,13 +1,13 @@
 {
   "comment": "由 scripts/pack-assets.mjs 生成。上传到 GitHub Releases 后，把下载链接填到下面。",
-  "generatedAt": "2026-10-14T23:01:18.553Z",
+  "generatedAt": "2026-10-18T05:16:47.835Z",
   "assets": [
     {
       "kind": "mod",
       "id": "birthday",
-      "version": "1.0.0",
-      "file": "birthday-1.0.0.zip",
-      "sizeBytes": 23331,
+      "version": "1.1.0",
+      "file": "birthday-1.1.0.zip",
+      "sizeBytes": 28631,
       "downloadUrl": ""
     },
     {
@@ -15,7 +15,7 @@
       "id": "elaina-avatar",
       "version": "1.0.0",
       "file": "elaina-avatar-1.0.0.zip",
-      "sizeBytes": 10644088,
+      "sizeBytes": 10644085,
       "downloadUrl": ""
     },
     {
@@ -31,7 +31,7 @@
       "id": "live2d",
       "version": "1.0.0",
       "file": "live2d-1.0.0.zip",
-      "sizeBytes": 50917,
+      "sizeBytes": 50480,
       "downloadUrl": ""
     },
     {
@@ -39,7 +39,7 @@
       "id": "live2d-models",
       "version": "1.0.0",
       "file": "live2d-models-1.0.0.zip",
-      "sizeBytes": 240024,
+      "sizeBytes": 240336,
       "downloadUrl": ""
     },
     {
@@ -47,7 +47,7 @@
       "id": "pet",
       "version": "1.0.0",
       "file": "pet-1.0.0.zip",
-      "sizeBytes": 12450,
+      "sizeBytes": 12386,
       "downloadUrl": ""
     },
     {

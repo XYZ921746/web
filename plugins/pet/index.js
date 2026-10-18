@@ -205,10 +205,10 @@
                 paintProactive();
                 // ⚠️ 顺序很重要：先 setProactive（它写 localStorage），再 paint。
                 //   反过来画的是**旧状态** —— 按钮显示"关"、存储却是"1"，
-                //   状态不一致（实测踩过）。
+                //   状态不一致。
                 // setProactive 开启时会**立即执行一次**并把 Promise 返回回来，
                 // 我们只等这一个结果来决定说什么 —— 不要自己再探一次，
-                // 那会重复读活动（白花 4 秒）并弹重复气泡（实测踩过）。
+                // 那会重复读活动（白花 4 秒）并弹重复气泡。
                 const r = await setProactive(true);
                 paintProactive();
                 if (!r || r.skipped === 'no-activity') {
@@ -340,10 +340,10 @@
          *   · 冷却：用户可能刚说过话，不该马上又被搭话
          * 所以只有当"活动指纹"变了、且距上次超过冷却时间，才会真的发。
          *
-         * ★ 本函数**不弹气泡**，只返回结果（{sent} / {skipped}）——
+         * 本函数**不弹气泡**，只返回结果（{sent} / {skipped}）——
          *   由调用方决定要不要说话。理由：定时器触发时不该打扰用户
          *   （那是后台行为），而用户**手动开启**时该给反馈。若在这里弹，
-         *   两条路径的文案会打架、甚至重复弹（实测踩过重复气泡）。
+         *   两条路径的文案会打架、甚至重复弹。
          */
         async function proactiveOnce(opts) {
             const o = opts || {};
@@ -407,10 +407,9 @@
             if (!on) return null;
             const every = Number(get('proactiveEvery', 10 * 60 * 1000)) || 10 * 60 * 1000;
             const runNow = immediate !== false;
-            // ★ 立即执行一次（仅用户主动开启时）。
+            // 立即执行一次（仅用户主动开启时）。
             //
             //   否则用户开了开关后要等 10 分钟才有反应，会以为功能坏了
-            //   （实测踩过：端到端测试等 6 秒，什么都没发生）。
             //   立即执行还有个好处：马上就能看到"它读到我在干什么了"，
             //   用户能立刻判断这个功能有没有用、要不要留着。
             //
@@ -420,7 +419,7 @@
             //   把 Promise 返回给调用方，让它根据结果给反馈 —— 这样"读活动"
             //   只发生一次。早先的写法是调用方自己再探一次，既多花 4 秒
             //   （服务端要跑 PowerShell），又会和 proactiveOnce 内部各说一句话，
-            //   用户看到**两条重复气泡**（实测踩过）。
+            //   用户看到**两条重复气泡**。
             const first = runNow ? proactiveOnce({ force: true }) : null;
             proactiveTimer = setInterval(() => { void proactiveOnce(); }, Math.max(60_000, every));
             return first;

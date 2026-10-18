@@ -15,7 +15,7 @@
  *   baseUrl(name)       模型资源基址（结尾带 /）
  *   assetUrl(name, rel) 模型内某个文件的 URL（rel 是相对模型根目录的路径）
  *
- * ★ 这里**不碰任何界面**，也不 import 宿主内部 —— 视频通话那边通过
+ * 这里**不碰任何界面**，也不 import 宿主内部 —— 视频通话那边通过
  *   host.require('live2d-models') 取这个接口。
  * ========================================================================== */
 (function () {
@@ -29,7 +29,7 @@
      * Web：服务端把 `/live2d/models/` 映射到本插件目录下的 models/（见 manifest.server.static）
      * APK：`window.__nativeModelBase` 指向应用数据目录（内置模型会被播种到那里）
      *
-     * ★ 两条路的**对外 URL 都是 /live2d/models/**，所以调用方不需要区分平台 ——
+     * 两条路的**对外 URL 都是 /live2d/models/**，所以调用方不需要区分平台 ——
      *   这也是拆分前 live2d-video.js 里那段 `isNative ? __nativeModelBase : '/live2d/models/'`
      *   能原样保留的原因。
      */
@@ -69,12 +69,12 @@
     //  引擎懒加载
     // ========================================================================
     //
-    // ★ 为什么必须懒加载：这三个库合计 770KB（Cubism Core 207KB + PIXI 460KB +
+    // 为什么必须懒加载：这三个库合计 770KB（Cubism Core 207KB + PIXI 460KB +
     //   pixi-live2d-display 120KB），而它们只在**打开视频通话**时才需要。
     //   拆分前它们由 index.html 无条件加载 —— 不装 Live2D 的用户也要为此付出
     //   解析与内存代价。现在改由本插件在真正需要时按顺序注入。
     //
-    // ★ 依赖顺序是硬的，不能并发：
+    // 依赖顺序是硬的，不能并发：
     //     live2dcubismcore → pixi-6 → pixi-live2d-display
     //   最后那个在**求值时**就要 window.PIXI 与 window.Live2DCubismCore 已存在。
     //   并发注入会因顺序不确定而随机失败（"有时能开有时不能"最难查）。
@@ -95,7 +95,7 @@
      *  工厂一进来就把它存下来（见 register 回调的第一行）。 */
     let hostRef = null;
     /** 引擎回落基址（电脑版）：仓库本体不带插件时，引擎在 web/vendor/（软件本体）。
-     *  ★ APK 不走这里 —— 那边宿主没有引擎了，改从插件自己目录取，见注入循环。 */
+     * APK 不走这里 —— 那边宿主没有引擎了，改从插件自己目录取，见注入循环。 */
     function vendorFallbackBase() {
         return '/vendor/';
     }
@@ -136,7 +136,7 @@
                 window.Live2D = { version: 'placeholder-cubism4-only', createLive2DModel: null };
             }
             // 逐个注入：先试插件声明的静态基址，404 再回落。
-            // ★★ 2026-10：回落分支在两端不同 —— 电脑版回落到宿主 /vendor/（软件本体，
+            // 2026-10：回落分支在两端不同 —— 电脑版回落到宿主 /vendor/（软件本体，
             //   插件缺失时兜底）；**APK 上宿主不再附带引擎**，改从**插件自己目录**取，
             //   地址由 host.assetUrl() 解析（别自己拼 /mods/<id>/…：id 与安装目录名可能不同）。
             for (const f of ENGINE_FILES) {
@@ -157,7 +157,7 @@
         try {
             return await enginePromise;
         } catch (e) {
-            // ★ 失败必须**清掉缓存的 Promise**：否则第一次失败后，
+            // 失败必须**清掉缓存的 Promise**：否则第一次失败后，
             //   后续每次调用都会立刻拿到同一个失败的 Promise ——
             //   用户即使把网络/文件问题修好了，也只能靠刷新页面才能重试。
             enginePromise = null;
@@ -178,9 +178,9 @@
             hostRef = host;
             host.log('引擎与模型资源接口就绪（引擎基址 ' + vendorBase() + '）');
 
-            // ---- 设置：模型管理（独立成窗，2026-10 从「Live2D 视频通话」搬来）----
+            // ---- 设置：模型管理----
             //
-            // ★ 为什么管理界面在**资源包**这边：谁拥有资产，谁负责管理。
+            // 为什么管理界面在**资源包**这边：谁拥有资产，谁负责管理。
             //   搬过来之后，卸载视频通话不会把模型一起带走；
             //   想换模型也不必进视频通话（见 panel.js 开头的说明）。
             host.slot('settings.modal', {
@@ -203,7 +203,7 @@
                 list, baseUrl, assetUrl, isNative, ensureEngine, engineReady, vendorBase,
                 /**
                  * 在文件管理器里打开一个模型（或本插件）的目录。
-                 * ★ 只是转发本插件自己的 host.openFolder —— 路径白名单在宿主/服务端，
+                 * 只是转发本插件自己的 host.openFolder —— 路径白名单在宿主/服务端，
                  *   消费方（如视频通话的详情区）拿到这个 api 就能"打开某个模型的
                  *   文件夹"，不必自己拼 /api/plugins/open-folder。
                  * @param {string} [sub] 相对本插件目录的子路径（如 'models/名字'）

@@ -9,8 +9,10 @@
   "after": [],
   "hidden": false,
   "scripts": ["panel.js"],
+  "capabilities": ["dragSort", "openFolder"],
   "server": {
     "entry": "server.mjs",
+    "capabilities": ["route-register", "static-read", "host-utils"],
     "routes": ["/api/live2d"],
     "static": [
       { "url": "/live2d/models", "dir": "models" },
