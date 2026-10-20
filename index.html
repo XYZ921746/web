@@ -3,150 +3,507 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ElainaChat Mod · 以插件为核心的伊蕾娜角色聊天应用</title>
-<meta name="description" content="ElainaChat Mod：程序本体只有文字聊天与 Agent 能力，角色呈现与界面全部交给可装可卸的扩展包。自带 API Key 直连服务商，开源（GPLv3）。">
+<title>ElainaChat Mod · 与伊蕾娜一起旅行的聊天应用</title>
+<meta name="description" content="ElainaChat Mod 是基于 ElainaChat 开源版二次开发的伊蕾娜聊天应用：文字与语音聊天、Agent 能力、多套人设与跨设备同步；角色、界面与玩法交给可装可卸的扩展包。自带 API Key 直连，开源（GPLv3）。">
+<meta name="theme-color" id="theme-color" content="#f6f1e8">
+<link rel="icon" href="./assets/favicon.png" type="image/png">
+<link rel="canonical" href="https://xyz921746.github.io/web/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:site_name" content="ElainaChat Mod">
+<meta property="og:title" content="ElainaChat Mod · 与伊蕾娜一起旅行的聊天应用">
+<meta property="og:description" content="文字与语音聊天、Agent 能力、多套人设与跨设备同步；角色与玩法交给可装可卸的扩展包。自带 API Key 直连服务商，开源（GPLv3）。">
+<meta property="og:url" content="https://xyz921746.github.io/web/">
+<meta property="og:image" content="https://xyz921746.github.io/web/assets/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="雪夜街道背景下的伊蕾娜立绘，标题：与伊蕾娜一起旅行的故事">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ElainaChat Mod · 与伊蕾娜一起旅行">
+<meta name="twitter:description" content="文字与语音聊天、Agent 能力、多套人设与跨设备同步；角色与玩法交给扩展包。">
+<meta name="twitter:image" content="https://xyz921746.github.io/web/assets/og-cover.jpg">
+<meta name="twitter:image:alt" content="雪夜街道背景下的伊蕾娜立绘，标题：与伊蕾娜一起旅行的故事">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ElainaChat Mod",
+  "url": "https://xyz921746.github.io/web/",
+  "description": "基于 ElainaChat 开源版二次开发的伊蕾娜聊天应用：文字与语音聊天、Agent 能力、多套人设与跨设备同步；角色、界面与玩法交给可装可卸的扩展包。",
+  "applicationCategory": "EntertainmentApplication",
+  "applicationSubCategory": "Chat",
+  "operatingSystem": "Windows, Android",
+  "softwareVersion": "1.3.4",
+  "inLanguage": "zh-CN",
+  "isAccessibleForFree": true,
+  "image": "https://xyz921746.github.io/web/assets/og-cover.jpg",
+  "downloadUrl": "https://github.com/XYZ921746/ElainaChat-mod/releases/latest",
+  "codeRepository": "https://github.com/XYZ921746/ElainaChat-mod",
+  "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "CNY"
+  }
+}
+</script>
 <link rel="stylesheet" href="./style.css">
-<!-- 外观切换：在 head 里同步引入，绘制前先落地主题，避免刷新时闪一下默认配色 -->
+<link rel="stylesheet" href="./home.css">
 <script src="./theme.js"></script>
+<script src="./site.js" defer></script>
 </head>
 <body>
 
-<!-- ── 顶部导航：改站点名 / 菜单项在这里 ───────────────────────────── -->
+<svg class="svg-sprite" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;overflow:hidden">
+  <defs>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M5 21h14"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3.5 13.7 9l5.5 1.7-5.5 1.7L12 18l-1.7-5.6L4.8 10.7 10.3 9 12 3.5Z"/><path d="M19 16.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2Z"/></symbol>
+    <symbol id="i-modules" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><path d="M16.5 13.5v6M13.5 16.5h6"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h8M17 7h3M4 17h3M12 17h8"/><circle cx="14.5" cy="7" r="2.2"/><circle cx="9.5" cy="17" r="2.2"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></symbol>
+    <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 10h10M7 14h6"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="6" width="12.5" height="12" rx="3"/><path d="m15.5 10.3 4.5-2.7v8.8l-4.5-2.7"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.6 5.2a5.3 5.3 0 0 0-7.5 0L12 6.3l-1.1-1.1a5.3 5.3 0 0 0-7.5 7.5L12 21l8.6-8.3a5.3 5.3 0 0 0 0-7.5Z"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5.5 12v8h13v-8M12 8v12"/><path d="M12 8S11 3.5 8.5 3.5a2.25 2.25 0 0 0 0 4.5H12Zm0 0s1-4.5 3.5-4.5a2.25 2.25 0 0 1 0 4.5H12Z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 7 2.6v5.8c0 4.3-3 7.4-7 9.1-4-1.7-7-4.8-7-9.1V5.6L12 3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="3"/><path d="M10.5 18.5h3"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></symbol>
+    <symbol id="i-auto" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17Z" fill="currentColor" stroke="none"/></symbol>
+  </defs>
+</svg>
+
+<a class="skip-link" href="#main">跳到主要内容</a>
+
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="./">
-      <img class="brand-mark" src="./brand.png" width="30" height="30" alt="">
-      <span>ElainaChat Mod</span>
+    <a class="brand" href="./" aria-label="ElainaChat Mod 首页">
+      <img class="brand-mark" src="./brand.png" width="38" height="38" alt="">
+      <span class="brand-copy">
+        <span class="brand-name">ElainaChat <span class="brand-badge">MOD</span></span>
+        <span class="brand-sub">与伊蕾娜一起旅行</span>
+      </span>
     </a>
     <div class="header-right">
-      <nav class="nav">
-        <a class="nav-link" href="#features">特性</a>
-        <a class="nav-link" href="./models/">live2d</a>
-        <a class="nav-link" href="./store/">插件商店</a>
-        <a class="btn btn--sm btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
+      <nav class="nav" aria-label="主要导航">
+        <a class="nav-link" href="#features">亮点</a>
+        <a class="nav-link" href="./store/">插件</a>
+        <a class="nav-link" href="#platforms">双端</a>
+        <a class="nav-link" href="./models/">Live2D</a>
+        <a class="nav-link" href="#faq">问答</a>
       </nav>
-      <!-- 外观控件：深浅色三态胶囊。配色固定为应用的默认主题「暖米绿」，不再提供色点选择 -->
       <div class="appearance">
         <div class="theme-capsule" role="group" aria-label="主题模式">
-          <button type="button" data-mode="auto" title="跟随设备深浅色">跟随设备</button>
-          <button type="button" data-mode="light" title="始终使用浅色">浅色</button>
-          <button type="button" data-mode="dark" title="始终使用深色">深色</button>
+          <button type="button" data-mode="auto" title="跟随设备深浅色" aria-label="跟随设备深浅色"><svg class="icon" aria-hidden="true"><use href="#i-auto"></use></svg></button>
+          <button type="button" data-mode="light" title="始终使用浅色" aria-label="始终使用浅色"><svg class="icon" aria-hidden="true"><use href="#i-sun"></use></svg></button>
+          <button type="button" data-mode="dark" title="始终使用深色" aria-label="始终使用深色"><svg class="icon" aria-hidden="true"><use href="#i-moon"></use></svg></button>
         </div>
       </div>
+      <a class="btn btn--primary btn--sm header-cta" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="打开菜单">
+        <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+      </button>
     </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu" hidden>
+    <nav class="mobile-nav" aria-label="移动导航">
+      <a class="nav-link" href="#features">项目亮点</a>
+      <a class="nav-link" href="./store/">插件商店</a>
+      <a class="nav-link" href="#platforms">电脑 / 安卓</a>
+      <a class="nav-link" href="#faq">常见问题</a>
+      <a class="nav-link" href="./models/">Live2D 模型</a>
+      <a class="nav-link" href="./store/submit/">插件投稿</a>
+      <a class="nav-link" href="./models/submit/">模型投稿</a>
+    </nav>
+    <div class="mobile-menu__actions">
+      <a class="btn btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载 APK</a>
+      <a class="btn btn--ghost" href="https://github.com/XYZ921746/ElainaChat-mod">GitHub 源码</a>
+    </div>
+    <p class="mobile-menu__note">电脑版需要 Node.js ≥ 20 · 项目处于测试状态</p>
   </div>
 </header>
 
-<main>
+<main id="main" tabindex="-1">
 
-  <!-- ── Hero：标题、简介、按钮 ──────────────────────────────────── -->
-  <section class="hero">
+  <!-- ── 首屏 ──────────────────────────────────────────────────────── -->
+  <section class="home-hero">
     <div class="wrap">
-      <p class="eyebrow">v1.3.1-mod · GPLv3 · 开源</p>
-      <h1>与伊蕾娜一起旅行的故事</h1>
-      <p class="lede">ElainaChat-mod 是以 <a href="https://elainachat.j3.ink" target="_blank" rel="noopener">ElainaChat 开源版</a>二次开发的客户端，为伊蕾娜的旅行提供了更多的可能 —— 感兴趣的话，可以去原项目网页看看。
-        本项目新增加了 <strong>Agent 功能</strong>，插件可拆装，根据你的需要进行不同的搭配！</p>
-      <div class="hero-actions">
-        <a class="btn btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载安卓版 APK</a>
-        <a class="btn btn--ghost" href="https://github.com/XYZ921746/ElainaChat-mod">电脑版（克隆仓库）</a>
-        <a class="btn btn--ghost" href="https://qm.qq.com/q/cr59nTQiUo" target="_blank" rel="noopener">加入项目作者群聊</a>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">v1.3.4 · GPLv3 · 开源</p>
+          <h1 class="hero-title">
+            <span>与伊蕾娜一起</span>
+            <span><em>旅行</em>的故事</span>
+          </h1>
+          <p class="hero-lede">
+            ElainaChat Mod 是基于 <a href="https://github.com/KaimeranFeran/ElainaChat-Open" target="_blank" rel="noopener">ElainaChat 开源版</a>二次开发的客户端，为伊蕾娜的旅行提供了更多可能。<strong>Agent 能力</strong>让电脑和手机都能成为她的旅途工具，多套人设、语音与跨设备同步让旅途随时延续；角色、界面与玩法，则交给可装可卸的扩展包。
+          </p>
+          <div class="hero-actions" id="download" role="group" aria-label="下载与加入">
+            <a class="btn btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest" title="从 GitHub Releases 下载安卓 APK">
+              <svg class="icon" aria-hidden="true"><use href="#i-download"></use></svg>
+              下载安卓版 APK
+            </a>
+            <a class="btn btn--ghost" href="https://github.com/XYZ921746/ElainaChat-mod" title="克隆 GitHub 仓库运行电脑版">电脑版 · 克隆仓库</a>
+            <a class="btn btn--ghost" href="https://qm.qq.com/q/cr59nTQiUo" target="_blank" rel="noopener" title="加入项目作者 QQ 群">加入作者群聊</a>
+          </div>
+          <ul class="hero-meta" aria-label="项目速览">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>纯净版 APK</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>扩展包可装可卸</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>多主题 + 深色</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>自带 API Key 直连</li>
+          </ul>
+        </div>
+
+        <div class="hero-visual">
+          <div class="hero-stage">
+            <span class="stage-glow" aria-hidden="true"></span>
+            <span class="stage-ring" aria-hidden="true"></span>
+
+            <div class="float-note float-note--agent" aria-hidden="true">
+              <span class="float-icon"><svg class="icon"><use href="#i-sparkles"></use></svg></span>
+              <span><strong>Agent · 已就绪</strong><span>正在读取你的日程</span></span>
+            </div>
+
+            <figure class="app-frame">
+              <div class="app-window" role="img" aria-label="应用界面示意：雪夜街道前，伊蕾娜正在和你聊天">
+                <img class="app-bg" src="./assets/night-street.webp" width="1200" height="672" alt="" fetchpriority="high" decoding="async">
+                <span class="app-shade" aria-hidden="true"></span>
+                <div class="app-topbar">
+                  <span class="app-contact">
+                    <img src="./brand.png" width="30" height="30" alt="">
+                    <span class="app-contact-copy">
+                      <strong>伊蕾娜</strong>
+                      <small><i></i>在线 · 旅途模式</small>
+                    </span>
+                  </span>
+                  <span class="app-actions" aria-hidden="true">
+                    <svg class="icon"><use href="#i-sparkles"></use></svg>
+                    <svg class="icon"><use href="#i-panel"></use></svg>
+                  </span>
+                </div>
+                <span class="scene-chip">雪夜 · 城市街道</span>
+                <img class="hero-art" src="./assets/elaina.webp" width="760" height="1454" alt="" decoding="async">
+                <div class="chat-stack">
+                  <div class="bubble bubble--elaina"><span class="bubble-name">伊蕾娜</span>今晚的雪，很适合出发。</div>
+                  <div class="bubble bubble--user">那，去哪儿？</div>
+                </div>
+                <span class="app-composer">
+                  <span>和伊蕾娜说点什么…</span>
+                  <span class="app-send" aria-hidden="true"><svg class="icon"><use href="#i-arrow"></use></svg></span>
+                </span>
+              </div>
+            </figure>
+
+            <div class="float-note float-note--plugins" aria-hidden="true">
+              <span class="float-icon"><svg class="icon"><use href="#i-modules"></use></svg></span>
+              <span><strong>旅途扩展包</strong><span>Galgame · Live2D · 桌宠…</span></span>
+            </div>
+
+            <p class="stage-caption">示意界面 · 场景与立绘来自扩展包</p>
+          </div>
+        </div>
       </div>
-      <ul class="meta">
-        <li>纯净版约 10.8 MB</li>
-        <li>7 个扩展包，全部可装可卸</li>
-        <li>多套主题 + 深色模式（可跟随系统）</li>
-        <li>自带 API Key 直连，无作者网关</li>
-      </ul>
     </div>
   </section>
 
-  <!-- ── 项目亮点（相对原版项目改了什么） ────────────────────────── -->
+  <!-- ── 项目亮点 ──────────────────────────────────────────────────── -->
   <section class="section" id="features">
     <div class="wrap">
       <div class="section-head">
-        <h2>项目亮点</h2>
-        <p>本项目在原版项目的基础上进行的改进。</p>
+        <p class="kicker"><b>01</b>项目亮点</p>
+        <h2>不止是聊天，她还能陪你做事</h2>
+        <p>在原版基础上，这一版把更多可能性做成了可以自己挑选的零件。</p>
       </div>
-      <div class="grid grid--2">
-        <article class="card">
-          <div class="card-head">
-            <img class="card-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=soft%20watercolor%20storybook%20illustration%2C%20a%20witch%27s%20satchel%20spilling%20glowing%20magical%20trinkets%20and%20small%20tool%20icons%20onto%20cream%20paper%2C%20olive%20green%20and%20warm%20gold%2C%20hand%20painted%20texture&image_size=square" width="48" height="48" alt="" loading="lazy">
-            <h3>mod 自定义功能</h3>
-          </div>
-          <p>想给项目加点功能，不用碰主程序 —— 用项目内提供的 <strong>插件开发 skill</strong> 写一个 mod 就行：
-            一个目录加一份清单，装、卸、开关都在设置里。</p>
-        </article>
-        <article class="card">
-          <div class="card-head">
-            <img class="card-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=soft%20watercolor%20storybook%20illustration%2C%20two%20speech%20bubbles%20drifting%20like%20paper%20lanterns%20above%20an%20open%20notebook%2C%20cream%20paper%20texture%2C%20sage%20green%20and%20dusty%20pink%2C%20hand%20painted&image_size=square" width="48" height="48" alt="" loading="lazy">
-            <h3>对话优化</h3>
-          </div>
-          <p>新增了<strong>模型思考强度</strong>的控制（部分模型或中转可能有兼容问题），以及新开的
-            <strong>第三人称转述模式</strong>，让对话更加自然。</p>
-        </article>
-        <article class="card">
-          <div class="card-head">
-            <img class="card-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=soft%20watercolor%20storybook%20illustration%2C%20a%20pocket%20watch%20and%20a%20small%20broom%20on%20a%20windowsill%20at%20dawn%2C%20cream%20paper%20texture%2C%20amber%20and%20olive%20green%2C%20hand%20painted&image_size=square" width="48" height="48" alt="" loading="lazy">
-            <h3>定时任务</h3>
-          </div>
-          <p>通过定时任务，你和伊蕾娜做过的约定将会实现 —— 比如 7 点准时和你说早安，或者 30 分钟后提醒你喝水。</p>
-        </article>
-        <article class="card">
-          <div class="card-head">
-            <img class="card-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=soft%20watercolor%20storybook%20illustration%2C%20a%20tidy%20desk%20with%20a%20laptop%20and%20a%20phone%2C%20a%20tiny%20witch%20silhouette%20helping%20arrange%20papers%2C%20cream%20paper%20texture%2C%20teal%20and%20olive%20green%2C%20hand%20painted&image_size=square" width="48" height="48" alt="" loading="lazy">
+
+      <div class="feature-grid">
+        <article class="feature-card feature-card--agent">
+          <div class="agent-copy">
+            <div class="feature-top">
+              <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-sparkles"></use></svg></span>
+              <span class="feature-index">01 / AGENT</span>
+            </div>
             <h3>Agent 能力</h3>
+            <p>电脑上，她能读写文件、执行本机命令，知道你正在忙什么；手机上，她能点击、滑动、输入、截图、读通知，也能读写你授权的文件。全程<strong>不经过作者云端</strong>。偶尔，还会吃你的醋。</p>
+            <a class="link-arrow link-arrow--light" href="#faq">了解数据与隐私 <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
           </div>
-          <p>通过这个功能，电脑上可以陪你工作 —— 它知道你正在干什么，你愿意的话甚至可以让伊蕾娜帮你干活；
-            手机端可以查看手机消息、操作手机（点击 / 滑动 / 输入 / 截图 / 读通知），全程<strong>不经过作者云端</strong>。
-            偶尔还会吃你的醋。</p>
+          <div class="agent-console" role="group" aria-label="Agent 能力一览">
+            <div class="console-head"><span><i aria-hidden="true"></i>AGENT · LOCAL</span><span class="console-badge">不经过作者云端</span></div>
+            <div class="console-row">
+              <span class="console-key">电脑</span>
+              <div class="console-chips"><span>文件</span><span>命令</span><span>日程</span></div>
+            </div>
+            <div class="console-row">
+              <span class="console-key">手机</span>
+              <div class="console-chips"><span>点击</span><span>滑动</span><span>输入</span><span>截图</span><span>通知</span><span>文件</span></div>
+            </div>
+            <div class="console-foot"><svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>所有操作发生在你的设备上</div>
+          </div>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-top">
+            <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-heart"></use></svg></span>
+            <span class="feature-index">02</span>
+          </div>
+          <h3>多套人设与同步</h3>
+          <p>新建、复制、改名、删除人设，随时切换，切换时不会丢掉正在编辑的内容；数据分类落盘，电脑版与安卓版可以<strong>互相导入备份</strong>。</p>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-top">
+            <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-sliders"></use></svg></span>
+            <span class="feature-index">03</span>
+          </div>
+          <h3>对话与语音</h3>
+          <p>保留<strong>模型思考强度</strong>与<strong>第三人称转述</strong>，新增语音输入与音色克隆（需自带 Key）；消息支持 Markdown 与 LaTeX 渲染。</p>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-top">
+            <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
+            <span class="feature-index">04</span>
+          </div>
+          <h3>定时任务与成就</h3>
+          <p>约定会被实现 —— 7 点和你说早安，或 30 分钟后提醒喝水。事件与进度成就解锁后持久保留，删掉对话也不会撤销。</p>
         </article>
       </div>
     </div>
   </section>
 
-  <!-- ── 双端 ────────────────────────────────────────────────────── -->
+  <!-- ── 插件生态 ──────────────────────────────────────────────────── -->
+  <section class="band band--night" id="plugins">
+    <div class="wrap">
+      <div class="band-head">
+        <div class="section-head">
+          <p class="kicker"><b>02</b>插件生态</p>
+          <h2>把旅途，装进背包</h2>
+          <p>程序本体只有文字聊天与 Agent 能力。角色呈现、全屏剧情、视频通话、桌宠……全部是可装可卸的扩展包，按你的喜好搭配。</p>
+        </div>
+        <div class="band-actions">
+          <a class="btn btn--light" href="./store/">逛插件商店 <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+          <a class="btn btn--outline-light" href="https://github.com/XYZ921746/ElainaChat-mod/blob/main/%E5%BC%80%E5%8F%91%E6%96%87%E6%A1%A3.md" target="_blank" rel="noopener">开发文档</a>
+        </div>
+      </div>
+
+      <div class="plugin-grid">
+        <article class="plugin-card">
+          <span class="plugin-icon"><svg class="icon" aria-hidden="true"><use href="#i-panel"></use></svg></span>
+          <h3>Galgame 界面</h3>
+          <p>全屏沉浸式剧情界面：场景背景 + 立绘 + 打字机对话框，与主界面共用同一份对话数据。</p>
+          <div class="plugin-meta"><span class="plugin-type">界面</span><span>v1.0.0 · 15 KB</span></div>
+        </article>
+        <article class="plugin-card">
+          <span class="plugin-icon"><svg class="icon" aria-hidden="true"><use href="#i-video"></use></svg></span>
+          <h3>Live2D 视频通话</h3>
+          <p>实时渲染、口型随真实音量、鼠标跟随，还有 AI 表情与动作驱动。</p>
+          <div class="plugin-meta"><span class="plugin-type">界面</span><span>v1.0.0 · 49 KB</span></div>
+        </article>
+        <article class="plugin-card">
+          <span class="plugin-icon"><svg class="icon" aria-hidden="true"><use href="#i-heart"></use></svg></span>
+          <h3>桌宠</h3>
+          <p>悬浮在桌面上的伊蕾娜：立绘 + 聊天气泡，回复时自动切换表情。</p>
+          <div class="plugin-meta"><span class="plugin-type">界面</span><span>v1.0.0 · 12 KB</span></div>
+        </article>
+        <article class="plugin-card">
+          <span class="plugin-icon"><svg class="icon" aria-hidden="true"><use href="#i-gift"></use></svg></span>
+          <h3>星屑之日</h3>
+          <p>10 月 17 日生日限定：开场彩蛋、灰紫夜空主题、生日面板与 23:59 告别彩蛋。</p>
+          <div class="plugin-meta"><span class="plugin-type plugin-type--event">生日限定</span><span>v1.1.0 · 28 KB</span></div>
+        </article>
+      </div>
+
+      <div class="resource-bar">
+        <b>配套资源</b>
+        <div class="resource-list">
+          <span>Live2D 引擎与模型</span>
+          <span>伊蕾娜立绘与情绪</span>
+          <span>场景背景图</span>
+        </div>
+        <span class="resource-note">素材版权归原作者 · 商用前请查看授权</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 双端 ──────────────────────────────────────────────────────── -->
   <section class="section" id="platforms">
     <div class="wrap">
       <div class="section-head">
-        <h2>电脑版 / 安卓版</h2>
+        <p class="kicker"><b>03</b>电脑 / 安卓</p>
+        <h2>书桌旁，或旅途中</h2>
         <p>聊天与界面两端同构，但「能操作什么」是互补的。</p>
       </div>
-      <div class="grid">
-        <article class="card">
-          <h3>电脑版（Web）</h3>
-          <ul class="steps">
-            <li>克隆仓库，双击 <strong>启动.bat</strong>（零依赖、零构建，需 Node.js ≥ 20）</li>
-            <li>浏览器打开 <strong>http://127.0.0.1:4173</strong></li>
-            <li>Agent 可读写电脑文件、执行本机命令</li>
-          </ul>
+
+      <div class="platform-grid">
+        <article class="platform-card">
+          <div class="platform-stage" aria-hidden="true">
+            <span class="stage-sticker">ZERO BUILD</span>
+            <div class="laptop">
+              <div class="laptop-screen">
+                <div class="laptop-bar"><span></span><span></span><span></span><em>ELAINACHAT · LOCAL</em></div>
+                <div class="laptop-code">
+                  <p><span class="prompt">&gt;</span>启动.bat</p>
+                  <p class="ok">✓ 服务已启动</p>
+                  <p class="url">✓ 浏览器已打开</p>
+                </div>
+              </div>
+              <div class="laptop-base"></div>
+            </div>
+          </div>
+          <div class="platform-body">
+            <p class="device-label"><svg class="icon" aria-hidden="true"><use href="#i-monitor"></use></svg>PC · WEB</p>
+            <h3>在你的书桌旁</h3>
+            <p>到 Releases 下载电脑版压缩包，解压后双击 <strong>启动.bat</strong>，浏览器会自动打开并进入页面；端口被占用时会自动顺延。也可以克隆仓库运行。零依赖、零构建，需要 Node.js ≥ 20。</p>
+            <ul class="platform-caps">
+              <li>读写电脑文件</li>
+              <li>执行本机命令</li>
+              <li>访问密码 + HTTPS</li>
+              <li>陪你一起工作</li>
+            </ul>
+          </div>
         </article>
-        <article class="card">
-          <h3>安卓版（APK）</h3>
-          <ul class="steps">
-            <li>到 Releases 下载 <strong>lite-debug.apk</strong>（约 10.8 MB）</li>
-            <li>允许「安装未知来源应用」后安装</li>
-            <li>Agent 可操作手机：点击 / 滑动 / 输入 / 截图 / 读通知</li>
-          </ul>
+
+        <article class="platform-card">
+          <div class="platform-stage platform-stage--android" aria-hidden="true">
+            <span class="stage-sticker">APK · 纯净版</span>
+            <div class="phone">
+              <span class="phone-notch"></span>
+              <div class="phone-screen">
+                <img src="./assets/night-street.webp" width="1200" height="672" alt="" loading="lazy" decoding="async">
+                <span class="phone-chip">AGENT</span>
+                <span class="phone-bubble">收到。出发前，我替你看过天气了。</span>
+              </div>
+              <span class="phone-home"></span>
+            </div>
+          </div>
+          <div class="platform-body">
+            <p class="device-label"><svg class="icon" aria-hidden="true"><use href="#i-phone"></use></svg>ANDROID · APK</p>
+            <h3>在路上，也能同行</h3>
+            <p>到 Releases 下载 <strong>ElainaChat-mod-x.x.x-release.apk</strong>，允许「安装未知来源应用」后即可安装。</p>
+            <ul class="platform-caps">
+              <li>点击 / 滑动</li>
+              <li>输入</li>
+              <li>截图</li>
+              <li>读通知</li>
+              <li>读写文件</li>
+            </ul>
+          </div>
         </article>
       </div>
-      <p class="notice">APK 是「纯净版」——只含程序本体，不含任何插件与图片资源；那些按需下载并在应用内安装。</p>
+
+      <p class="notice">APK 是「纯净版」——只含程序本体，不含任何插件与图片资源；那些按需下载并在应用内安装。两端聊天与界面同构，但 Agent 能操作的东西互为补充。</p>
+    </div>
+  </section>
+
+  <!-- ── 常见问题 ──────────────────────────────────────────────────── -->
+  <section class="section" id="faq">
+    <div class="wrap faq-layout">
+      <div class="faq-aside">
+        <p class="kicker"><b>04</b>常见问题</p>
+        <h2>旅人常问</h2>
+        <p>关于安装、数据和隐私，先把常见的问题替你问完。还有别的，可以到 <a href="https://github.com/XYZ921746/web/issues" target="_blank" rel="noopener">项目仓库提 issue</a>。</p>
+      </div>
+
+      <div class="faq-list">
+        <details class="faq-item" open>
+          <summary>「自带 API Key」是什么意思？<span class="faq-toggle" aria-hidden="true"></span></summary>
+          <div class="faq-answer"><p>程序没有作者的中转网关。你在设置里填入自己的模型服务商 API Key，请求由你的设备直接发往服务商，费用与额度也归你的账户。</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>Agent 会上传我电脑或手机里的文件吗？<span class="faq-toggle" aria-hidden="true"></span></summary>
+          <div class="faq-answer"><p>Agent 的操作在你的设备上完成，全程不经过作者云端。电脑版可以读写文件、执行本机命令；手机版可以点击、滑动、输入、截图、读通知，也能读写你授权的手机文件。具体能看到什么，取决于你交办的任务 —— 建议只在信任的环境里使用。</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>APK 里都包含什么？<span class="faq-toggle" aria-hidden="true"></span></summary>
+          <div class="faq-answer"><p>它是纯净版：只含程序本体，不含任何插件与图片资源。立绘、场景、Live2D 引擎和模型都按需下载，装进应用后再启用。</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>电脑版和手机版有什么不同？<span class="faq-toggle" aria-hidden="true"></span></summary>
+          <div class="faq-answer"><p>聊天、主题、插件与数据备份在两端同构；区别主要在 Agent：电脑能读写文件、执行命令，手机能操作手机界面、读写授权文件，各自做擅长的事。电脑版需要 Node.js ≥ 20，零构建启动。</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>电脑和手机的数据怎么同步？<span class="faq-toggle" aria-hidden="true"></span></summary>
+          <div class="faq-answer"><p>数据分类落盘保存，电脑版与安卓版可以互相导入备份；也可以手动导出标准 zip，手机端会导出到文档目录。</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>插件与素材可以商用吗？<span class="faq-toggle" aria-hidden="true"></span></summary>
+          <div class="faq-answer"><p>程序与插件代码以 GPLv3 发布；角色立绘、场景背景、Live2D 模型等素材的权利属于各自作者，商用需另行取得授权。<a href="./store/">插件商店</a>与<a href="./models/">模型区</a>的每张卡片都标注了用途，安装前看一眼。</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>遇到问题，或者想投稿怎么办？<span class="faq-toggle" aria-hidden="true"></span></summary>
+          <div class="faq-answer"><p>可以到 <a href="https://github.com/XYZ921746/web/issues" target="_blank" rel="noopener">web 仓库提 issue</a>，或加入作者群聊。插件与模型都有各自的 GitHub 投稿表单：<a href="./store/submit/">插件投稿</a>、<a href="./models/submit/">模型投稿</a>，不用会 git。</p></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 结尾 CTA ──────────────────────────────────────────────────── -->
+  <section class="final-cta">
+    <div class="wrap">
+      <div class="cta-card">
+        <img class="cta-bg" src="./assets/night-street.webp" width="1200" height="672" alt="" loading="lazy" decoding="async">
+        <div class="cta-inner">
+          <p class="kicker"><b>05</b>启程</p>
+          <h2>下一站，由你决定</h2>
+          <p>带上伊蕾娜，从一次下载开始。插件可以慢慢挑，故事可以随时继续。</p>
+          <div class="cta-actions">
+            <a class="btn btn--primary" href="#download">回到下载区 <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+          </div>
+          <p class="cta-note">v1.3.4 · GPLv3 · 项目处于测试状态</p>
+        </div>
+      </div>
     </div>
   </section>
 
 </main>
 
-<!-- ── 页脚 ────────────────────────────────────────────────────────── -->
 <footer class="site-footer">
   <div class="wrap">
-    <p>ElainaChat Mod · 基于 <a href="https://github.com/shuixinggangzheng/ElainaChat-Open">shuixinggangzheng/ElainaChat-Open</a>（MIT）二次开发，以 GPLv3 发布。</p>
-    <p>项目处于测试状态，可能存在未知问题。</p>
-    <p>
-      <a href="https://github.com/XYZ921746/ElainaChat-mod">源码</a> ·
-      <a href="./models/">live2d 模型</a> ·
-      <a href="./store/">插件商店</a> ·
-      <a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载</a> ·
-      <a href="https://github.com/XYZ921746">个人主页</a>
-    </p>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="./" aria-label="ElainaChat Mod 首页">
+          <img class="brand-mark" src="./brand.png" width="38" height="38" alt="" loading="lazy">
+          <span class="brand-copy">
+            <span class="brand-name">ElainaChat <span class="brand-badge">MOD</span></span>
+            <span class="brand-sub">与伊蕾娜一起旅行</span>
+          </span>
+        </a>
+        <p>以插件为核心的伊蕾娜角色聊天应用。程序保持克制，旅途交给你来拼装。</p>
+      </div>
+      <div>
+        <p class="footer-col-title">探索</p>
+        <ul class="footer-links">
+          <li><a href="#features">项目亮点</a></li>
+          <li><a href="#plugins">插件生态</a></li>
+          <li><a href="#platforms">电脑 / 安卓</a></li>
+          <li><a href="#faq">常见问题</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-title">资源</p>
+        <ul class="footer-links">
+          <li><a href="./models/">Live2D 模型</a></li>
+          <li><a href="./store/">插件商店</a></li>
+          <li><a href="./store/submit/">插件投稿</a></li>
+          <li><a href="./models/submit/">模型投稿</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-title">项目</p>
+        <ul class="footer-links">
+          <li><a href="https://github.com/XYZ921746/ElainaChat-mod">GitHub 源码</a></li>
+          <li><a href="https://github.com/XYZ921746/ElainaChat-mod/releases/latest">下载最新版</a></li>
+          <li><a href="https://qm.qq.com/q/cr59nTQiUo" target="_blank" rel="noopener">项目群聊</a></li>
+          <li><a href="https://github.com/XYZ921746">个人主页</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>ElainaChat Mod · 基于 <a href="https://github.com/KaimeranFeran/ElainaChat-Open" target="_blank" rel="noopener">KaimeranFeran/ElainaChat-Open</a>（MIT）二次开发，以 GPLv3 发布。</p>
+      <p>立绘与场景素材版权归原作者 · © 2026</p>
+    </div>
   </div>
 </footer>
 
