@@ -197,11 +197,9 @@ function initLive2DCore(host) {
     host.id = 'live2d-call-host';
     host.innerHTML = `
       <div id="live2d-stage" class="live2d-stage">
-        <div class="live2d-topbar">
-          <div class="live2d-model-select">
-            <select id="live2d-model-select" title="切换模型"></select>
-          </div>
-        </div>
+        <!-- 右上角：退出。舞台不提供语音、模型下拉这类控件，
+             模型在「设置 → 插件 → Galgame 齿轮 → 情景演绎」里选。 -->
+        <button id="live2d-exit-btn" class="live2d-exit-btn" type="button" title="退出情景演绎" aria-label="退出情景演绎">✕</button>
         <div id="live2d-canvas-wrap" class="live2d-canvas-wrap">
           <canvas id="live2d-canvas"></canvas>
           <!-- 立绘模式：同一个舞台里只放立绘，气泡位置、打字机、输入行全部复用 -->
@@ -233,9 +231,7 @@ function initLive2DCore(host) {
           </div>
         </div>
         <div class="live2d-bottombar">
-          <button id="live2d-talk-btn" class="live2d-mic-btn" title="语音输入：点击开始说话，说完再点一次发送">🎤 语音</button>
           <button id="live2d-adjust-toggle" class="live2d-adjust-btn" title="显示/隐藏模型调整框">📐</button>
-          <button id="live2d-end-btn" class="live2d-end-btn" title="退出情景演绎">✕ 退出</button>
         </div>
       </div>
     `;
@@ -247,10 +243,17 @@ function initLive2DCore(host) {
       #live2d-call-host { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 950; display: none; }
       #live2d-call-host.open { display: block; }
       .live2d-stage { width: 100%; height: 100%; background: #0b0e14; position: relative; overflow: hidden; }
-      .live2d-topbar { position: absolute; top: 0; left: 0; right: 0; padding: 12px 16px; display: flex; align-items: center; gap: 10px; z-index: 5; background: linear-gradient(rgba(0,0,0,.45), transparent); }
-      .live2d-model-select { display: flex; align-items: center; gap: 6px; margin-left: auto; }
-      .live2d-model-select select { background: rgba(255,255,255,.14); color: #fff; border: none; border-radius: 8px; padding: 5px 8px; font-size: 12px; max-width: 140px; outline: none; }
-      .live2d-model-select select option { color: #222; }
+      /* 右上角退出：舞台唯一的常驻控件（模型选择在设置页里） */
+      .live2d-exit-btn {
+        position: absolute; top: 14px; right: 16px; z-index: 7;
+        width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 15px; line-height: 1;
+        background: rgba(10,14,22,.52); border: 1px solid rgba(255,255,255,.22);
+        backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        transition: background .15s, transform .15s;
+      }
+      .live2d-exit-btn:hover { background: rgba(239,68,68,.75); transform: scale(1.05); }
       .live2d-canvas-wrap { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
       #live2d-canvas { width: 100%; height: 100%; display: block; }
       /* 立绘模式：立绘与 Live2D 共用同一个位置，切换时只换内容 */
@@ -285,16 +288,10 @@ function initLive2DCore(host) {
       /* 鼠标跟随关闭时的提示：让"模型不动"这件事自解释，而不是让人以为模型坏了 */
       .live2d-follow-hint { position: absolute; bottom: 132px; left: 50%; transform: translateX(-50%); color: #fcd34d; font-size: 12px; display: none; background: rgba(0,0,0,.55); padding: 5px 14px; border-radius: 999px; cursor: pointer; z-index: 6; white-space: nowrap; }
       .live2d-follow-hint.on { display: block; }
-      .live2d-bottombar { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 20px calc(20px + env(safe-area-inset-bottom)); display: flex; gap: 14px; justify-content: center; align-items: center; z-index: 5; background: linear-gradient(transparent, rgba(0,0,0,.55)); }
-      .live2d-mic-btn { background: rgba(255,255,255,.14); border: none; color: #fff; width: 54px; height: 54px; border-radius: 50%; cursor: pointer; font-size: 12px; font-weight: 600; transition: all .15s; }
-      .live2d-mic-btn:hover { background: rgba(255,255,255,.28); }
-      .live2d-mic-btn.listening { background: rgba(239,68,68,.78); box-shadow: 0 0 0 3px rgba(239,68,68,.45); animation: live2d-mic-pulse 1.2s ease-in-out infinite; }
-      @keyframes live2d-mic-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+      .live2d-bottombar { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 20px calc(20px + env(safe-area-inset-bottom)); display: flex; gap: 14px; justify-content: center; align-items: center; z-index: 5; }
       .live2d-adjust-btn { background: rgba(255,255,255,.14); border: none; color: #fff; width: 54px; height: 54px; border-radius: 50%; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
       .live2d-adjust-btn:hover { background: rgba(255,255,255,.28); }
       .live2d-adjust-btn.active { background: rgba(129,199,255,.35); color: #fff; box-shadow: 0 0 0 2px rgba(129,199,255,.7); }
-      .live2d-end-btn { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.18); color: #fff; padding: 9px 18px; border-radius: 999px; font-size: 13px; cursor: pointer; }
-      .live2d-end-btn:hover { background: rgba(255,255,255,.26); }
       .live2d-bg-panel { position: absolute; top: 52px; left: 50%; transform: translateX(-50%); z-index: 6; background: rgba(20,22,35,.92); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 14px 16px; width: 320px; backdrop-filter: blur(10px); }
       .live2d-bg-panel.hidden { display: none; }
       .live2d-bg-head { color: #fff; font-size: 13px; font-weight: 600; margin-bottom: 10px; }
@@ -322,12 +319,7 @@ function initLive2DCore(host) {
     `;
     document.head.appendChild(style);
 
-    host.querySelector('#live2d-end-btn').addEventListener('click', close);
-    host.querySelector('#live2d-talk-btn').addEventListener('click', toggleTalk);
-    host.querySelector('#live2d-model-select').addEventListener('change', (e) => {
-      selectedModel = e.target.value;
-      if (isOpen) void loadModel();
-    });
+    host.querySelector('#live2d-exit-btn').addEventListener('click', close);
     host.querySelector('#live2d-adjust-toggle').addEventListener('click', toggleAdjustBox);
     // 气泡输入行：和剧情界面一样"回车发送"。发送走 host.sendUserMessage，
     // 与主界面共用同一份对话数据 —— 两边说的互相可见。
@@ -385,20 +377,10 @@ function initLive2DCore(host) {
       console.warn('[Live2D] 获取模型列表失败:', err.message || err);
       modelsList = [];
     }
-    const sel = document.getElementById('live2d-model-select');
-    if (!sel) return;
-    sel.innerHTML = '';
-    if (!modelsList.length) {
-      sel.innerHTML = '<option value="">（未上传模型）</option>';
-    } else {
-      for (const m of modelsList) {
-        const opt = document.createElement('option');
-        opt.value = m.name;          // 目录名即显示名（设置里可重命名）
-        opt.textContent = m.name;
-        sel.appendChild(opt);
-      }
-      if (!selectedModel || !modelsList.some(m => m.name === selectedModel)) selectedModel = modelsList[0].name;
-      sel.value = selectedModel;
+    // 先确定"用哪个模型"：舞台里已经没有模型下拉，这一步不能跟着下拉一起被跳过
+    //   （否则删掉下拉后 selectedModel 一直是空，loadModel 直接 return，舞台没有模型）。
+    if (modelsList.length && (!selectedModel || !modelsList.some(m => m.name === selectedModel))) {
+      selectedModel = modelsList[0].name;
     }
   }
 
@@ -1822,15 +1804,6 @@ ${lines.join('\n')}
     }
   }
 
-  // ===== 真实语音输入（复用主应用的录音 + ASR + 发送流程） =====
-  function toggleTalk() {
-    if (typeof window.handleMicClick === 'function') {
-      window.handleMicClick();
-    } else {
-      console.warn('[Live2D] 主应用语音输入不可用');
-    }
-  }
-
   // ===== 舞台内的对话框（打字机 + 发送） =====
   //
   // 为什么要有它：合并后"情景演绎"不再只是一块全屏画面 —— 用户在这里
@@ -1995,27 +1968,6 @@ ${lines.join('\n')}
 
   function getSceneMode() { return sceneMode; }
 
-  function onVoiceStateEvent(e) {
-    const detail = e?.detail || {};
-    const btn = document.getElementById('live2d-talk-btn');
-    if (!btn) return;
-    const st = detail.state || 'idle';
-    if (st === 'listening') {
-      btn.textContent = '🎤 聆听中…';
-      btn.classList.add('listening');
-      btn.title = '正在聆听，说完再点一次发送';
-    } else if (st === 'paused') {
-      btn.textContent = '🎤 已暂停';
-      btn.classList.remove('listening');
-      btn.title = '再次点击结束并发送';
-    } else {
-      btn.textContent = '🎤 说话';
-      btn.classList.remove('listening');
-      btn.title = '语音输入：点击开始说话，说完再点一次发送';
-    }
-  }
-  window.addEventListener('voice-state', onVoiceStateEvent);
-
   // ===== 对外 API =====
   window.Live2DCall = {
     open, close,
@@ -2043,11 +1995,7 @@ ${lines.join('\n')}
       const n = String(name || '');
       if (!n || n === selectedModel) return false;
       selectedModel = n;
-      // 同步通话界面里的下拉（它和这里是同一份状态的两个入口）
-      try {
-        const sel = document.getElementById('live2d-model-select');
-        if (sel) sel.value = n;
-      } catch (e) { /* 界面还没建起来，忽略 */ }
+      // 舞台里没有模型下拉，选择只来自设置页；开着的话直接重载
       if (isOpen) void loadModel();
       return true;
     },
@@ -2056,7 +2004,6 @@ ${lines.join('\n')}
     // 供设置页在"重命名模型"之后刷新通话界面的下拉，并迁移按模型名存设置
     applyRenamedModel,
     toggleMute,
-    toggleTalk,
     setExpression,
     playMotion,
     driveEmotion,
