@@ -147,6 +147,7 @@
                 '<div id="ggInfo">伊蕾娜 · 魔女之旅</div>' +
                 '<div id="ggMenu">' +
                   '<button class="gg-btn" id="ggSettings" type="button">⚙ 设置</button>' +
+                  '<button class="gg-btn" id="ggScenario" type="button">🎭 情景演绎</button>' +
                   '<button class="gg-btn" id="ggSpeech" type="button">🎤 语音</button>' +
                   '<button class="gg-btn" id="ggExit" type="button">✕ 退出 Galgame</button>' +
                 '</div>' +
@@ -190,6 +191,12 @@
                 // 让位给设置面板：它层级更高，但我们先隐藏自己避免视觉重叠
                 layer.classList.remove('on');
                 try { if (typeof openSettings === 'function') openSettings(); } catch (e) { /* 忽略 */ }
+            });
+            // 情景演绎：打开全屏 Live2D 通话（实现见 index-live2d.js）。
+            // 它盖在剧情界面之上（z-index 950 > 剧情层），退出通话回到剧情界面。
+            layer.querySelector('#ggScenario').addEventListener('click', (ev) => {
+                ev.preventDefault(); ev.stopPropagation();
+                openScenario();
             });
             layer.querySelector('#ggSpeech').addEventListener('click', (ev) => { ev.stopPropagation(); startVoice(); });
             layer.querySelector('#ggSend').addEventListener('click', (ev) => { ev.stopPropagation(); send(); });
@@ -477,27 +484,40 @@
         }
 
         /**
-         * 同步「场景切换」提示词到宿主。
+         * 同步提示词到宿主。
          *
          * 这是 mod 影响模型行为的唯一入口：通过 host.setPromptHint 注册一段文本，
          * 宿主在每次构造对话消息时取出来拼进 system。mod 不需要知道宿主怎么拼提示词，
          * 宿主也不需要知道有哪些 mod。
+         *
+         * ★ 合并后的关键点：情景演绎（Live2D）的表现指南也在这段里。
+         *   `setPromptHint` 在同一插件内是**覆盖**而不是拼接，所以两段必须合成一次调用；
+         *   而且两段各有各的生效条件（场景说明要开着剧情界面，表现指南只要插件启用），
+         *   只要**任一**生效就要注入。
          */
         function syncSceneHint() {
             try {
+                const parts = [];
                 if (enabled && aiBgEnabled()) {
                     const names = BGS.map((b) => b[1]).join('、');
-                    host.setPromptHint(
+                    parts.push(
                         '# 场景切换（内部指令，不要向用户解释）\n'
                         + '当前为 Galgame 界面，背景场景可由你决定。当剧情明显进入新的地点或时段时，'
                         + '请在回复的**最后单独一行**输出场景标记：<scene>场景名</scene>；'
                         + '如果场景没有变化，不要输出该标记，也不要在正文里提到它。\n'
                         + '可选场景名（必须从其中选择）：' + names + '。'
                     );
-                } else {
-                    host.clearPromptHint();
                 }
-            } catch (e) { host.warn('同步场景提示词失败', e); }
+                // 情景演绎的"表现指南"（表情/动作/当前模型清单/水印说明）。
+                // 住在 index-live2d.js 里，随模型加载而变化，每次同步都现取一次。
+                const l2d = window.Live2DCall;
+                if (l2d && typeof l2d.promptHintText === 'function') {
+                    const t = String(l2d.promptHintText() || '').trim();
+                    if (t) parts.push(t);
+                }
+                if (parts.length) host.setPromptHint(parts.join('\n\n'));
+                else host.clearPromptHint();
+            } catch (e) { host.warn('同步提示词失败', e); }
         }
 
         // ==================== 开关 ====================
@@ -534,6 +554,34 @@
             if (typeTimer) { clearInterval(typeTimer); typeTimer = null; typing = false; }
             if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
         }
+        /**
+         * 打开「情景演绎」（全屏 Live2D 通话）。
+         *
+         * 它叠在剧情界面之上（通话层 z-index 950 > 剧情层），退出通话即回到剧情。
+         * 实现由 index-live2d.js 提供（window.Live2DCall）；没装配成功就说清楚，
+         * 而不是让按钮点下去毫无反应。
+         */
+        function openScenario() {
+            const call = window.Live2DCall;
+            if (call && typeof call.open === 'function') {
+                void call.open();
+                return true;
+            }
+            showTip('情景演绎未就绪（Live2D 组件没有装配成功，刷新页面后再试）');
+            host.error('情景演绎未就绪：window.Live2DCall 不存在');
+            return false;
+        }
+
+        // 主界面顶栏的「情景演绎」按钮：不依赖剧情界面是否打开，随时可进调用
+        host.slot('header.actions', {
+            id: 'scenario',
+            label: '情景演绎',
+            title: '情景演绎（Live2D 全屏互动）',
+            svg: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">'
+                + '<path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>',
+            onClick: () => openScenario(),
+        });
+
         function setEnabled(on, silent) {
             enabled = !!on;
             set('enabled', on ? '1' : '0');
@@ -556,12 +604,32 @@
         enabled = true;
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => open());
         else open();
-        host.log('已就绪（场景 ' + BGS.length + ' 个，立绘走 elaina-avatar）');
+
+        // ---- 情景演绎（原独立的「Live2D 视频通话」插件）----
+        //
+        // 装配顺序：先把 Live2D 内核跑起来（它初始化模型选择、并交出提示词材料），
+        // 再同步一次提示词 —— 否则第一次注入时还没有表现指南。
+        let scenario = null;
+        try {
+            if (typeof window.__galgameMountScenarioStage === 'function') {
+                scenario = window.__galgameMountScenarioStage(host);
+            } else {
+                host.error('情景演绎装配脚本未就绪（register.js 没加载成功），剧情界面不受影响');
+            }
+        } catch (e) {
+            // 情景演绎坏了不能拖垮剧情界面 —— 这正是"失败隔离"要在包内也成立的原因
+            host.error('情景演绎装配失败（剧情界面不受影响）', e);
+        }
+        syncSceneHint();
+        host.log('已就绪（场景 ' + BGS.length + ' 个，立绘走 elaina-avatar，情景演绎=' + (scenario ? '可用' : '不可用') + '）');
 
         return {
             setEnabled,
             isOpen: () => Boolean(layer && layer.classList.contains('on')),
             toggle: () => setEnabled(!enabled),
+            /** 打开情景演绎（同主界面按钮；供其它插件或 Agent 调用） */
+            openScenario,
+            isScenarioOpen: () => Boolean(window.Live2DCall && typeof window.Live2DCall.isOpen === 'function' && window.Live2DCall.isOpen()),
             bgs: () => BGS.slice(),
             scenes: () => BGS.slice(),
             setScene: (file) => {

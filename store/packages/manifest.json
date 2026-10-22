@@ -1,6 +1,6 @@
 {
   "comment": "由 scripts/pack-assets.mjs 生成。上传到 GitHub Releases 后，把下载链接填到下面。",
-  "generatedAt": "2026-10-23T00:50:00.000Z",
+  "generatedAt": "2026-10-23T00:50:00Z",
   "assets": [
     {
       "kind": "mod",
@@ -23,7 +23,7 @@
       "id": "galgame",
       "version": "1.1.0",
       "file": "galgame-1.1.0.zip",
-      "sizeBytes": 16825,
+      "sizeBytes": 66318,
       "downloadUrl": ""
     },
     {
