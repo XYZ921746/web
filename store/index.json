@@ -7,7 +7,7 @@
     {
       "id": "galgame",
       "name": "Galgame 界面",
-      "version": "1.2.4",
+      "version": "1.2.5",
       "kind": "ui",
       "prerequisite": false,
       "author": "ElainaChat Mod",
@@ -21,8 +21,8 @@
         "scene-backgrounds",
         "live2d-models"
       ],
-      "downloadUrl": "https://xyz921746.github.io/web/store/packages/galgame-1.2.4.zip",
-      "sizeBytes": 69052
+      "downloadUrl": "https://xyz921746.github.io/web/store/packages/galgame-1.2.5.zip",
+      "sizeBytes": 69167
     },
     {
       "id": "pet",
