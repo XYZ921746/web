@@ -271,8 +271,9 @@ function initLive2DCore(host) {
       .gg-stext::-webkit-scrollbar { display: none; }
       .gg-stext.typing::after { content: "▍"; margin-left: 2px; animation: gg-l2d-caret .9s steps(1) infinite; }
       @keyframes gg-l2d-caret { 50% { opacity: 0; } }
-      .gg-srow { position: absolute; left: 0; right: 0; bottom: -58px; display: flex; gap: 10px; opacity: 0; transition: opacity .2s, bottom .2s; }
-      .live2d-gg-dialog:hover .gg-srow, .gg-srow.show { bottom: 0; opacity: 1; }
+      /* 输入行：跟随气泡在文档流里（不用 hover 展开 —— 触屏没有 hover，
+         原来那套"鼠标移上去才出现"在手机上等于没有输入框） */
+      .gg-srow { display: flex; gap: 10px; margin-top: 10px; }
       #live2d-gg-input { flex: 1 1 auto; height: 44px; border-radius: 14px; padding: 0 16px; border: 1px solid rgba(255,255,255,.22); background: rgba(10,14,22,.78); color: #fff; outline: none; font-size: 14px; }
       #live2d-gg-input::placeholder { color: rgba(255,255,255,.4); }
       #live2d-gg-send { flex: 0 0 auto; width: 44px; height: 44px; border: 0; border-radius: 50%; cursor: pointer; background: rgba(0,122,255,.85); color: #fff; font-size: 16px; }
@@ -756,7 +757,9 @@ function initLive2DCore(host) {
     if (bubblePoll) clearInterval(bubblePoll);
     bubblePoll = setInterval(() => { if (isOpen) syncBubble(false); }, 700);
 
-    // 立绘模式不需要引擎：直接跳过 PIXI 与模型加载（没装模型的用户也能用）
+    // 立绘模式不需要引擎：直接跳过 PIXI 与模型加载（没装模型的用户也能用）。
+    // 但**背景要先上**：它是 stage 的 CSS 背景，和用不用引擎无关。
+    applyBackground();
     if (sceneMode === 'portrait') return;
 
     if (!app) {
@@ -1970,22 +1973,27 @@ ${lines.join('\n')}
   /** 把当前立绘 / 模型那套界面切到指定模式（不动存储：设置页改完再调 setSceneMode） */
   function applySceneMode() {
     const hostEl = document.getElementById('live2d-call-host');
-    const canvasWrap = document.getElementById('live2d-canvas-wrap');
     const portrait = document.getElementById('ggL2dPortrait');
     const adjust = document.getElementById('live2d-adjust-toggle');
     const tag = document.getElementById('live2d-name-tag');
     const isPortrait = sceneMode === 'portrait';
     if (hostEl) hostEl.classList.toggle('portrait', isPortrait);
-    if (canvasWrap) canvasWrap.style.display = isPortrait ? 'none' : '';
+    // ⚠️ 不要隐藏 #live2d-canvas-wrap —— 立绘层就住在它里面，
+    //   隐藏容器会把立绘一起藏掉（选择立绘后舞台一片空的直接原因）。
+    //   只藏 canvas 本身即可，规则在 CSS：#live2d-call-host.portrait #live2d-canvas。
     if (portrait) portrait.classList.toggle('on', isPortrait);
     // 「调整」只对 Live2D 有意义（立绘走自适应构图）
     if (adjust) adjust.style.display = isPortrait ? 'none' : '';
     if (tag) tag.textContent = isPortrait ? '图片立绘' : (selectedModel || '情景演绎中');
     if (isPortrait) {
+      // 立绘模式下没有 canvas 盖着，背景由 stage 的 CSS 背景承担
+      applyBackground();
       applyPortraitEmotion(currentEmotionName());
+      try { app?.ticker?.stop?.(); } catch { /* ignore */ }
     } else if (isOpen && app) {
       // 切回模型：如果之前一次都没加载成功（只是被隐藏），这里补一次
       if (!model) void loadModel();
+      applyBackground();
       startRenderLoop();
     }
   }
