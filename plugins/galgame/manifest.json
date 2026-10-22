@@ -1,11 +1,21 @@
 {
-    "id": "galgame",
-    "name": "Galgame 界面",
-    "version": "1.1.0",
-    "description": "全屏沉浸式剧情界面（场景背景 + 立绘 + 打字机对话框），并内置「情景演绎」全屏 Live2D 互动；与主界面共用同一份对话数据。",
-    "entry": "index.js",
-    "styles": ["style.css"],
-    "scripts": ["register.js", "index-live2d.js", "settings-panel.js"],
-    "defaultEnabled": true,
-    "after": ["elaina-avatar", "scene-backgrounds", "live2d-models"]
+  "id": "galgame",
+  "name": "Galgame 界面",
+  "version": "1.2.0",
+  "description": "全屏沉浸式剧情舞台：对话框 + 角色呈现（图片立绘 / Live2D 模型可切换），场景背景、打字机、AI 表情驱动；与主界面共用同一份对话数据。",
+  "entry": "index.js",
+  "styles": [
+    "style.css"
+  ],
+  "scripts": [
+    "register.js",
+    "index-live2d.js",
+    "settings-panel.js"
+  ],
+  "defaultEnabled": true,
+  "after": [
+    "elaina-avatar",
+    "scene-backgrounds",
+    "live2d-models"
+  ]
 }

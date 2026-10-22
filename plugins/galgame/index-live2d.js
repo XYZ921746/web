@@ -204,6 +204,21 @@ function initLive2DCore(host) {
         </div>
         <div id="live2d-canvas-wrap" class="live2d-canvas-wrap">
           <canvas id="live2d-canvas"></canvas>
+          <!-- 立绘模式：同一个舞台里只放立绘，气泡位置、打字机、输入行全部复用 -->
+          <div id="ggL2dPortrait" class="live2d-portrait">
+            <img id="ggL2dPortraitImg" alt="伊蕾娜">
+            <div id="ggL2dPortraitEmpty" class="live2d-portrait-empty">切换到「图片立绘」并启用「伊蕾娜立绘与情绪」后，这里会显示立绘</div>
+          </div>
+          <div id="live2d-bubble-wrap" class="live2d-bubble-wrap">
+            <div id="live2d-gg-dialog" class="live2d-gg-dialog">
+              <div id="live2d-gg-name">伊蕾娜</div>
+              <div id="live2d-gg-text" class="gg-stext"></div>
+              <div id="live2d-gg-input-row" class="gg-srow">
+                <input id="live2d-gg-input" type="text" placeholder="和伊蕾娜说点什么…（回车发送）" autocomplete="off">
+                <button id="live2d-gg-send" type="button" title="发送">➤</button>
+              </div>
+            </div>
+          </div>
           <div class="live2d-name-tag" id="live2d-name-tag">情景演绎中</div>
           <div class="live2d-follow-hint" id="live2d-follow-hint" title="点击开启鼠标跟随">鼠标跟随已关闭 · 点此开启</div>
           <div class="live2d-mute-hint" id="live2d-mute-hint" title="AI 语音已静音（可由 AI 用 [操作:取消静音] 恢复）">AI 声音已静音</div>
@@ -240,6 +255,33 @@ function initLive2DCore(host) {
       .live2d-model-select select option { color: #222; }
       .live2d-canvas-wrap { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
       #live2d-canvas { width: 100%; height: 100%; display: block; }
+      /* 立绘模式：立绘与 Live2D 共用同一个位置，切换时只换内容 */
+      .live2d-portrait { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: none; align-items: flex-end; justify-content: center; pointer-events: none; }
+      .live2d-portrait.on { display: flex; }
+      #live2d-call-host.portrait #live2d-canvas { display: none; }
+      #ggL2dPortraitImg { max-height: 88%; max-width: 78%; object-fit: contain; object-position: bottom center; filter: drop-shadow(0 18px 40px rgba(0,0,0,.5)); transition: opacity .25s ease; }
+      #ggL2dPortraitImg.emo-swap { animation: gg-l2d-pop .32s cubic-bezier(.3,1.4,.5,1) both; }
+      @keyframes gg-l2d-pop { from { opacity: .4; transform: translateY(8px) scale(.985); } to { opacity: 1; transform: none; } }
+      .live2d-portrait-empty { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); max-width: 340px; text-align: center; color: rgba(255,255,255,.55); font-size: 12px; line-height: 1.8; padding: 14px 18px; border: 1px dashed rgba(255,255,255,.2); border-radius: 14px; }
+      /* 气泡：复用剧情界面的观感（半透明深色 + 打字机 + 悬浮输入行） */
+      .live2d-bubble-wrap { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 4vw 92px; display: flex; justify-content: center; z-index: 4; pointer-events: none; }
+      .live2d-gg-dialog { position: relative; width: min(1080px, 94vw); min-height: 150px; padding: 18px 26px 20px; border-radius: 22px; background: rgba(12,16,26,.62); border: 1px solid rgba(255,255,255,.16); box-shadow: 0 18px 50px rgba(0,0,0,.42); backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); color: #fff; pointer-events: auto; }
+      #live2d-gg-name { display: inline-block; margin-bottom: 6px; font-size: 15px; font-weight: 800; color: #bfe3ff; }
+      .gg-stext { min-height: 3.7em; max-height: 32vh; overflow-y: auto; font-size: 16.5px; line-height: 1.85; letter-spacing: .01em; color: #fff; white-space: pre-wrap; word-break: break-word; scrollbar-width: none; }
+      .gg-stext::-webkit-scrollbar { display: none; }
+      .gg-stext.typing::after { content: "▍"; margin-left: 2px; animation: gg-l2d-caret .9s steps(1) infinite; }
+      @keyframes gg-l2d-caret { 50% { opacity: 0; } }
+      .gg-srow { position: absolute; left: 0; right: 0; bottom: -58px; display: flex; gap: 10px; opacity: 0; transition: opacity .2s, bottom .2s; }
+      .live2d-gg-dialog:hover .gg-srow, .gg-srow.show { bottom: 0; opacity: 1; }
+      #live2d-gg-input { flex: 1 1 auto; height: 44px; border-radius: 14px; padding: 0 16px; border: 1px solid rgba(255,255,255,.22); background: rgba(10,14,22,.78); color: #fff; outline: none; font-size: 14px; }
+      #live2d-gg-input::placeholder { color: rgba(255,255,255,.4); }
+      #live2d-gg-send { flex: 0 0 auto; width: 44px; height: 44px; border: 0; border-radius: 50%; cursor: pointer; background: rgba(0,122,255,.85); color: #fff; font-size: 16px; }
+      @media (max-width: 560px) {
+        .live2d-bubble-wrap { padding: 0 3vw 84px; }
+        .live2d-gg-dialog { min-height: 132px; padding: 14px 16px 16px; border-radius: 18px; }
+        .gg-stext { font-size: 15px; max-height: 30vh; }
+        #ggL2dPortraitImg { max-width: 100%; max-height: 100%; }
+      }
       .live2d-name-tag { position: absolute; bottom: 84px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,.85); font-size: 13px; background: rgba(0,0,0,.4); padding: 4px 14px; border-radius: 999px; white-space: nowrap; }
       .live2d-speaking-indicator { position: absolute; top: 56px; left: 50%; transform: translateX(-50%); color: #7dd3fc; font-size: 13px; display: none; background: rgba(0,0,0,.5); padding: 5px 14px; border-radius: 999px; }
       .live2d-speaking-indicator.on { display: block; }
@@ -293,6 +335,17 @@ function initLive2DCore(host) {
       if (isOpen) void loadModel();
     });
     host.querySelector('#live2d-adjust-toggle').addEventListener('click', toggleAdjustBox);
+    // 气泡输入行：和剧情界面一样"回车发送"。发送走 host.sendUserMessage，
+    // 与主界面共用同一份对话数据 —— 两边说的互相可见。
+    const sendBtn = host.querySelector('#live2d-gg-send');
+    const inputEl = host.querySelector('#live2d-gg-input');
+    if (sendBtn) sendBtn.addEventListener('click', (ev) => { ev.stopPropagation(); sendBubbleText(); });
+    if (inputEl) {
+      inputEl.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); ev.stopPropagation(); sendBubbleText(); }
+      });
+      inputEl.addEventListener('click', (ev) => ev.stopPropagation());
+    }
     // 「鼠标跟随已关闭」提示：点击直接开启，避免用户误以为是模型不支持
     const followHint = host.querySelector('#live2d-follow-hint');
     if (followHint) followHint.addEventListener('click', () => setMouseFollow(true));
@@ -696,14 +749,26 @@ function initLive2DCore(host) {
     ensureMouseTracking();   // 每次打开都确保监听器在位（close 会移除）
     syncFollowHint();
     syncMuteHint();
+    // 立绘 / 模型双模式：先把界面摆到用户选的那一套，再决定要不要加载引擎
+    applySceneMode();
+    // 气泡显示最新一句，并轮询后续消息（与剧情界面同一份数据）
+    syncBubble(true);
+    if (bubblePoll) clearInterval(bubblePoll);
+    bubblePoll = setInterval(() => { if (isOpen) syncBubble(false); }, 700);
+
+    // 立绘模式不需要引擎：直接跳过 PIXI 与模型加载（没装模型的用户也能用）
+    if (sceneMode === 'portrait') return;
 
     if (!app) {
       const canvas = document.getElementById('live2d-canvas');
       const wrap = document.getElementById('live2d-canvas-wrap');
+      // 尺寸取 stage（立绘模式下画布容器是隐藏的，拿它当 resizeTo 会量到 0×0，
+      // PIXI 会建出一个 1×1 的渲染器，切回模型时一片空白）
+      const sizeTo = document.getElementById('live2d-stage') || wrap;
       app = new PIXI.Application({
         view: canvas,
         autoStart: true,
-        resizeTo: wrap,
+        resizeTo: sizeTo,
         background: 0x0b0e14,
         antialias: true,
       });
@@ -906,6 +971,8 @@ function initLive2DCore(host) {
   function close() {
     isOpen = false;
     speaking = false;
+    if (bubblePoll) { clearInterval(bubblePoll); bubblePoll = null; }
+    if (bubbleTyping) { clearInterval(bubbleTyping.timer); bubbleTyping = null; }
     mouthEnergy = 1;
     voiceEnergy = null; // 必须复位：否则下次通话会沿用上一轮残留的真实音量，嘴型一开始就是张着的
     currentExpParams = [];
@@ -1066,8 +1133,10 @@ function initLive2DCore(host) {
     rafRunning = true;
     const tick = () => {
       if (!isOpen || !model) { rafRunning = false; return; }
-      // 保持 canvas 内部分辨率与容器 CSS 尺寸一致，避免模型被拉伸变形
-      const wrap = document.getElementById('live2d-canvas-wrap');
+      // 保持 canvas 内部分辨率与容器 CSS 尺寸一致，避免模型被拉伸变形。
+      // 量 stage 而不是 canvas-wrap：立绘模式下 canvas-wrap 是 display:none，
+      // 量它得到 0×0，renderer 被缩成 1×1 —— 从立绘切回模型时就是一片空白。
+      const wrap = document.getElementById('live2d-stage') || document.getElementById('live2d-canvas-wrap');
       if (wrap && wrap.clientWidth > 0 && wrap.clientHeight > 0 &&
           (wrap.clientWidth !== app.screen.width || wrap.clientHeight !== app.screen.height)) {
         app.renderer.resize(wrap.clientWidth, wrap.clientHeight);
@@ -1480,6 +1549,8 @@ function initLive2DCore(host) {
       return false;
     }
     mouthEnergy = emo.energy;
+    // 立绘模式：情绪直接换立绘图（同一套情绪键，所以两条呈现路线表情是一致的）
+    if (sceneMode === 'portrait') applyPortraitEmotion(emoKey);
     // 关键：参数组按「情绪键」查（happy/sad/surprised/calm…），不能按 exp 文件名键查。
     // 否则 surprised 的 exp 是 dizzy 会错套"晕"的参数组、calm 的 exp 是 smile 会直接查不到。
     void setExpression(emo.exp).then(() => applyEmotionParams(emoKey));
@@ -1779,6 +1850,165 @@ ${lines.join('\n')}
     }
   }
 
+  // ===== 舞台内的对话框（打字机 + 发送） =====
+  //
+  // 为什么要有它：合并后"情景演绎"不再只是一个通话画面 —— 用户在这里
+  // 既能看到立绘 / 模型，也要能直接说话。气泡与剧情界面同一份数据（host.getMessages），
+  // 所以两边谁说的话对方都看得见。
+  let bubbleTyping = null;   // { timer, full }
+  let bubbleLastKey = '';
+  let bubblePoll = null;
+  /** 打字机开关（设置页可关；关掉就是整段直接出现） */
+  let typewriterOn = (function () {
+    try { return localStorage.getItem(L2D_PREFIX + 'typewriter') !== '0'; } catch { return true; }
+  })();
+
+  function bubbleEls() {
+    const wrap = document.getElementById('live2d-bubble-wrap');
+    return {
+      text: wrap ? wrap.querySelector('#live2d-gg-text') : null,
+      name: wrap ? wrap.querySelector('#live2d-gg-name') : null,
+    };
+  }
+
+  /** 打字机：长文本只做"逐字出现"的观感，速度固定，不按字数拖时间 */
+  function typeBubble(text) {
+    const { text: el } = bubbleEls();
+    if (!el) return;
+    if (bubbleTyping) { clearInterval(bubbleTyping.timer); bubbleTyping = null; }
+    const full = String(text || '');
+    if (!typewriterOn) { el.textContent = full; el.classList.remove('typing'); return; }
+    // 长了就分块出字（每 16ms 一批），否则一段几百字要等十几秒
+    const step = Math.max(1, Math.ceil(full.length / 140));
+    let shown = 0;
+    el.textContent = '';
+    el.classList.add('typing');
+    bubbleTyping = {
+      full,
+      get shown() { return shown; },
+      timer: setInterval(() => {
+        shown = Math.min(full.length, shown + step);
+        el.textContent = full.slice(0, shown);
+        if (shown >= full.length) {
+          clearInterval(bubbleTyping.timer);
+          bubbleTyping = null;
+          el.classList.remove('typing');
+        }
+      }, 16),
+    };
+  }
+
+  /** 气泡显示最新一条可见消息（与剧情界面同一筛选规则） */
+  function syncBubble(force) {
+    const msgs = (host.getMessages() || []).filter((m) => m && m.text && m.role !== 'system' && m.hidden !== true);
+    const last = msgs[msgs.length - 1];
+    const key = last ? (last.id + ':' + String(last.text).length) : '';
+    if (!force && key === bubbleLastKey) return;
+    bubbleLastKey = key;
+    const { name } = bubbleEls();
+    if (!last) return;
+    if (name) name.textContent = last.role === 'user' ? '你' : '伊蕾娜';
+    typeBubble(last.text);
+  }
+
+  function sendBubbleText() {
+    const input = document.getElementById('live2d-gg-input');
+    if (!input) return false;
+    const t = String(input.value || '').trim();
+    if (!t) return false;
+    input.value = '';
+    try {
+      host.sendUserMessage(t);
+      return true;
+    } catch (e) {
+      host.error('发送失败', e);
+      input.value = t;
+      return false;
+    }
+  }
+
+  // ===== 立绘 / Live2D 双模式 =====
+  //
+  // 用户在设置里选「用哪一套」：
+  //   · live2d    —— 原通话画面（渲染引擎 + 模型）
+  //   · portrait  —— 图片立绘（立绘包 elaina-avatar），没有模型也能看到角色
+  //   两者共用同一个舞台、同一个气泡、同一个输入行，所以切换只是换"站在那儿的东西"。
+  const SCENE_MODE_KEY = L2D_PREFIX + 'sceneMode';
+  let sceneMode = 'live2d';
+  try {
+    const m = localStorage.getItem(SCENE_MODE_KEY);
+    if (m === 'portrait' || m === 'live2d') sceneMode = m;
+  } catch { /* ignore */ }
+
+  function avatarApi() {
+    return (window.ElainaAvatar && typeof window.ElainaAvatar.src === 'function') ? window.ElainaAvatar : null;
+  }
+
+  /** 立绘模式下按情绪换图；立绘包不在就显示说明，而不是留一块空白 */
+  function applyPortraitEmotion(emoKey) {
+    const img = document.getElementById('ggL2dPortraitImg');
+    const empty = document.getElementById('ggL2dPortraitEmpty');
+    if (!img) return;
+    const api = avatarApi();
+    const list = api ? api.EMOTIONS : [];
+    const key = list.indexOf(emoKey) >= 0 ? emoKey : 'calm';
+    const src = api ? api.src(key) : '';
+    if (!src) {
+      img.style.display = 'none';
+      if (empty) empty.style.display = '';
+      return;
+    }
+    if (empty) empty.style.display = 'none';
+    img.style.display = '';
+    if (img.getAttribute('src') === src) return;
+    img.setAttribute('src', src);
+    img.classList.remove('emo-swap');
+    void img.offsetWidth;
+    img.classList.add('emo-swap');
+  }
+
+  /** 把当前立绘 / 模型那套界面切到指定模式（不动存储：设置页改完再调 setSceneMode） */
+  function applySceneMode() {
+    const hostEl = document.getElementById('live2d-call-host');
+    const canvasWrap = document.getElementById('live2d-canvas-wrap');
+    const portrait = document.getElementById('ggL2dPortrait');
+    const adjust = document.getElementById('live2d-adjust-toggle');
+    const tag = document.getElementById('live2d-name-tag');
+    const isPortrait = sceneMode === 'portrait';
+    if (hostEl) hostEl.classList.toggle('portrait', isPortrait);
+    if (canvasWrap) canvasWrap.style.display = isPortrait ? 'none' : '';
+    if (portrait) portrait.classList.toggle('on', isPortrait);
+    // 「调整」只对 Live2D 有意义（立绘走自适应构图）
+    if (adjust) adjust.style.display = isPortrait ? 'none' : '';
+    if (tag) tag.textContent = isPortrait ? '图片立绘' : (selectedModel || '情景演绎中');
+    if (isPortrait) {
+      applyPortraitEmotion(currentEmotionName());
+    } else if (isOpen && app) {
+      // 切回模型：如果之前一次都没加载成功（只是被隐藏），这里补一次
+      if (!model) void loadModel();
+      startRenderLoop();
+    }
+  }
+
+  /** 最近一条 AI 回复里的情绪标签（立绘模式下用来选图） */
+  function currentEmotionName() {
+    return lastTagValue(String((host.getMessages() || []).slice(-1)[0]?.text || ''), '情绪') || 'calm';
+  }
+
+  /**
+   * 切换模式（设置页调用；打开中会立刻生效）。
+   * @param {'live2d'|'portrait'} mode
+   */
+  function setSceneMode(mode) {
+    const next = mode === 'portrait' ? 'portrait' : 'live2d';
+    sceneMode = next;
+    try { localStorage.setItem(SCENE_MODE_KEY, next); } catch { /* ignore */ }
+    applySceneMode();
+    return next;
+  }
+
+  function getSceneMode() { return sceneMode; }
+
   function onVoiceStateEvent(e) {
     const detail = e?.detail || {};
     const btn = document.getElementById('live2d-talk-btn');
@@ -1909,6 +2139,48 @@ ${lines.join('\n')}
     },
 
     isOpen() { return isOpen; },
+    // ---- 立绘 / Live2D 双模式（设置页用）----
+    /** 当前模式：'live2d' | 'portrait' */
+    getSceneMode,
+    /** 切换模式（打开中立刻生效；写 galgame.live2d.sceneMode） */
+    setSceneMode,
+    /** 发一句话（气泡输入行也行；供设置页"测试"或有其它入口用） */
+    sendMessage(text) {
+      const t = String(text == null ? '' : text).trim();
+      if (!t) return false;
+      try { host.sendUserMessage(t); return true; } catch (e) { return false; }
+    },
+    // ---- 设置页要用的读写接口（都带存储，立即生效）----
+    /** 可用模型名清单（没打开舞台时也能列出：走模型接口的本地清单） */
+    getModelList() {
+      // 模型清单住在「Live2D 引擎与模型」里（api.list() 是异步的，走
+      // /api/live2d/models）。这里顺手补一次，拿不到就用已知的列表 ——
+      // 打开舞台后 loadModel 会把它刷新成权威值。
+      if (models && models.ok && models.api && typeof models.api.list === 'function') {
+        Promise.resolve(models.api.list()).then((arr) => {
+          if (Array.isArray(arr) && arr.length) {
+            modelsList = arr.map((m) => (typeof m === 'string' ? { name: m } : m));
+          }
+        }).catch(() => { /* 离线/服务没起：保持现状 */ });
+      }
+      return modelsList.map((m) => (typeof m === 'string' ? m : (m && m.name) || '')).filter(Boolean);
+    },
+    getMouseFollow() { return !!mouseFollowEnabled; },
+    setMouseFollow(on) { setMouseFollow(on); },
+    getMouseFollowScale() { return mouseFollowScale; },
+    setMouseFollowScale(level) { setMouseFollowScale(level); },
+    /** 把当前模型的大小与位置恢复成"按屏幕高度自适应"的初始值 */
+    resetModelView() {
+      try { localStorage.removeItem(resizeStorageKey()); } catch { /* ignore */ }
+      needsInitScale = true;
+      if (isOpen && model) void loadModel();
+      return true;
+    },
+    /** 对话框打字机开关（关闭则整段直接出现） */
+    setTypewriter(on) {
+      typewriterOn = !!on;
+      try { localStorage.setItem(L2D_PREFIX + 'typewriter', typewriterOn ? '1' : '0'); } catch { /* ignore */ }
+    },
     // 真实语音音量 → 嘴型（VAD 简化）：0~1 音量；传 null/0 恢复正弦波并停嘴
     setVoiceEnergy(level) {
       if (level == null || Number(level) < 0.015) {
