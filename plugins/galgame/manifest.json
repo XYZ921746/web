@@ -1,8 +1,8 @@
 {
   "id": "galgame",
   "name": "Galgame 界面",
-  "version": "1.2.6",
-  "description": "全屏沉浸式剧情舞台：对话框 + 角色呈现（图片立绘 / Live2D 模型可切换），场景背景、打字机、AI 表情驱动；与主界面共用同一份对话数据。",
+  "version": "1.3.0",
+  "description": "全屏沉浸式剧情舞台：对话框 + 角色呈现（图片立绘 / Live2D 模型可切换），场景背景、打字机、AI 表情驱动；随附 AI 技能，可自由调节背景与表情；与主界面共用同一份对话数据。",
   "entry": "index.js",
   "styles": [
     "style.css"
@@ -11,6 +11,9 @@
     "register.js",
     "index-live2d.js",
     "settings-panel.js"
+  ],
+  "skills": [
+    "skills/scenario-stage"
   ],
   "defaultEnabled": true,
   "after": [

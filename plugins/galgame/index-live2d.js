@@ -1494,31 +1494,39 @@ function initLive2DCore(host) {
     if (missing.length) console.warn('[Live2D] 该模型没有这些情绪参数槽，已跳过：', missing.join(', '));
   }
 
-  function driveEmotion(name) {
+  /**
+   * 把一个情绪/表情词解析成内部情绪键（happy/sad/…）。
+   *
+   * 两处共用（`[情绪:]` 与立绘模式下的 `[表情:]`），免得同一套同义词表写两遍。
+   * @returns {{key:string, emo:object}|null}
+   */
+  function resolveEmotionKey(name) {
     const input = String(name || '').trim();
-    if (!input) return false;
-    let emoKey = null;
-    let emo = null;
+    if (!input) return null;
     const lower = input.toLowerCase();
-    if (EMOTION_MAP[lower]) {
-      emoKey = lower;
-      emo = EMOTION_MAP[lower];
-    } else {
-      for (const [k, v] of Object.entries(EMOTION_MAP)) {
-        if (k === input || v.exp === input || v.keys.some(w => w === input)) { emoKey = k; emo = v; break; }
-      }
+    if (EMOTION_MAP[lower]) return { key: lower, emo: EMOTION_MAP[lower] };
+    for (const [k, v] of Object.entries(EMOTION_MAP)) {
+      if (k === input || v.exp === input || v.keys.some(w => w === input)) return { key: k, emo: v };
     }
-    if (!emo) {
-      console.warn('[Live2D] 未知情绪:', input);
+    return null;
+  }
+
+  function driveEmotion(name) {
+    const hit = resolveEmotionKey(name);
+    if (!hit) {
+      console.warn('[Live2D] 未知情绪:', name);
       return false;
     }
-    mouthEnergy = emo.energy;
-    // 立绘模式：情绪直接换立绘图（同一套情绪键，所以两条呈现路线表情是一致的）
-    if (sceneMode === 'portrait') applyPortraitEmotion(emoKey);
+    mouthEnergy = hit.emo.energy;
+    // 立绘模式：情绪直接换立绘图，**不再碰模型**（模型根本没加载）
+    if (sceneMode === 'portrait') {
+      applyPortraitEmotion(hit.key);
+      return true;
+    }
     // 关键：参数组按「情绪键」查（happy/sad/surprised/calm…），不能按 exp 文件名键查。
     // 否则 surprised 的 exp 是 dizzy 会错套"晕"的参数组、calm 的 exp 是 smile 会直接查不到。
-    void setExpression(emo.exp).then(() => applyEmotionParams(emoKey));
-    console.log('[Live2D] 情绪:', input, '→', emoKey, '(exp:', emo.exp + ')', 'energy', emo.energy);
+    void setExpression(hit.emo.exp).then(() => applyEmotionParams(hit.key));
+    console.log('[Live2D] 情绪:', name, '→', hit.key, '(exp:', hit.emo.exp + ')', 'energy', hit.emo.energy);
     return true;
   }
 
@@ -1606,6 +1614,26 @@ function initLive2DCore(host) {
       } catch (e) { /* 资源包出错不该影响换背景 */ }
     }
     return BG_PRESETS[key] || key;
+  }
+
+  /**
+   * 舞台背景现在可用的名字（给提示词与设置页共用）。
+   *
+   * 两类：预设色（[背景:深蓝]）与场景图（[背景:雪夜]，来自 scene-backgrounds）。
+   * 返回的是**名字**而不是 CSS —— AI 需要知道"能说什么"，不需要知道怎么实现。
+   */
+  function listBackgroundNames() {
+    const scenes = [];
+    const sb = window.ElainaSceneBackgrounds;
+    if (sb && typeof sb.list === 'function') {
+      try {
+        for (const s of sb.list()) {
+          const label = s && (s.label || s.file);
+          if (label) scenes.push(label);
+        }
+      } catch (e) { /* 资源包不在就没图可选 */ }
+    }
+    return { presets: Object.keys(BG_PRESETS), scenes };
   }
 
   // ── Live2D 独有的两个操作：水印 / 静音 ──────────────────────────────────
@@ -1724,6 +1752,16 @@ ${lines.join('\n')}
       if (watermarkExp) {
         parts.push('当前 Live2D 模型带有作者水印（模型内置水印开关）。请在开场白或合适的时机用 [操作:隐藏水印] 隐藏水印（标签不会显示给用户）；若用户明确要求查看原始水印，再用 [操作:显示水印]。');
       }
+      // 背景：把"能说什么"直接列出来（两类名字），AI 才不会编不存在的场景。
+      const bgs = listBackgroundNames();
+      parts.push('# 舞台背景（[背景:名字]，立绘与模型两种呈现都生效）\n'
+        + '预设色：' + bgs.presets.join('、') + '\n'
+        + (bgs.scenes.length ? '场景图：' + bgs.scenes.join('、') + '\n' : '场景图：当前没有安装「场景背景图」\n')
+        + '用法：在回复里写 [背景:深蓝] 或 [背景:雪夜]；只换背景时也放在回复末尾，标签不会显示给用户。');
+      // 当前呈现方式：告诉 AI 哪些标签在这种情况下有效，避免在立绘模式下写动作/位置。
+      parts.push(sceneMode === 'portrait'
+        ? '# 当前呈现：图片立绘\n[情绪:…] 与 [表情:…] 都会切换立绘；[动作:] / [位置:] / [大小:] 在立绘模式下不适用，不要用。'
+        : '# 当前呈现：Live2D 模型\n[情绪:] / [表情:] / [动作:] / [位置:] / [大小:] 都可用。');
       // 合并后由 galgame 的 syncSceneHint 统一注入（两段提示词合并成一份）。
       // 这里只交出手上的材料 —— 删掉两行都不行：
       //   ① 交出去 → 让 scene hint 能带上"当前模型有哪些表情/动作"
@@ -1759,7 +1797,16 @@ ${lines.join('\n')}
     const t = String(text);
 
     const expName = lastTagValue(t, '表情');
-    if (expName) void setExpression(expName);
+    if (expName) {
+      // 立绘模式没有 exp3 文件：把表情名按同一套同义词表映射成立绘情绪
+      //   （AI 写 [表情:happy] 与 [情绪:开心] 在两种呈现下效果一致）
+      if (sceneMode === 'portrait') {
+        const hit = resolveEmotionKey(expName);
+        if (hit) applyPortraitEmotion(hit.key);
+      } else {
+        void setExpression(expName);
+      }
+    }
     const motionName = lastTagValue(t, '动作');
     if (motionName) void playMotion(motionName);
 
@@ -1963,6 +2010,12 @@ ${lines.join('\n')}
     sceneMode = next;
     try { localStorage.setItem(SCENE_MODE_KEY, next); } catch { /* ignore */ }
     applySceneMode();
+    // 提示词里写了"当前呈现：立绘/模型"，切换后要立刻重算，
+    //   否则 AI 会按旧模式给动作/位置标签（立绘模式下那些不生效）。
+    syncLive2DPromptHint();
+    if (typeof window.__galgameRefreshPromptHint === 'function') {
+      try { window.__galgameRefreshPromptHint(); } catch (e) { /* 宿主提示词刷新失败不影响界面 */ }
+    }
     return next;
   }
 
@@ -2077,6 +2130,23 @@ ${lines.join('\n')}
     getSceneMode,
     /** 切换模式（打开中立刻生效；写 galgame.live2d.sceneMode） */
     setSceneMode,
+    // ---- 给 AI / 外部调用的"自由调节"接口（两种呈现都支持）----
+    /** 可用的背景名字：{ presets: ['深蓝'…], scenes: ['雪夜'…] } */
+    listBackgrounds() { return listBackgroundNames(); },
+    /** 按名字换背景（预设色或场景图；认不出则原样当 CSS，经 sanitize） */
+    setBackgroundByName(name) {
+      const value = resolveBackgroundValue(name);
+      if (!value) return false;
+      // 先过白名单：认不出的名字（既不是预设也不是场景图）不该被当成 CSS 写进去
+      const safe = sanitizeBackground(value);
+      if (!safe) return false;
+      window.Live2DCall.setBackground(safe);
+      return true;
+    },
+    /** 可用的情绪键（立绘与模型共用这套词表） */
+    listEmotions() { return Object.keys(EMOTION_MAP); },
+    /** 按情绪/表情词切换表现（立绘换图、模型换表情；无法识别返回 false） */
+    setEmotion(name) { return driveEmotion(name); },
     /** 发一句话（气泡输入行也行；供设置页"测试"或有其它入口用） */
     sendMessage(text) {
       const t = String(text == null ? '' : text).trim();

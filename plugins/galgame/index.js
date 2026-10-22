@@ -632,6 +632,10 @@
             host.error('情景演绎装配失败（剧情界面不受影响）', e);
         }
         syncSceneHint();
+        // 情景演绎切换"立绘 / 模型"时要立刻重算提示词（那段里写了当前呈现方式）。
+        //   暴露一个只做这件事的钩子，而不是让 stage 直接改 host 提示词 ——
+        //   提示词只能由插件这一处合成（两段分开 setPromptHint 会互相覆盖）。
+        window.__galgameRefreshPromptHint = syncSceneHint;
         host.log('已就绪（场景 ' + BGS.length + ' 个，立绘走 elaina-avatar，情景演绎=' + (scenario ? '可用' : '不可用') + '）');
 
         return {
