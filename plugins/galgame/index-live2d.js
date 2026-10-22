@@ -1,5 +1,5 @@
 /* ============================================================================
- * 情景演绎（Live2D 通话界面）
+ * 情景演绎（Live2D 舞台）
  *
  * 住在 galgame 插件目录里：把原先独立的「Live2D 视频通话」插件并进了 Galgame。
  * 两者本来就是同一件事的两种呈现（剧情对话框 / 全屏通话），拆成两个包时用的是
@@ -7,7 +7,7 @@
  * 「情景演绎」入口。
  *
  * 引擎与模型仍在资源插件「Live2D 引擎与模型」（live2d-models）里，
- * 本文件只负责**界面与表现**（全屏通话、口型、表情/动作/情绪驱动）。
+ * 本文件只负责**界面与表现**（全屏舞台、口型、表情/动作/情绪驱动）。
  *
  * ── 依赖 ───────────────────────────────────────────────────────────────────
  *   manifest.after = ['live2d-models']  —— 缺它会被**拒绝加载**（不是带病运行），
@@ -221,8 +221,6 @@ function initLive2DCore(host) {
           </div>
           <div class="live2d-name-tag" id="live2d-name-tag">情景演绎中</div>
           <div class="live2d-follow-hint" id="live2d-follow-hint" title="点击开启鼠标跟随">鼠标跟随已关闭 · 点此开启</div>
-          <div class="live2d-mute-hint" id="live2d-mute-hint" title="AI 语音已静音（可由 AI 用 [操作:取消静音] 恢复）">AI 声音已静音</div>
-          <div class="live2d-speaking-indicator" id="live2d-speaking">🔊 正在说话…</div>
           <div id="live2d-resize-box" class="live2d-resize-box" title="拖动移动 · 拖手柄调整大小">
             <div class="live2d-handle" data-dir="nw"></div>
             <div class="live2d-handle" data-dir="n"></div>
@@ -235,9 +233,9 @@ function initLive2DCore(host) {
           </div>
         </div>
         <div class="live2d-bottombar">
-          <button id="live2d-talk-btn" class="live2d-mic-btn" title="语音输入：点击开始说话，说完再点一次发送">🎤 说话</button>
+          <button id="live2d-talk-btn" class="live2d-mic-btn" title="语音输入：点击开始说话，说完再点一次发送">🎤 语音</button>
           <button id="live2d-adjust-toggle" class="live2d-adjust-btn" title="显示/隐藏模型调整框">📐</button>
-          <button id="live2d-end-btn" class="live2d-end-btn" title="结束通话">📞 挂断</button>
+          <button id="live2d-end-btn" class="live2d-end-btn" title="退出情景演绎">✕ 退出</button>
         </div>
       </div>
     `;
@@ -284,14 +282,9 @@ function initLive2DCore(host) {
         #ggL2dPortraitImg { max-width: 100%; max-height: 100%; }
       }
       .live2d-name-tag { position: absolute; bottom: 84px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,.85); font-size: 13px; background: rgba(0,0,0,.4); padding: 4px 14px; border-radius: 999px; white-space: nowrap; }
-      .live2d-speaking-indicator { position: absolute; top: 56px; left: 50%; transform: translateX(-50%); color: #7dd3fc; font-size: 13px; display: none; background: rgba(0,0,0,.5); padding: 5px 14px; border-radius: 999px; }
-      .live2d-speaking-indicator.on { display: block; }
       /* 鼠标跟随关闭时的提示：让"模型不动"这件事自解释，而不是让人以为模型坏了 */
       .live2d-follow-hint { position: absolute; bottom: 132px; left: 50%; transform: translateX(-50%); color: #fcd34d; font-size: 12px; display: none; background: rgba(0,0,0,.55); padding: 5px 14px; border-radius: 999px; cursor: pointer; z-index: 6; white-space: nowrap; }
       .live2d-follow-hint.on { display: block; }
-      /* 静音提示：静音这个状态以前完全没有界面反馈（它引用的按钮早已被移除） */
-      .live2d-mute-hint { position: absolute; bottom: 170px; left: 50%; transform: translateX(-50%); color: #fca5a5; font-size: 12px; display: none; background: rgba(0,0,0,.55); padding: 5px 14px; border-radius: 999px; z-index: 6; white-space: nowrap; }
-      .live2d-mute-hint.on { display: block; }
       .live2d-bottombar { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 20px calc(20px + env(safe-area-inset-bottom)); display: flex; gap: 14px; justify-content: center; align-items: center; z-index: 5; background: linear-gradient(transparent, rgba(0,0,0,.55)); }
       .live2d-mic-btn { background: rgba(255,255,255,.14); border: none; color: #fff; width: 54px; height: 54px; border-radius: 50%; cursor: pointer; font-size: 12px; font-weight: 600; transition: all .15s; }
       .live2d-mic-btn:hover { background: rgba(255,255,255,.28); }
@@ -300,8 +293,8 @@ function initLive2DCore(host) {
       .live2d-adjust-btn { background: rgba(255,255,255,.14); border: none; color: #fff; width: 54px; height: 54px; border-radius: 50%; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
       .live2d-adjust-btn:hover { background: rgba(255,255,255,.28); }
       .live2d-adjust-btn.active { background: rgba(129,199,255,.35); color: #fff; box-shadow: 0 0 0 2px rgba(129,199,255,.7); }
-      .live2d-end-btn { background: #ef4444; border: none; color: #fff; padding: 10px 22px; border-radius: 999px; font-size: 14px; cursor: pointer; }
-      .live2d-end-btn:hover { background: #dc2626; }
+      .live2d-end-btn { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.18); color: #fff; padding: 9px 18px; border-radius: 999px; font-size: 13px; cursor: pointer; }
+      .live2d-end-btn:hover { background: rgba(255,255,255,.26); }
       .live2d-bg-panel { position: absolute; top: 52px; left: 50%; transform: translateX(-50%); z-index: 6; background: rgba(20,22,35,.92); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 14px 16px; width: 320px; backdrop-filter: blur(10px); }
       .live2d-bg-panel.hidden { display: none; }
       .live2d-bg-head { color: #fff; font-size: 13px; font-weight: 600; margin-bottom: 10px; }
@@ -749,7 +742,6 @@ function initLive2DCore(host) {
     container.classList.add('open');
     ensureMouseTracking();   // 每次打开都确保监听器在位（close 会移除）
     syncFollowHint();
-    syncMuteHint();
     // 立绘 / 模型双模式：先把界面摆到用户选的那一套，再决定要不要加载引擎
     applySceneMode();
     // 气泡显示最新一句，并轮询后续消息（与剧情界面同一份数据）
@@ -892,14 +884,6 @@ function initLive2DCore(host) {
     hint.classList.toggle('on', isOpen && !mouseFollowEnabled);
   }
 
-  // 静音状态提示。[操作:静音] 以前只改了一个早已从 UI 移除的按钮，
-  // 静音后通话界面毫无反馈，用户不知道 AI 为什么不说话了。
-  function syncMuteHint() {
-    const hint = document.getElementById('live2d-mute-hint');
-    if (!hint) return;
-    hint.classList.toggle('on', isOpen && aiVoiceMuted);
-  }
-
   // 挂载/恢复鼠标追踪监听器（幂等）。
   // 必须每次 open() 都调用一次：close() 会移除监听器并置空，而 buildUI() 只执行一次，
   // 若只在 buildUI 里挂载，"关闭通话 → 再打开"之后鼠标跟随会永久失效。
@@ -997,7 +981,6 @@ function initLive2DCore(host) {
       mouseMoveHandler = null;
     }
     syncFollowHint();
-    syncMuteHint();
     if (mouseTrackRaf) { clearInterval(mouseTrackRaf); mouseTrackRaf = null; }
     // 停掉 PIXI 的 ticker：隐藏时没必要继续每帧渲染，open() 会重新 start
     try { app?.ticker?.stop?.(); } catch { /* ignore */ }
@@ -1173,16 +1156,12 @@ function initLive2DCore(host) {
 
   function startMouth() {
     speaking = true;
-    const ind = document.getElementById('live2d-speaking');
-    if (ind) ind.classList.add('on');
   }
 
   function stopMouth() {
     speaking = false;
     mouthEnergy = 1;
     voiceEnergy = null;
-    const ind = document.getElementById('live2d-speaking');
-    if (ind) ind.classList.remove('on');
     if (model) {
       try { model.internalModel?.coreModel?.setParameterValueById?.('ParamMouthOpenY', 0); } catch { /* ignore */ }
     }
@@ -1702,7 +1681,7 @@ function initLive2DCore(host) {
 【表情标签】[表情:happy] / [表情:sad] / [表情:angry] / [表情:blush] / [表情:cry] / [表情:smile] / [表情:think] / [表情:shy] / [表情:dizzy] —— 直接指定表情。
 【动作标签】[动作:wave]（挥手）/ [动作:bow]（鞠躬）。
 【状态标签】[位置:left|center|right|上|下] —— 移动角色位置；[大小:大|小|特大|特小|65%] —— 调整角色大小。
-【背景标签】[背景:深蓝|蓝紫|星空|紫罗兰|红蓝|深黑|墨蓝|深紫|玫红|青绿] —— 切换通话背景。
+【背景标签】[背景:深蓝|蓝紫|星空|紫罗兰|红蓝|深黑|墨蓝|深紫|玫红|青绿] —— 切换舞台背景。
 【静音与水印】[操作:静音] / [操作:取消静音] / [操作:隐藏水印] / [操作:显示水印]
 
 【使用要求】情绪标签是角色扮演表达的核心部分：每条回复都应根据内容带 1 个情绪或表情标签（内容完全中性时除外）；当情绪发生变化时（如从开心转为难过、从平静转为惊讶），务必切换到对应的情绪/表情标签，让角色的表情跟随情景变化；标签放在回复开头或情绪表达处，一条回复最多 2 个。`;
@@ -1841,7 +1820,6 @@ ${lines.join('\n')}
       // 静音 AI 声音：停止嘴动
       stopMouth();
     }
-    syncMuteHint();
   }
 
   // ===== 真实语音输入（复用主应用的录音 + ASR + 发送流程） =====
@@ -1855,7 +1833,7 @@ ${lines.join('\n')}
 
   // ===== 舞台内的对话框（打字机 + 发送） =====
   //
-  // 为什么要有它：合并后"情景演绎"不再只是一个通话画面 —— 用户在这里
+  // 为什么要有它：合并后"情景演绎"不再只是一块全屏画面 —— 用户在这里
   // 既能看到立绘 / 模型，也要能直接说话。气泡与剧情界面同一份数据（host.getMessages），
   // 所以两边谁说的话对方都看得见。
   let bubbleTyping = null;   // { timer, full }
