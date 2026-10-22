@@ -5,11 +5,12 @@
  * 注册点，而是由 galgame/index.js 在装配主界面的同时一并调用：
  *
  *   · settings.modal 插槽 → 「情景演绎设置」（内容见 panel.html）
- *   · 主界面的 ⚙ 设置 / 顶栏按钮 → 打开这个设置
+ *   · header.actions 插槽 → 主页右上角的「情景演绎」按钮
  *   · Live2D 的提示词 → 交给 galgame 的 syncSceneHint 一起注入
  *
- * 为什么**不**再注册 header.actions：合并后入口只有一个 —— galgame 主界面上的
- * 「🎭 情景演绎」按钮，用户不必再记"顶栏还有个视频通话"。
+ * 为什么入口在顶栏而**不在**剧情界面里：情景演绎是主页的一个独立入口
+ *   （用户要求），不该要求先打开剧情界面；剧情界面里也不再放它的按钮 ——
+ *   它本来就盖在剧情界面之上打开，两个入口叠在一起只会让人以为要"先剧情再通话"。
  *
  * 注意：本文件不是注册点。index-live2d.js / settings-panel.js 都**不**自己调
  *   ElainaMods.register —— 注册表是 Map，多注册一次会覆盖掉 galgame 主界面。
@@ -60,6 +61,25 @@
             // 脚本没注入成功时要说清楚 —— 否则表现为"插件是 ready、但点了没反应"
             host.error('index-live2d.js 未就绪（__live2dInitCore 不存在），情景演绎不可用');
         }
+
+        // ---- 顶部按钮：情景演绎 ----
+        //
+        // 这是主页右上角（header.actions 插槽）的入口，与插件卡片无关：
+        // 用户要的是"随时点一下就能进全屏互动"，不必先打开剧情界面。
+        host.slot('header.actions', {
+            id: 'scenario',
+            label: '情景演绎',
+            title: '情景演绎（Live2D 全屏互动）',
+            svg: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">'
+                + '<path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>',
+            onClick() {
+                if (window.Live2DCall && typeof window.Live2DCall.open === 'function') {
+                    window.Live2DCall.open();
+                } else {
+                    host.error('情景演绎未就绪（Live2D 组件没有装配成功，刷新页面后再试）');
+                }
+            },
+        });
 
         // ---- 设置：独立成窗（不占主设置的分栏）----
         host.slot('settings.modal', {

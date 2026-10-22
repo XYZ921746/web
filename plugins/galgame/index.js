@@ -147,7 +147,6 @@
                 '<div id="ggInfo">伊蕾娜 · 魔女之旅</div>' +
                 '<div id="ggMenu">' +
                   '<button class="gg-btn" id="ggSettings" type="button">⚙ 设置</button>' +
-                  '<button class="gg-btn" id="ggScenario" type="button">🎭 情景演绎</button>' +
                   '<button class="gg-btn" id="ggSpeech" type="button">🎤 语音</button>' +
                   '<button class="gg-btn" id="ggExit" type="button">✕ 退出 Galgame</button>' +
                 '</div>' +
@@ -192,12 +191,8 @@
                 layer.classList.remove('on');
                 try { if (typeof openSettings === 'function') openSettings(); } catch (e) { /* 忽略 */ }
             });
-            // 情景演绎：打开全屏 Live2D 通话（实现见 index-live2d.js）。
-            // 它盖在剧情界面之上（z-index 950 > 剧情层），退出通话回到剧情界面。
-            layer.querySelector('#ggScenario').addEventListener('click', (ev) => {
-                ev.preventDefault(); ev.stopPropagation();
-                openScenario();
-            });
+            // 情景演绎的入口在**主页右上角**（register.js 注册的 header.actions），
+            // 不在这里 —— 剧情界面不该成为进全屏互动的前置步骤。
             layer.querySelector('#ggSpeech').addEventListener('click', (ev) => { ev.stopPropagation(); startVoice(); });
             layer.querySelector('#ggSend').addEventListener('click', (ev) => { ev.stopPropagation(); send(); });
             input.addEventListener('keydown', (ev) => {
@@ -557,7 +552,8 @@
         /**
          * 打开「情景演绎」（全屏 Live2D 通话）。
          *
-         * 它叠在剧情界面之上（通话层 z-index 950 > 剧情层），退出通话即回到剧情。
+         * 入口是主页右上角那个按钮（register.js 注册的 header.actions），
+         * 这里只是把同一件事暴露给其它插件 / Agent 调用。
          * 实现由 index-live2d.js 提供（window.Live2DCall）；没装配成功就说清楚，
          * 而不是让按钮点下去毫无反应。
          */
@@ -571,16 +567,6 @@
             host.error('情景演绎未就绪：window.Live2DCall 不存在');
             return false;
         }
-
-        // 主界面顶栏的「情景演绎」按钮：不依赖剧情界面是否打开，随时可进调用
-        host.slot('header.actions', {
-            id: 'scenario',
-            label: '情景演绎',
-            title: '情景演绎（Live2D 全屏互动）',
-            svg: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">'
-                + '<path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>',
-            onClick: () => openScenario(),
-        });
 
         function setEnabled(on, silent) {
             enabled = !!on;
