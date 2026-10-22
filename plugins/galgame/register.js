@@ -62,9 +62,31 @@
             host.error('index-live2d.js 未就绪（__live2dInitCore 不存在），情景演绎不可用');
         }
 
-        // ---- 顶部按钮：情景演绎 ----
+        // ---- 顶部按钮 ①：Galgame 剧情 ----
         //
-        // 这是主页右上角（header.actions 插槽）的入口，与插件卡片无关：
+        // 启用插件只让功能可用，**不**自动全屏（见 index.js 的初始化说明）——
+        // 进剧情界面就是点这里。它与「情景演绎」并列在主页右上角：
+        // 一个是剧情对话框，一个是全屏 Live2D 互动，互不依赖。
+        host.slot('header.actions', {
+            id: 'story',
+            label: '剧情模式',
+            title: '进入全屏剧情界面',
+            svg: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">'
+                + '<path stroke-linecap="round" stroke-linejoin="round" d="M4 5.5A1.5 1.5 0 015.5 4H9v16H5.5A1.5 1.5 0 014 18.5v-13zM9 4h9.5A1.5 1.5 0 0120 5.5v13a1.5 1.5 0 01-1.5 1.5H9V4z"/></svg>',
+            onClick() {
+                const api = window.ElainaMods && typeof window.ElainaMods.find === 'function'
+                    ? window.ElainaMods.find('galgame') : null;
+                const storyApi = api && api.entry ? api.entry.api : null;
+                if (storyApi && typeof storyApi.toggleOpen === 'function') {
+                    storyApi.toggleOpen();
+                } else {
+                    host.error('剧情界面未就绪（Galgame 主界面没有装配成功，刷新页面后再试）');
+                }
+            },
+        });
+
+        // ---- 顶部按钮 ②：情景演绎 ----
+        //
         // 用户要的是"随时点一下就能进全屏互动"，不必先打开剧情界面。
         host.slot('header.actions', {
             id: 'scenario',

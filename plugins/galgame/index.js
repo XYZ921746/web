@@ -519,6 +519,7 @@
 
         function open() {
             build();
+            enabled = true;
             layer.style.display = 'block';
             syncSceneHint();
             applyOptions();
@@ -527,6 +528,9 @@
             shownCount = Math.max(0, list.length - 1);
             lastMsgKey = '';
             syncFromState(true);
+            // 场景说明只在界面开着时注入；打开这一刻先补一次，
+            // 否则上一轮 close() 把它清掉了，AI 不会带场景标记
+            syncSceneHint();
             if (pollTimer) clearInterval(pollTimer);
             // 轮询对话变化：宿主没有"新消息"事件时这是最稳的方式
             // （有事件总线后可以换成订阅，但轮询不依赖宿主改接口）
@@ -541,6 +545,7 @@
             }, 600);
         }
         function close() {
+            enabled = false;
             host.clearPromptHint();
             if (layer) {
                 layer.classList.remove('on');
@@ -577,19 +582,25 @@
 
         // ==================== 初始化 ====================
 
-        // ⚠️ 这里**不读** localStorage 里自己的 enabled 开关。
+        // 启用插件**不等于**打开剧情界面：初始只把界面建好并藏着，等用户点
+        // 主页右上角的「Galgame 剧情」再进（用户要求）。
         //
-        // 原因：那会形成"双重开关"—— mod 系统的启用状态（elaina_plugin_galgame）
-        // 与界面自己的开关（elaina_galgame_enabled）各自记一份。用户从设置里启用 mod 时，
-        // mod 系统的状态变成"启用"，但如果界面开关还是 0，mod 初始化后不会 open()，
-        // 表现是"开关打开了、界面却没出现"（这个 bug 是端到端测试抓到的）。
+        // 为什么不在这里 open()：启用是一个"设置动作"，多数人是在设置里拨开关，
+        // 期待的是"这个功能现在可用"，而不是"我现在被切走了" —— 自动全屏正是
+        // 最容易被当成"点了设置就跳页"的那种意外。入口有两个：
+        //    · 主页顶栏按钮（register.js 注册的 header.actions，id=story）
+        //    · 插件自己的 API：ElainaMods.find('galgame').api.open()
         //
-        // 正确语义：**mod 被启用 = 界面就该出现**。所以初始化时直接打开，
-        // 不再看自己那份记忆。右上角的「退出」按钮仍然可用 —— 它调 setEnabled(false)，
-        // 同时会把 mod 系统的开关也关掉（见下面 onExit 的处理）。
-        enabled = true;
-        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => open());
-        else open();
+        // 这里仍然**不读** localStorage 里自己那份 enabled 开关（双重开关问题：
+        // mod 系统与界面各记一份，会导致"开关开了但界面没出现"）。
+        enabled = false;
+        build();
+        layer.style.display = 'none';
+        layer.classList.remove('on');
+        // 界面没开时不该往 system 里塞场景说明（它描述的是"你现在在剧情界面里"）；
+        // 等用户点了「剧情模式」再由 open() 注入。Live2D 那段表现指南不受影响，
+        // 因为 syncSceneHint 会把它单独带上。
+        syncSceneHint();
 
         // ---- 情景演绎（原独立的「Live2D 视频通话」插件）----
         //
@@ -613,6 +624,21 @@
             setEnabled,
             isOpen: () => Boolean(layer && layer.classList.contains('on')),
             toggle: () => setEnabled(!enabled),
+            /** 打开剧情界面（主页右上角「Galgame 剧情」按钮调的就是它） */
+            open,
+            close,
+            /**
+             * 打开 / 收起剧情界面。
+             *
+             * 与 setEnabled 的区别：setEnabled 还负责 mod 自己的开关状态与提示词，
+             * 这里是纯粹的"进/出界面"；`enabled` 会跟着走，因为提示词里那段场景说明
+             * 只在界面开着时才该注入（见 syncSceneHint）。
+             */
+            toggleOpen() {
+                if (layer && layer.classList.contains('on')) close();
+                else open();
+                return Boolean(layer && layer.classList.contains('on'));
+            },
             /** 打开情景演绎（同主界面按钮；供其它插件或 Agent 调用） */
             openScenario,
             isScenarioOpen: () => Boolean(window.Live2DCall && typeof window.Live2DCall.isOpen === 'function' && window.Live2DCall.isOpen()),
