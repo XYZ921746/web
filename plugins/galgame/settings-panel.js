@@ -208,6 +208,31 @@ function initLive2DSettingsPanel(host) {
         });
     }
 
+    // 朗读开关：状态在 Live2DCall（舞台顶栏那颗 🔊 也是同一个状态）
+    const sp = $('gsSpeech');
+    const spHint = $('gsSpeechHint');
+    function syncSpeechRow() {
+        const api = call();
+        const configured = Boolean(api && typeof api.speechConfigured === 'function' && api.speechConfigured());
+        if (sp) {
+            sp.checked = Boolean(api && typeof api.getSpeechEnabled === 'function' ? api.getSpeechEnabled() : get('speech', '1') !== '0');
+            sp.disabled = !configured;
+        }
+        if (spHint) {
+            spHint.textContent = configured
+                ? '已检测到语音服务：新回复会自动朗读，舞台右上角的 🔊 可随时开关。'
+                : '还没配置语音服务（设置 → 语音里选 TTS 供应商并填 API Key），配好后这里才会生效。';
+        }
+    }
+    if (sp) {
+        sp.addEventListener('change', () => {
+            const api = call();
+            if (api && typeof api.setSpeechEnabled === 'function') api.setSpeechEnabled(sp.checked);
+            else set('speech', sp.checked ? '1' : '0');
+        });
+    }
+    syncSpeechRow();
+
     // ── ⑤ 试一下 ──────────────────────────────────────────────
     const test = $('gsTest');
     if (test) test.addEventListener('click', () => {

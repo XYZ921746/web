@@ -199,6 +199,7 @@ function initLive2DCore(host) {
       <div id="live2d-stage" class="live2d-stage">
         <!-- 右上角：退出。舞台不提供语音、模型下拉这类控件，
              模型在「设置 → 插件 → Galgame 齿轮 → 情景演绎」里选。 -->
+        <button id="live2d-speech-btn" class="live2d-exit-btn live2d-speech-btn" type="button" title="朗读：开（点一下关闭）" aria-label="朗读开关">🔊</button>
         <button id="live2d-exit-btn" class="live2d-exit-btn" type="button" title="退出情景演绎" aria-label="退出情景演绎">✕</button>
         <div id="live2d-canvas-wrap" class="live2d-canvas-wrap">
           <canvas id="live2d-canvas"></canvas>
@@ -254,6 +255,10 @@ function initLive2DCore(host) {
         transition: background .15s, transform .15s;
       }
       .live2d-exit-btn:hover { background: rgba(239,68,68,.75); transform: scale(1.05); }
+      /* 朗读开关：与退出按钮同款，但平时更低调（不是"离开"那种破坏性动作） */
+      .live2d-speech-btn { right: 58px; font-size: 14px; }
+      .live2d-speech-btn:hover { background: rgba(255,255,255,.3); transform: scale(1.05); }
+      .live2d-speech-btn.is-off { opacity: .55; }
       .live2d-canvas-wrap { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
       #live2d-canvas { width: 100%; height: 100%; display: block; }
       /* 立绘模式：立绘与 Live2D 共用同一个位置，切换时只换内容 */
@@ -320,6 +325,28 @@ function initLive2DCore(host) {
     document.head.appendChild(style);
 
     host.querySelector('#live2d-exit-btn').addEventListener('click', close);
+    // 朗读开关：关掉后不再自动念新回复，正在念的立即停
+    const speechBtn = host.querySelector('#live2d-speech-btn');
+    if (speechBtn) {
+      const syncSpeechBtn = () => {
+        speechBtn.classList.toggle('is-off', !speechEnabled);
+        speechBtn.textContent = speechEnabled ? '🔊' : '🔇';
+        speechBtn.title = speechEnabled ? '朗读：开（点一下关闭）' : '朗读：关（点一下开启）';
+        // 没配 TTS 时这个按钮没有意义，直接收起来（比点了没反应好）
+        let configured = false;
+        try { configured = typeof host.speechConfigured === 'function' && host.speechConfigured(); } catch (e) { configured = false; }
+        speechBtn.style.display = configured ? '' : 'none';
+      };
+      speechBtn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        speechEnabled = !speechEnabled;
+        try { localStorage.setItem(L2D_PREFIX + 'speech', speechEnabled ? '1' : '0'); } catch { /* ignore */ }
+        if (!speechEnabled) { try { host.stopSpeech(); } catch (e) { /* 忽略 */ } }
+        syncSpeechBtn();
+      });
+      syncSpeechBtn();
+      window.__galgameSyncSpeechBtn = syncSpeechBtn;
+    }
     host.querySelector('#live2d-adjust-toggle').addEventListener('click', toggleAdjustBox);
     // 气泡输入行：和剧情界面一样"回车发送"。发送走 host.sendUserMessage，
     // 与主界面共用同一份对话数据 —— 两边说的互相可见。
@@ -942,6 +969,9 @@ function initLive2DCore(host) {
     speaking = false;
     if (bubblePoll) { clearInterval(bubblePoll); bubblePoll = null; }
     if (bubbleTyping) { clearInterval(bubbleTyping.timer); bubbleTyping = null; }
+    // 退出舞台时把还没念完的语音停掉 —— 否则界面关了声音还在响
+    try { if (typeof host.stopSpeech === 'function') host.stopSpeech(); } catch (e) { /* 忽略 */ }
+    speakStartedAt = 0;
     mouthEnergy = 1;
     voiceEnergy = null; // 必须复位：否则下次通话会沿用上一轮残留的真实音量，嘴型一开始就是张着的
     currentExpParams = [];
@@ -1859,6 +1889,13 @@ ${lines.join('\n')}
   let bubbleTyping = null;   // { timer, full }
   let bubbleLastKey = '';
   let bubblePoll = null;
+  /** 已经念过的那条消息 id（避免轮询把它重复念一遍） */
+  let lastSpokenMessageId = '';
+  /** 朗读开关（设置页可关；默认开 = 配了 TTS 就念，与主界面一致） */
+  let speechEnabled = (function () {
+    try { return localStorage.getItem(L2D_PREFIX + 'speech') !== '0'; } catch { return true; }
+  })();
+  let speakStartedAt = 0;
   /** 打字机开关（设置页可关；关掉就是整段直接出现） */
   let typewriterOn = (function () {
     try { return localStorage.getItem(L2D_PREFIX + 'typewriter') !== '0'; } catch { return true; }
@@ -1910,7 +1947,39 @@ ${lines.join('\n')}
     if (!last) return;
     if (name) name.textContent = last.role === 'user' ? '你' : '伊蕾娜';
     typeBubble(last.text);
+    // AI 的新回复 → 朗读（和主界面同一条 TTS 链路）。
+    //   只在**这条消息是新出现的 AI 消息**时念：用户自己的话不念，
+    //   第一次打开舞台也不把历史最后一条重念一遍（force 时跳过）。
+    if (last.role !== 'user' && !force && last.id !== lastSpokenMessageId) {
+      speakBubble(last);
+    }
   }
+
+  /**
+   * 朗读当前这条 AI 回复。
+   *
+   * 走 host.speak（core.js 的 ElainaHost.speech）而不是自己发 TTS 请求：
+   *   供应商、鉴权、日语朗读稿都在宿主设置里，插件不该复制一份。
+   * 没有配置 TTS 时静默跳过 —— 这是"没装语音就只显示文字"的正常形态，不是错误。
+   */
+  function speakBubble(msg) {
+    if (!speechEnabled) return;
+    if (typeof host.speak !== 'function') return;
+    let configured = false;
+    try { configured = typeof host.speechConfigured === 'function' && host.speechConfigured(); } catch (e) { configured = false; }
+    if (!configured) return;
+    const id = String((msg && msg.id) || '');
+    if (!id) return;
+    lastSpokenMessageId = id;
+    try {
+      host.speak(String(msg.text || ''), {
+        messageId: id,
+        onStart() { speakStartedAt = Date.now(); },
+        onEnd() { speakStartedAt = 0; },
+      }).catch(() => { /* 念不出来不该在界面上留噪音，文字已经在气泡里 */ });
+    } catch (e) { /* 同上 */ }
+  }
+
 
   function sendBubbleText() {
     const input = document.getElementById('live2d-gg-input');
@@ -2147,6 +2216,29 @@ ${lines.join('\n')}
     listEmotions() { return Object.keys(EMOTION_MAP); },
     /** 按情绪/表情词切换表现（立绘换图、模型换表情；无法识别返回 false） */
     setEmotion(name) { return driveEmotion(name); },
+    // ---- 朗读（与主界面同一条 TTS 链路）----
+    /** 朗读开关是否打开（设置页 / 顶栏按钮用） */
+    getSpeechEnabled() { return speechEnabled; },
+    /** 开/关朗读；关掉会立刻停掉正在念的 */
+    setSpeechEnabled(on) {
+      speechEnabled = !!on;
+      try { localStorage.setItem(L2D_PREFIX + 'speech', speechEnabled ? '1' : '0'); } catch { /* ignore */ }
+      if (!speechEnabled) { try { host.stopSpeech(); } catch (e) { /* 忽略 */ } }
+      if (typeof window.__galgameSyncSpeechBtn === 'function') window.__galgameSyncSpeechBtn();
+      return speechEnabled;
+    },
+    /** 语音是否已配置（供应商 + Key 齐全） */
+    speechConfigured() {
+      try { return typeof host.speechConfigured === 'function' && host.speechConfigured(); } catch (e) { return false; }
+    },
+    /** 手动念最新一条 AI 回复（设置页"试听"用） */
+    speakLatest() {
+      const msgs = (host.getMessages() || []).filter((m) => m && m.text && m.role !== 'user' && m.hidden !== true);
+      const last = msgs[msgs.length - 1];
+      if (!last) return false;
+      speakBubble(last);
+      return true;
+    },
     /** 发一句话（气泡输入行也行；供设置页"测试"或有其它入口用） */
     sendMessage(text) {
       const t = String(text == null ? '' : text).trim();
