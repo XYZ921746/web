@@ -84,7 +84,10 @@
 
         // ---- 设置：独立成窗（不占主设置的分栏）----
         host.slot('settings.modal', {
-            id: 'scenario',
+            // ★ 这里必须是**插件 id**（galgame），不是随便起的名字：
+            //   设置页的齿轮按 `__modSettingsOpeners[插件id]` 找打开函数，
+            //   写成 'scenario' 的话按钮能点但永远找不到这个设置窗。
+            id: 'galgame',
             label: '情景演绎',
             title: '情景演绎设置',
             async render(container) {
