@@ -573,11 +573,25 @@
             return false;
         }
 
+        /**
+         * 插件启用 / 停用（由插件系统的开关调用）。
+         *
+         * ★ 启用**只代表"这个功能可用"**，不打开任何界面 —— 入口在主页右上角
+         *   「情景演绎」。之前这里写成 `if (on) open()`，于是用户只是在设置里
+         *   把开关拨开，就被直接推进全屏舞台（"一打开 mod 就进 mod 页面"）。
+         * 停用仍要 close()：界面若开着，必须收掉。
+         */
         function setEnabled(on, silent) {
-            enabled = !!on;
-            set('enabled', on ? '1' : '0');
-            if (on) open(); else close();
-            if (!silent) showTip(on ? 'Galgame 界面已开启（右上角可退出）' : '已退出 Galgame，回到主界面');
+            if (!on) {
+                close();
+                set('enabled', '0');
+                if (!silent) showTip('已停用 Galgame，回到主界面');
+                return;
+            }
+            // 启用时保持"界面没开"的状态（场景提示词也不注入），等用户点入口
+            enabled = false;
+            set('enabled', '0');
+            if (!silent) showTip('Galgame 已启用：点主页右上角「情景演绎」进入');
         }
 
         // ==================== 初始化 ====================
@@ -623,7 +637,11 @@
         return {
             setEnabled,
             isOpen: () => Boolean(layer && layer.classList.contains('on')),
-            toggle: () => setEnabled(!enabled),
+            /** 兼容旧调用：现在是"开/关界面"，不是"启用/停用插件" */
+            toggle: () => {
+                if (layer && layer.classList.contains('on')) close();
+                else open();
+            },
             /** 打开剧情界面（主页右上角「Galgame 剧情」按钮调的就是它） */
             open,
             close,
