@@ -233,6 +233,18 @@ function initLive2DSettingsPanel(host) {
     }
     syncSpeechRow();
 
+    // 语音输入（ASR）：这里只做状态说明 —— 开关在宿主「设置 → 语音」里，
+    //   本面板不重复提供一份（两份开关必然漂移，而且凭证也在那边）。
+    (function syncDictationRow() {
+        const el = $('gsDictationHint');
+        if (!el) return;
+        const api = call();
+        const configured = Boolean(api && typeof api.dictationConfigured === 'function' && api.dictationConfigured());
+        el.textContent = configured
+            ? '已配置：舞台右上角的 🎤 可直接说话，识别完自动发送。'
+            : '未配置：到「设置 → 语音 → 语音识别」选供应商并填 API Key，配好后舞台才会出现 🎤。';
+    })();
+
     // ── ⑤ 试一下 ──────────────────────────────────────────────
     const test = $('gsTest');
     if (test) test.addEventListener('click', () => {

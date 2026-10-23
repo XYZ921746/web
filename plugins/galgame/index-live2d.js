@@ -193,12 +193,13 @@ function initLive2DCore(host) {
 
   // ===== DOM =====
   function buildUI() {
-    const host = document.createElement('div');
-    host.id = 'live2d-call-host';
-    host.innerHTML = `
+    const layer = document.createElement('div');
+    layer.id = 'live2d-call-host';
+    layer.innerHTML = `
       <div id="live2d-stage" class="live2d-stage">
         <!-- 右上角：退出。舞台不提供语音、模型下拉这类控件，
              模型在「设置 → 插件 → Galgame 齿轮 → 情景演绎」里选。 -->
+        <button id="live2d-mic-btn" class="live2d-exit-btn live2d-mic-btn" type="button" title="语音输入（点一下开始说话）" aria-label="语音输入">🎤</button>
         <button id="live2d-speech-btn" class="live2d-exit-btn live2d-speech-btn" type="button" title="朗读：开（点一下关闭）" aria-label="朗读开关">🔊</button>
         <button id="live2d-exit-btn" class="live2d-exit-btn" type="button" title="退出情景演绎" aria-label="退出情景演绎">✕</button>
         <div id="live2d-canvas-wrap" class="live2d-canvas-wrap">
@@ -236,7 +237,7 @@ function initLive2DCore(host) {
         </div>
       </div>
     `;
-    document.body.appendChild(host);
+    document.body.appendChild(layer);
 
     const style = document.createElement('style');
     style.textContent = `
@@ -259,6 +260,14 @@ function initLive2DCore(host) {
       .live2d-speech-btn { right: 58px; font-size: 14px; }
       .live2d-speech-btn:hover { background: rgba(255,255,255,.3); transform: scale(1.05); }
       .live2d-speech-btn.is-off { opacity: .55; }
+      /* 语音输入：最左那颗；正在听时变红并轻微脉动（让"麦开着"这件事看得见） */
+      .live2d-mic-btn { right: 100px; font-size: 15px; }
+      .live2d-mic-btn:hover { background: rgba(255,255,255,.3); transform: scale(1.05); }
+      .live2d-mic-btn.is-listening {
+        background: rgba(239,68,68,.8); border-color: rgba(255,255,255,.4);
+        animation: live2d-mic-beat 1.2s ease-in-out infinite;
+      }
+      @keyframes live2d-mic-beat { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
       .live2d-canvas-wrap { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
       #live2d-canvas { width: 100%; height: 100%; display: block; }
       /* 立绘模式：立绘与 Live2D 共用同一个位置，切换时只换内容 */
@@ -324,9 +333,9 @@ function initLive2DCore(host) {
     `;
     document.head.appendChild(style);
 
-    host.querySelector('#live2d-exit-btn').addEventListener('click', close);
+    layer.querySelector('#live2d-exit-btn').addEventListener('click', close);
     // 朗读开关：关掉后不再自动念新回复，正在念的立即停
-    const speechBtn = host.querySelector('#live2d-speech-btn');
+    const speechBtn = layer.querySelector('#live2d-speech-btn');
     if (speechBtn) {
       const syncSpeechBtn = () => {
         speechBtn.classList.toggle('is-off', !speechEnabled);
@@ -347,11 +356,45 @@ function initLive2DCore(host) {
       syncSpeechBtn();
       window.__galgameSyncSpeechBtn = syncSpeechBtn;
     }
-    host.querySelector('#live2d-adjust-toggle').addEventListener('click', toggleAdjustBox);
+
+    // 语音输入：开麦 / 结束并发送。识别结果由宿主直接发出去（与主界面麦克风同一链路），
+    //   所以这里不需要拿文本 —— 舞台的气泡轮询会看到那条用户消息。
+    //   没配置 ASR 时按钮隐藏：让用户点一下再弹"未配置"是最差的一种设计。
+    const micBtn = layer.querySelector('#live2d-mic-btn');
+    if (micBtn) {
+      const micState = () => {
+        try { return typeof host.dictationState === 'function' ? String(host.dictationState()) : 'idle'; } catch (e) { return 'idle'; }
+      };
+      const syncMicBtn = () => {
+        let configured = false;
+        try { configured = typeof host.dictationConfigured === 'function' && host.dictationConfigured(); } catch (e) { configured = false; }
+        micBtn.style.display = configured ? '' : 'none';
+        const st = micState();
+        const listening = st === 'listening' || st === 'paused';
+        micBtn.classList.toggle('is-listening', listening);
+        micBtn.textContent = listening ? '⏹' : '🎤';
+        micBtn.title = listening ? '结束并发送（再说一次点这里）' : '语音输入（点一下开始说话）';
+      };
+      micBtn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        try {
+          if (typeof host.dictate === 'function') host.dictate();
+        } catch (e) { host.error('语音输入不可用', e); }
+        // 宿主的状态是异步推进的：点完先同步一次，再隔几拍对齐（识别结束会自己变回 idle）
+        syncMicBtn();
+        [300, 900, 1800].forEach((ms) => setTimeout(syncMicBtn, ms));
+      });
+      // 宿主每次改语音状态都会派发 voice-state 事件（见 settings.js 的 updateUI），
+      //   跟着它刷新按钮，比轮询便宜也更即时。
+      window.addEventListener('voice-state', syncMicBtn);
+      syncMicBtn();
+      window.__galgameSyncMicBtn = syncMicBtn;
+    }
+    layer.querySelector('#live2d-adjust-toggle').addEventListener('click', toggleAdjustBox);
     // 气泡输入行：和剧情界面一样"回车发送"。发送走 host.sendUserMessage，
     // 与主界面共用同一份对话数据 —— 两边说的互相可见。
-    const sendBtn = host.querySelector('#live2d-gg-send');
-    const inputEl = host.querySelector('#live2d-gg-input');
+    const sendBtn = layer.querySelector('#live2d-gg-send');
+    const inputEl = layer.querySelector('#live2d-gg-input');
     if (sendBtn) sendBtn.addEventListener('click', (ev) => { ev.stopPropagation(); sendBubbleText(); });
     if (inputEl) {
       inputEl.addEventListener('keydown', (ev) => {
@@ -360,13 +403,13 @@ function initLive2DCore(host) {
       inputEl.addEventListener('click', (ev) => ev.stopPropagation());
     }
     // 「鼠标跟随已关闭」提示：点击直接开启，避免用户误以为是模型不支持
-    const followHint = host.querySelector('#live2d-follow-hint');
+    const followHint = layer.querySelector('#live2d-follow-hint');
     if (followHint) followHint.addEventListener('click', () => setMouseFollow(true));
     // 注意：鼠标追踪监听器不在这里挂载（buildUI 只在首次打开时执行一次），
     // 否则 close() 移除监听后再次打开通话将永远不会重新挂载 —— 见 ensureMouseTracking()
 
     // 调整框拖拽：手柄缩放 / 框内移动
-    const box = host.querySelector('#live2d-resize-box');
+    const box = layer.querySelector('#live2d-resize-box');
     box.querySelectorAll('.live2d-handle').forEach(h => {
       h.addEventListener('pointerdown', (e) => {
         e.preventDefault();
@@ -736,14 +779,21 @@ function initLive2DCore(host) {
 
   async function open() {
     if (isOpen) return;
-    // 确保 Live2D 引擎就绪（引擎已搬进 mod，这里负责触发按需加载）
-    try {
-      await waitForLive2D();
-    } catch (err) {
-      window.alert('Live2D 引擎未能加载：' + err.message
-        + '。请确认「设置 → 插件」里的「Live2D 引擎与模型」与「Galgame 界面」都已启用，然后刷新页面重试。');
-      console.error('[Live2D] PIXI.live2d 不可用:', window.PIXI ? Object.keys(window.PIXI) : 'PIXI 未加载');
-      return;
+    // 立绘模式**不需要引擎**：先判断模式再等引擎，否则没装「Live2D 引擎与模型」
+    //   时会被下面那段 alert 直接挡在门外 —— 而立绘本来就不依赖它。
+    const needEngine = sceneMode !== 'portrait';
+    if (needEngine) {
+      // 确保 Live2D 引擎就绪（引擎已搬进 mod，这里负责触发按需加载）
+      try {
+        await waitForLive2D();
+      } catch (err) {
+        // 引擎起不来不该让整个舞台打不开：说清楚，并**降级到立绘模式**
+        //   （用户至少还能看到角色与对话框），而不是弹一个框就什么都不给。
+        console.error('[Live2D] PIXI.live2d 不可用:', window.PIXI ? Object.keys(window.PIXI) : 'PIXI 未加载');
+        host.warn('Live2D 引擎未能加载，本次改用图片立绘：' + (err && err.message ? err.message : err));
+        sceneMode = 'portrait';
+        try { localStorage.setItem(SCENE_MODE_KEY, 'portrait'); } catch { /* ignore */ }
+      }
     }
     isOpen = true;
     if (!container) buildUI();
@@ -971,6 +1021,13 @@ function initLive2DCore(host) {
     if (bubbleTyping) { clearInterval(bubbleTyping.timer); bubbleTyping = null; }
     // 退出舞台时把还没念完的语音停掉 —— 否则界面关了声音还在响
     try { if (typeof host.stopSpeech === 'function') host.stopSpeech(); } catch (e) { /* 忽略 */ }
+    // 正在录音的话也停掉：界面都没了，麦克风不该还开着
+    try {
+      if (typeof host.dictationState === 'function') {
+        const st = String(host.dictationState() || 'idle');
+        if (st === 'listening' || st === 'paused') host.dictate('stop');
+      }
+    } catch (e) { /* 忽略 */ }
     speakStartedAt = 0;
     mouthEnergy = 1;
     voiceEnergy = null; // 必须复位：否则下次通话会沿用上一轮残留的真实音量，嘴型一开始就是张着的
@@ -2238,6 +2295,19 @@ ${lines.join('\n')}
       if (!last) return false;
       speakBubble(last);
       return true;
+    },
+    // ---- 语音输入（说话 → 识别 → 发送）----
+    /** ASR 是否已配置（false 时舞台不显示麦克风按钮） */
+    dictationConfigured() {
+      try { return typeof host.dictationConfigured === 'function' && host.dictationConfigured(); } catch (e) { return false; }
+    },
+    /** 开麦 / 结束并发送；action 缺省为切换 */
+    dictate(action) {
+      try { return typeof host.dictate === 'function' ? host.dictate(action) : false; } catch (e) { return false; }
+    },
+    /** 当前语音输入状态：idle / listening / paused / thinking / error */
+    dictationState() {
+      try { return typeof host.dictationState === 'function' ? String(host.dictationState()) : 'idle'; } catch (e) { return 'idle'; }
     },
     /** 发一句话（气泡输入行也行；供设置页"测试"或有其它入口用） */
     sendMessage(text) {
