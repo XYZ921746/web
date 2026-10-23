@@ -197,10 +197,7 @@ function initLive2DCore(host) {
     layer.id = 'live2d-call-host';
     layer.innerHTML = `
       <div id="live2d-stage" class="live2d-stage">
-        <!-- 右上角：退出。舞台不提供语音、模型下拉这类控件，
-             模型在「设置 → 插件 → Galgame 齿轮 → 情景演绎」里选。 -->
-        <button id="live2d-mic-btn" class="live2d-exit-btn live2d-mic-btn" type="button" title="语音输入（点一下开始说话）" aria-label="语音输入">🎤</button>
-        <button id="live2d-speech-btn" class="live2d-exit-btn live2d-speech-btn" type="button" title="朗读：开（点一下关闭）" aria-label="朗读开关">🔊</button>
+        <!-- 右上角只留退出。语音输入在下方聊天框那一行（麦克风就在输入框旁边）。 -->
         <button id="live2d-exit-btn" class="live2d-exit-btn" type="button" title="退出情景演绎" aria-label="退出情景演绎">✕</button>
         <div id="live2d-canvas-wrap" class="live2d-canvas-wrap">
           <canvas id="live2d-canvas"></canvas>
@@ -215,6 +212,7 @@ function initLive2DCore(host) {
               <div id="live2d-gg-text" class="gg-stext"></div>
               <div id="live2d-gg-input-row" class="gg-srow">
                 <input id="live2d-gg-input" type="text" placeholder="和伊蕾娜说点什么…（回车发送）" autocomplete="off">
+                <button id="live2d-mic-btn" class="gg-mic-btn" type="button" title="语音输入：点一下开始说话" aria-label="语音输入">🎤</button>
                 <button id="live2d-gg-send" type="button" title="发送">➤</button>
               </div>
             </div>
@@ -257,17 +255,18 @@ function initLive2DCore(host) {
       }
       .live2d-exit-btn:hover { background: rgba(239,68,68,.75); transform: scale(1.05); }
       /* 朗读开关：与退出按钮同款，但平时更低调（不是"离开"那种破坏性动作） */
-      .live2d-speech-btn { right: 58px; font-size: 14px; }
-      .live2d-speech-btn:hover { background: rgba(255,255,255,.3); transform: scale(1.05); }
-      .live2d-speech-btn.is-off { opacity: .55; }
-      /* 语音输入：最左那颗；正在听时变红并轻微脉动（让"麦开着"这件事看得见） */
-      .live2d-mic-btn { right: 100px; font-size: 15px; }
-      .live2d-mic-btn:hover { background: rgba(255,255,255,.3); transform: scale(1.05); }
-      .live2d-mic-btn.is-listening {
-        background: rgba(239,68,68,.8); border-color: rgba(255,255,255,.4);
-        animation: live2d-mic-beat 1.2s ease-in-out infinite;
+      /* 语音输入：聊天框那一行、发送键左边（和主界面的麦克风同一个位置习惯） */
+      .gg-mic-btn {
+        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+        border: 1px solid rgba(255,255,255,.22); background: rgba(10,14,22,.78);
+        color: #fff; font-size: 16px; line-height: 1; transition: background .15s, transform .15s;
       }
-      @keyframes live2d-mic-beat { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+      .gg-mic-btn:hover { background: rgba(255,255,255,.22); transform: scale(1.04); }
+      .gg-mic-btn.is-listening {
+        background: rgba(239,68,68,.82); border-color: rgba(255,255,255,.4);
+        animation: gg-mic-beat 1.2s ease-in-out infinite;
+      }
+      @keyframes gg-mic-beat { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
       .live2d-canvas-wrap { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
       #live2d-canvas { width: 100%; height: 100%; display: block; }
       /* 立绘模式：立绘与 Live2D 共用同一个位置，切换时只换内容 */
@@ -334,31 +333,10 @@ function initLive2DCore(host) {
     document.head.appendChild(style);
 
     layer.querySelector('#live2d-exit-btn').addEventListener('click', close);
-    // 朗读开关：关掉后不再自动念新回复，正在念的立即停
-    const speechBtn = layer.querySelector('#live2d-speech-btn');
-    if (speechBtn) {
-      const syncSpeechBtn = () => {
-        speechBtn.classList.toggle('is-off', !speechEnabled);
-        speechBtn.textContent = speechEnabled ? '🔊' : '🔇';
-        speechBtn.title = speechEnabled ? '朗读：开（点一下关闭）' : '朗读：关（点一下开启）';
-        // 没配 TTS 时这个按钮没有意义，直接收起来（比点了没反应好）
-        let configured = false;
-        try { configured = typeof host.speechConfigured === 'function' && host.speechConfigured(); } catch (e) { configured = false; }
-        speechBtn.style.display = configured ? '' : 'none';
-      };
-      speechBtn.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        speechEnabled = !speechEnabled;
-        try { localStorage.setItem(L2D_PREFIX + 'speech', speechEnabled ? '1' : '0'); } catch { /* ignore */ }
-        if (!speechEnabled) { try { host.stopSpeech(); } catch (e) { /* 忽略 */ } }
-        syncSpeechBtn();
-      });
-      syncSpeechBtn();
-      window.__galgameSyncSpeechBtn = syncSpeechBtn;
-    }
 
-    // 语音输入：开麦 / 结束并发送。识别结果由宿主直接发出去（与主界面麦克风同一链路），
-    //   所以这里不需要拿文本 —— 舞台的气泡轮询会看到那条用户消息。
+    // 语音输入（聊天框那一行、发送键左边）：开麦 / 结束并发送。
+    //   识别结果由宿主直接发出去（与主界面麦克风同一链路），所以这里不拿文本 ——
+    //   舞台的气泡轮询会看到那条用户消息。
     //   没配置 ASR 时按钮隐藏：让用户点一下再弹"未配置"是最差的一种设计。
     const micBtn = layer.querySelector('#live2d-mic-btn');
     if (micBtn) {
@@ -373,7 +351,7 @@ function initLive2DCore(host) {
         const listening = st === 'listening' || st === 'paused';
         micBtn.classList.toggle('is-listening', listening);
         micBtn.textContent = listening ? '⏹' : '🎤';
-        micBtn.title = listening ? '结束并发送（再说一次点这里）' : '语音输入（点一下开始说话）';
+        micBtn.title = listening ? '结束并发送' : '语音输入：点一下开始说话';
       };
       micBtn.addEventListener('click', (ev) => {
         ev.stopPropagation();
@@ -1948,10 +1926,14 @@ ${lines.join('\n')}
   let bubblePoll = null;
   /** 已经念过的那条消息 id（避免轮询把它重复念一遍） */
   let lastSpokenMessageId = '';
-  /** 朗读开关（设置页可关；默认开 = 配了 TTS 就念，与主界面一致） */
-  let speechEnabled = (function () {
-    try { return localStorage.getItem(L2D_PREFIX + 'speech') !== '0'; } catch { return true; }
-  })();
+  /**
+   * 朗读：**默认开、不可关**。
+   *
+   * 判决理由：朗读要不要开是"有没有配 TTS"决定的（没配就念不出来，见 speakBubble
+   *   里的 configured 判断），不需要再叠一个开关 —— 一个"开了也不一定响"的开关
+   *   只会让人怀疑是不是坏了。已配 TTS 的用户进来就听到声音，这才是他要的效果。
+   */
+  const speechEnabled = true;   // 只读：不再有开关（见上面的说明）
   let speakStartedAt = 0;
   /** 打字机开关（设置页可关；关掉就是整段直接出现） */
   let typewriterOn = (function () {
@@ -2020,7 +2002,7 @@ ${lines.join('\n')}
    * 没有配置 TTS 时静默跳过 —— 这是"没装语音就只显示文字"的正常形态，不是错误。
    */
   function speakBubble(msg) {
-    if (!speechEnabled) return;
+    // 朗读没有开关：配了 TTS 就念（下面的 configured 判断），没配就只显示文字。
     if (typeof host.speak !== 'function') return;
     let configured = false;
     try { configured = typeof host.speechConfigured === 'function' && host.speechConfigured(); } catch (e) { configured = false; }
@@ -2273,18 +2255,8 @@ ${lines.join('\n')}
     listEmotions() { return Object.keys(EMOTION_MAP); },
     /** 按情绪/表情词切换表现（立绘换图、模型换表情；无法识别返回 false） */
     setEmotion(name) { return driveEmotion(name); },
-    // ---- 朗读（与主界面同一条 TTS 链路）----
-    /** 朗读开关是否打开（设置页 / 顶栏按钮用） */
-    getSpeechEnabled() { return speechEnabled; },
-    /** 开/关朗读；关掉会立刻停掉正在念的 */
-    setSpeechEnabled(on) {
-      speechEnabled = !!on;
-      try { localStorage.setItem(L2D_PREFIX + 'speech', speechEnabled ? '1' : '0'); } catch { /* ignore */ }
-      if (!speechEnabled) { try { host.stopSpeech(); } catch (e) { /* 忽略 */ } }
-      if (typeof window.__galgameSyncSpeechBtn === 'function') window.__galgameSyncSpeechBtn();
-      return speechEnabled;
-    },
-    /** 语音是否已配置（供应商 + Key 齐全） */
+    // ---- 朗读（与主界面同一条 TTS 链路；默认开，没有开关）----
+    /** 语音是否已配置（供应商 + Key 齐全）。没配时朗读静默跳过 */
     speechConfigured() {
       try { return typeof host.speechConfigured === 'function' && host.speechConfigured(); } catch (e) { return false; }
     },
