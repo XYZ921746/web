@@ -374,6 +374,60 @@ html[data-theme="dark"] .theme-capsule button[aria-pressed="true"] {
   padding: 8px 17px;
   font-size: 13.5px;
 }
+/* ── 作者群聊入口：悬浮 / 键盘聚焦时弹出二维码 ─────────────────────────── */
+.qq-group { position: relative; }
+.qq-pop {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 14px);
+  z-index: 40;
+  width: 184px;
+  padding: 10px 10px 9px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, 8px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+}
+.qq-pop img {
+  width: 164px;
+  height: 212px;
+  margin: 0 auto;
+  border-radius: 8px;
+  object-fit: contain;
+  background: #fff;
+}
+.qq-pop__hint {
+  display: block;
+  margin-top: 7px;
+  color: var(--ink-soft);
+  font: 500 11.5px/1.4 var(--font-sans);
+  white-space: nowrap;
+}
+.qq-group:hover .qq-pop,
+.qq-group:focus-within .qq-pop {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+/* 页头按钮贴近右边缘：改为向下弹出并右对齐，避免超出视口 */
+.qq-group--down .qq-pop {
+  top: calc(100% + 14px);
+  right: 0;
+  bottom: auto;
+  left: auto;
+  transform: translateY(-8px);
+}
+.qq-group--down:hover .qq-pop,
+.qq-group--down:focus-within .qq-pop { transform: translateY(0); }
+@media (max-width: 960px) {
+  .mobile-menu__qq { width: 100%; margin-top: 10px; }
+}
 .menu-toggle {
   display: none;
   position: relative;
@@ -2258,6 +2312,12 @@ html[data-theme="dark"] .btn--on-dark:hover {
         </div>
       </div>
       <a class="btn btn--primary btn--sm header-cta" href="https://github.com/XYZ921746/ElainaChat-mod/releases">下载</a>
+      <a class="btn btn--ghost btn--sm header-cta qq-group qq-group--down" href="https://qm.qq.com/q/YdAcNJMqwE" target="_blank" rel="noopener" aria-label="加入作者群聊，鼠标悬浮查看群二维码">加入群聊
+        <span class="qq-pop" role="tooltip">
+          <img src="./assets/qq-group-qrcode.jpg" width="164" height="212" alt="作者群聊二维码" loading="lazy" decoding="async">
+          <span class="qq-pop__hint">扫码加入作者群聊</span>
+        </span>
+      </a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="打开菜单">
         <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
       </button>
@@ -2278,6 +2338,7 @@ html[data-theme="dark"] .btn--on-dark:hover {
       <a class="btn btn--primary" href="https://github.com/XYZ921746/ElainaChat-mod/releases">下载最新版</a>
       <a class="btn btn--ghost" href="https://github.com/XYZ921746/ElainaChat-mod">GitHub 源码</a>
     </div>
+    <a class="btn btn--ghost mobile-menu__qq" href="https://qm.qq.com/q/YdAcNJMqwE" target="_blank" rel="noopener">加入作者群聊</a>
     <p class="mobile-menu__note">GPLv3 开源 · 数据全在本机 · 版本以 Releases 页为准</p>
   </div>
 </header>
@@ -2303,6 +2364,12 @@ html[data-theme="dark"] .btn--on-dark:hover {
               下载电脑版 / 安卓版
             </a>
             <a class="btn btn--ghost" href="https://github.com/XYZ921746/ElainaChat-mod" title="查看 GitHub 源码">查看源码</a>
+            <a class="btn btn--ghost qq-group" href="https://qm.qq.com/q/YdAcNJMqwE" target="_blank" rel="noopener" aria-label="加入作者群聊，鼠标悬浮查看群二维码">加入作者群聊
+              <span class="qq-pop" role="tooltip">
+                <img src="./assets/qq-group-qrcode.jpg" width="164" height="212" alt="作者群聊二维码" loading="lazy" decoding="async">
+                <span class="qq-pop__hint">扫码加入作者群聊</span>
+              </span>
+            </a>
           </div>
           <ul class="hero-meta" aria-label="项目速览">
             <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>电脑版安装包免依赖</li>
@@ -2693,7 +2760,7 @@ html[data-theme="dark"] .btn--on-dark:hover {
         </details>
         <details class="faq-item">
           <summary>遇到问题，或者想投稿怎么办？<span class="faq-toggle" aria-hidden="true"></span></summary>
-          <div class="faq-answer"><p>可以到 <a href="https://github.com/XYZ921746/ElainaChat-mod/issues" target="_blank" rel="noopener">项目仓库提 issue</a>，或加入作者群聊。插件与模型都有各自的 GitHub 投稿表单：<a href="./store/submit/">插件投稿</a>、<a href="./models/submit/">模型投稿</a>，不用会 git。</p></div>
+          <div class="faq-answer"><p>可以到 <a href="https://github.com/XYZ921746/ElainaChat-mod/issues" target="_blank" rel="noopener">项目仓库提 issue</a>，或<a href="https://qm.qq.com/q/YdAcNJMqwE" target="_blank" rel="noopener">加入作者群聊</a>。插件与模型都有各自的 GitHub 投稿表单：<a href="./store/submit/">插件投稿</a>、<a href="./models/submit/">模型投稿</a>，不用会 git。</p></div>
         </details>
       </div>
     </div>
@@ -2759,6 +2826,7 @@ html[data-theme="dark"] .btn--on-dark:hover {
           <li><a href="https://github.com/XYZ921746/ElainaChat-mod/releases">下载最新版</a></li>
           <li><a href="https://github.com/XYZ921746/ElainaChat-mod#readme">能力一览</a></li>
           <li><a href="https://github.com/XYZ921746">个人主页</a></li>
+          <li><a href="https://qm.qq.com/q/YdAcNJMqwE" target="_blank" rel="noopener">加入作者群聊</a></li>
         </ul>
       </div>
     </div>
