@@ -382,12 +382,12 @@ html[data-theme="dark"] .theme-capsule button[aria-pressed="true"] {
   bottom: calc(100% + 14px);
   z-index: 40;
   width: 184px;
-  padding: 10px 10px 9px;
+  padding: 0;
   border: 1px solid var(--line);
   border-radius: 16px;
   background: var(--surface);
   box-shadow: var(--shadow-md);
-  text-align: center;
+  overflow: hidden;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -395,19 +395,11 @@ html[data-theme="dark"] .theme-capsule button[aria-pressed="true"] {
   transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
 }
 .qq-pop img {
-  width: 164px;
-  height: 212px;
-  margin: 0 auto;
-  border-radius: 8px;
-  object-fit: contain;
-  background: #fff;
-}
-.qq-pop__hint {
   display: block;
-  margin-top: 7px;
-  color: var(--ink-soft);
-  font: 500 11.5px/1.4 var(--font-sans);
-  white-space: nowrap;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  background: transparent;
 }
 .qq-group:hover .qq-pop,
 .qq-group:focus-within .qq-pop {
@@ -2315,7 +2307,6 @@ html[data-theme="dark"] .btn--on-dark:hover {
       <a class="btn btn--ghost btn--sm header-cta qq-group qq-group--down" href="https://qm.qq.com/q/YdAcNJMqwE" target="_blank" rel="noopener" aria-label="加入作者群聊，鼠标悬浮查看群二维码">加入群聊
         <span class="qq-pop" role="tooltip">
           <img src="./assets/qq-group-qrcode.jpg" width="164" height="212" alt="作者群聊二维码" loading="lazy" decoding="async">
-          <span class="qq-pop__hint">扫码加入作者群聊</span>
         </span>
       </a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="打开菜单">
@@ -2367,7 +2358,6 @@ html[data-theme="dark"] .btn--on-dark:hover {
             <a class="btn btn--ghost qq-group" href="https://qm.qq.com/q/YdAcNJMqwE" target="_blank" rel="noopener" aria-label="加入作者群聊，鼠标悬浮查看群二维码">加入作者群聊
               <span class="qq-pop" role="tooltip">
                 <img src="./assets/qq-group-qrcode.jpg" width="164" height="212" alt="作者群聊二维码" loading="lazy" decoding="async">
-                <span class="qq-pop__hint">扫码加入作者群聊</span>
               </span>
             </a>
           </div>
