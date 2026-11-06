@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>桌宠</title>
+<style>
+  /* 透明桌宠页：页面背景必须全透明，透明像素露出的是壳窗体的透明底并直接「看穿」到桌面；
+     这些像素也不参与命中测试——点人物周围等于点到桌面下层。 */
+  html, body {
+      margin: 0; width: 100%; height: 100%;
+      background: transparent; overflow: hidden;
+      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  }
+  /* 人物是唯一的交互面：按住拖动（JS 实现并经壳挪窗），短按弹出菜单。 */
+  #char {
+      position: fixed; bottom: 44px; left: 50%; transform: translateX(-50%);
+      max-height: 88%; max-width: 88%; object-fit: contain; object-position: bottom center;
+      animation: breathe 6.5s ease-in-out infinite;
+      user-select: none; -webkit-user-drag: none;
+      touch-action: none;   /* 触屏拖动不被当成滚动，指针事件才连得上 */
+      cursor: grab;
+  }
+  #char:active { cursor: grabbing; }
+  @keyframes breathe {
+      0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
+      50% { transform: translateX(-50%) translateY(-1.2%) scale(1.008); }
+  }
+  /* 说话气泡：人物左上角（头顶偏左），只展示、不接收点击 */
+  #bubble {
+      position: fixed; left: 6px; top: 64px;
+      max-width: 60%; box-sizing: border-box; padding: 8px 12px;
+      border-radius: 14px; background: rgba(255, 255, 255, .94); color: #1e1b4b;
+      font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-word;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, .18);
+      opacity: 0; transition: opacity .25s; pointer-events: none;
+  }
+  #bubble.show { opacity: 1; }
+  /* 点击人物弹出的菜单：贴在人物右上方 */
+  #menu {
+      position: fixed; right: 8px; top: 42%;
+      display: flex; flex-direction: column; gap: 2px;
+      padding: 6px; border-radius: 14px;
+      background: rgba(255, 255, 255, .92); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, .9);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .22);
+      opacity: 0; pointer-events: none; transform: translateY(6px) scale(.96);
+      transition: opacity .16s, transform .16s;
+  }
+  #menu.show { opacity: 1; pointer-events: auto; transform: none; }
+  #menu button, .panel button {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 14px; border: 0; border-radius: 10px;
+      background: transparent; color: #1e1b4b; cursor: pointer;
+      font-size: 13px; text-align: left; white-space: nowrap;
+  }
+  #menu button:hover { background: rgba(99, 102, 241, .14); }
+  #menu .ico { width: 18px; text-align: center; }
+  #menu .tag { margin-left: auto; font-size: 10px; color: #6366f1; }
+  /* 聊天输入条：人物脚下，进入聊天模式才出现 */
+  #inputRow {
+      position: fixed; left: 6px; right: 6px; bottom: 6px;
+      display: none; gap: 6px; align-items: center;
+      padding: 6px; border-radius: 14px;
+      background: rgba(255, 255, 255, .92); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, .9);
+      box-shadow: 0 8px 26px rgba(0, 0, 0, .2);
+  }
+  #inputRow.show { display: flex; }
+  #chatInput {
+      flex: 1; min-width: 0; border: 0; outline: none; background: transparent;
+      font-size: 13px; color: #1e1b4b; padding: 6px 4px;
+  }
+  #chatSend {
+      flex: none; width: 30px; height: 30px; border-radius: 50%; border: 0;
+      background: linear-gradient(135deg, #f472b6, #a78bfa); color: #fff;
+      font-size: 14px; cursor: pointer;
+  }
+  /* 桌宠自己的设置面板（菜单「设置」打开）：频率与朗读，都在这调，不跳主应用 */
+  #settings {
+      position: fixed; left: 8px; right: 8px; top: 34%;
+      padding: 10px 12px; border-radius: 14px;
+      background: rgba(255, 255, 255, .94); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, .9);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .22);
+      opacity: 0; pointer-events: none; transform: translateY(6px);
+      transition: opacity .16s, transform .16s;
+      color: #1e1b4b; font-size: 12px;
+  }
+  #settings.show { opacity: 1; pointer-events: auto; transform: none; }
+  #settings h4 { margin: 0 0 8px; font-size: 12px; color: #6366f1; }
+  #settings label { display: flex; align-items: center; gap: 6px; padding: 3px 0; cursor: pointer; }
+  #settings .row { display: flex; align-items: center; gap: 6px; margin: 6px 0 2px; }
+  #settings input[type="number"] { width: 52px; padding: 3px 6px; border: 1px solid #ddd; border-radius: 8px; font-size: 12px; }
+  #settings .hint { color: #888; font-size: 10px; margin: 6px 0 0; line-height: 1.5; }
+  #settings .close { margin-top: 8px; width: 100%; justify-content: center; background: rgba(99, 102, 241, .12); border-radius: 10px; }
+</style>
+</head>
+<body>
+  <div id="bubble"></div>
+  <img id="char" alt="伊蕾娜" draggable="false">
+  <div id="menu">
+    <button id="mChat"><span class="ico">💬</span>聊天</button>
+    <button id="mSettings"><span class="ico">⚙️</span>设置</button>
+    <button id="mProactive"><span class="ico">⚡</span>主动搭话<span class="tag" id="proTag">关</span></button>
+    <button id="mHide"><span class="ico">✕</span>收起桌宠</button>
+  </div>
+  <div id="settings">
+    <h4>桌宠设置</h4>
+    <label><input type="radio" name="freq" value="fast">快（5 分钟以内随机搭一次）</label>
+    <label><input type="radio" name="freq" value="medium">中（30 分钟以内随机搭一次）</label>
+    <label><input type="radio" name="freq" value="slow">慢（1 小时以内随机搭一次）</label>
+    <div class="row">
+      <label><input type="radio" name="freq" value="custom">自定义</label>
+      <input type="number" id="customMin" min="1" max="720"> 分钟搭一次
+    </div>
+    <label><input type="checkbox" id="ttsToggle">桌宠说话时朗读（TTS）</label>
+    <button class="close" id="settingsClose">完成</button>
+    <p class="hint">主动搭话开启时，AI 会随机截取屏幕画面看看你在做什么再搭话；截图只会发给你自己配置的 AI 供应商。</p>
+  </div>
+  <div id="inputRow">
+    <input id="chatInput" type="text" placeholder="和伊蕾娜说点什么…" autocomplete="off">
+    <button id="chatSend" title="发送">➤</button>
+  </div>
+<script>
+(function () {
+    'use strict';
+    // 页面只依赖 Web 标准能力（BroadcastChannel + DOM）：数据从主页面来，菜单动作也发回主页面，
+    // 由主页面经宿主 API 落地——本页对壳的唯一直接依赖是拖动时的挪窗消息（主页面代替不了这件事）。
+    var ch = document.getElementById('char');
+    var bubble = document.getElementById('bubble');
+    var menu = document.getElementById('menu');
+    var settings = document.getElementById('settings');
+    var inputRow = document.getElementById('inputRow');
+    var chatInput = document.getElementById('chatInput');
+    var proTag = document.getElementById('proTag');
+    var hideTimer = null;
+    var chan = new BroadcastChannel('elaina-pet');
+    var emotions = {};   // 情绪键 -> 立绘 URL（主页面 init 时下发，本页不自己拼路径）
+
+    function showBubble(text) {
+        var t = String(text == null ? '' : text);
+        if (!t) return;
+        bubble.textContent = t;
+        bubble.classList.add('show');
+        if (hideTimer) clearTimeout(hideTimer);
+        hideTimer = setTimeout(function () { bubble.classList.remove('show'); }, 9000);
+    }
+    function setEmotion(key) {
+        var url = emotions[key || 'calm'] || emotions.calm;
+        if (url && ch.getAttribute('src') !== url) ch.setAttribute('src', url);
+    }
+    function setProactiveTag(on) { proTag.textContent = on ? '开' : '关'; }
+
+    chan.onmessage = function (ev) {
+        var d = ev.data || {};
+        if (d.type === 'init') {
+            emotions = d.emotions || {};
+            setEmotion(d.emotion);
+            if (d.bubble) showBubble(d.bubble);
+            setProactiveTag(d.proactive);
+        } else if (d.type === 'emotion') {
+            setEmotion(d.key);
+        } else if (d.type === 'bubble') {
+            showBubble(d.text);
+        } else if (d.type === 'proactive') {
+            setProactiveTag(d.on);
+        } else if (d.type === 'show-settings') {
+            hideMenu();
+            hideInput();
+            applySettings(d.settings || {});
+            settings.classList.add('show');
+            sendHit();
+        }
+    };
+    // 主页面可能先于本页建好监听，也可能晚于本页加载完成——hello 触发 init，谁来晚了都能对上
+    chan.postMessage({ type: 'hello' });
+
+    // ── 命中区域上报：壳按这些矩形放行真实鼠标，其余像素穿透 ──
+    function sendHit() {
+        var rects = [];
+        try {
+            var cr = ch.getBoundingClientRect();
+            rects.push([Math.round(cr.left), Math.round(cr.top), Math.round(cr.width), Math.round(cr.height)]);
+            if (menu.classList.contains('show')) {
+                var mr = menu.getBoundingClientRect();
+                rects.push([Math.round(mr.left), Math.round(mr.top), Math.round(mr.width), Math.round(mr.height)]);
+            }
+            if (settings.classList.contains('show')) {
+                var sr = settings.getBoundingClientRect();
+                rects.push([Math.round(sr.left), Math.round(sr.top), Math.round(sr.width), Math.round(sr.height)]);
+            }
+            if (inputRow.classList.contains('show')) {
+                var ir = inputRow.getBoundingClientRect();
+                rects.push([Math.round(ir.left), Math.round(ir.top), Math.round(ir.width), Math.round(ir.height)]);
+            }
+        } catch (e) { /* 忽略 */ }
+        postToShell({ type: 'mod-window-hit', rects: JSON.stringify(rects) });
+    }
+    ch.addEventListener('load', function () { sendHit(); });
+
+    // ── 菜单 ──
+    function toggleMenu() { menu.classList.toggle('show'); hidePanel(settings); hideInput(); sendHit(); }
+    function hideMenu() { menu.classList.remove('show'); }
+    function hidePanel(p) { p.classList.remove('show'); }
+    function hideInput() { inputRow.classList.remove('show'); }
+    document.getElementById('mChat').addEventListener('click', function () {
+        hideMenu();
+        hidePanel(settings);
+        inputRow.classList.toggle('show');
+        sendHit();
+        if (inputRow.classList.contains('show')) chatInput.focus();
+    });
+    document.getElementById('mSettings').addEventListener('click', function () {
+        hideMenu();
+        hideInput();
+        chan.postMessage({ type: 'settings-request' });   // 配置在主页面，由它回推 show-settings
+    });
+    document.getElementById('mProactive').addEventListener('click', function () {
+        chan.postMessage({ type: 'proactive-toggle' });   // 新状态由主页面回推 proactive 消息
+    });
+    document.getElementById('mHide').addEventListener('click', function () {
+        hideMenu();
+        chan.postMessage({ type: 'close-request' });
+    });
+
+    // ── 桌宠设置面板 ──
+    function applySettings(cfg) {
+        var freq = cfg.freq || 'fast';
+        var radios = settings.querySelectorAll('input[name="freq"]');
+        for (var i = 0; i < radios.length; i++) radios[i].checked = radios[i].value === freq;
+        document.getElementById('customMin').value = cfg.customMin || 15;
+        document.getElementById('ttsToggle').checked = Boolean(cfg.tts);
+    }
+    function collectSettings() {
+        var freq = 'fast';
+        var radios = settings.querySelectorAll('input[name="freq"]');
+        for (var i = 0; i < radios.length; i++) if (radios[i].checked) freq = radios[i].value;
+        var customMin = Math.max(1, Math.min(720, Number(document.getElementById('customMin').value) || 15));
+        return { freq: freq, customMin: customMin, tts: document.getElementById('ttsToggle').checked };
+    }
+    function pushSettings() {
+        var cfg = collectSettings();
+        chan.postMessage({ type: 'settings-set', settings: cfg });   // 主页面落盘并回推
+    }
+    settings.addEventListener('change', function () { pushSettings(); });
+    document.getElementById('settingsClose').addEventListener('click', function () {
+        hidePanel(settings);
+        sendHit();
+    });
+
+    // ── 聊天输入 ──
+    function sendChat() {
+        var v = String(chatInput.value || '').trim();
+        if (!v) return;
+        chatInput.value = '';
+        chan.postMessage({ type: 'chat-send', text: v });
+    }
+    document.getElementById('chatSend').addEventListener('click', sendChat);
+    chatInput.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter') { ev.stopPropagation(); sendChat(); }
+    });
+
+    // ── 拖动 + 点击 ──
+    // 挪窗消息直接发给壳（mod-window-move-*）：主窗口代替不了「移动另一个窗」这件事。
+    function postToShell(msg) {
+        try {
+            var wv = window.chrome && window.chrome.webview;
+            if (wv && typeof wv.postMessage === 'function') wv.postMessage(msg);
+        } catch (e) { /* 没有壳（如把本页直接开在浏览器里）时拖动不可用，其余功能不受影响 */ }
+    }
+    var DRAG_THRESHOLD = 5;   // 位移超过它才算拖动；否则抬起时按「点击」处理（弹菜单）
+    var drag = null;
+    ch.addEventListener('pointerdown', function (ev) {
+        if (ev.button !== 0 && ev.pointerType === 'mouse') return;
+        drag = { x: ev.screenX, y: ev.screenY, moved: false };
+        if (ch.setPointerCapture) { try { ch.setPointerCapture(ev.pointerId); } catch (e) { /* 忽略 */ } }
+        ev.preventDefault();
+    });
+    ch.addEventListener('pointermove', function (ev) {
+        if (!drag) return;
+        var dx = ev.screenX - drag.x, dy = ev.screenY - drag.y;
+        if (!drag.moved && Math.abs(dx) * Math.abs(dx) + Math.abs(dy) * Math.abs(dy) < DRAG_THRESHOLD * DRAG_THRESHOLD) return;
+        if (!drag.moved) {
+            drag.moved = true;
+            hideMenu(); hidePanel(settings); hideInput();   // 拖动开始就收浮层，别让它们跟着窗飘
+            sendHit();
+            postToShell({ type: 'mod-window-move-start' });
+        }
+        postToShell({ type: 'mod-window-move', x: dx, y: dy });
+        ev.preventDefault();
+    });
+    function finishDrag(wasCancelled) {
+        if (!drag) return;
+        var wasClick = !drag.moved;
+        drag = null;
+        postToShell({ type: 'mod-window-move-end' });
+        if (wasClick && !wasCancelled) toggleMenu();
+    }
+    ch.addEventListener('pointerup', function () { finishDrag(false); });
+    ch.addEventListener('pointercancel', function () { finishDrag(true); });
+    // 右键同样弹菜单（鼠标用户的习惯）；拖动中的右键忽略
+    ch.addEventListener('contextmenu', function (ev) {
+        ev.preventDefault();
+        if (!drag || !drag.moved) { drag = null; toggleMenu(); }
+    });
+    sendHit();   // 立绘已缓存时 load 不再触发，这里兜底报一次
+})();
+</script>
+</body>
+</html>

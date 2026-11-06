@@ -1,10 +1,16 @@
 {
     "id": "pet",
     "name": "桌宠",
-    "version": "1.0.0",
-    "description": "悬浮桌宠：立绘 + 聊天气泡，回复情绪自动切换表情。与 Galgame 共用立绘与情绪识别。",
+    "version": "1.1.0",
+    "description": "悬浮桌宠：立绘 + 聊天气泡，回复情绪自动切换表情。可浮出为透明置顶桌宠（桌面壳）或置顶小窗（浏览器）。与 Galgame 共用立绘与情绪识别。",
     "entry": "index.js",
     "styles": ["style.css"],
+    "capabilities": ["desktopWindow"],
+    "server": {
+        "entry": "server.mjs",
+        "routes": ["/api/pet"],
+        "capabilities": ["route-register"]
+    },
     "defaultEnabled": false,
     "after": ["elaina-avatar"]
 }

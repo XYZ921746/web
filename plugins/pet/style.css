@@ -1,14 +1,6 @@
-/* ============================================================================
- * 桌宠样式
- *
- * 大部分布局用内联样式写在 index.js 里（浮层结构简单，内联更直观且便于
- * 单个 mod 自包含）。这里只放**必须用 CSS 定义**的部分：动画关键帧。
- * ========================================================================== */
+/* 桌宠样式：布局用内联样式写在 index.js 里，这里只放必须用 CSS 定义的部分（动画关键帧等）。 */
 
-/* 呼吸浮动：立绘轻微上下移动，让静态图看起来"活着"。
-   Galgame 的立绘也复用了同一个动画名（上游如此）—— 所以这个关键帧
-   实际上被两个 mod 共用。放在桌宠的样式里是因为桌宠是它的主要使用场景；
-   若将来两个 mod 都要独立可用，可以把这个动画上移到公共依赖插件里。 */
+/* 呼吸浮动：让静态图看起来"活着"；同一动画名也被 Galgame 的立绘复用。 */
 @keyframes pet-breathe {
     0%, 100% { transform: translateY(0) scale(1); }
     50% { transform: translateY(-1.2%) scale(1.008); }
@@ -34,3 +26,31 @@
     #petLayer { width: min(300px, 92vw) !important; }
     #petLayer #petAvatar { max-height: 150px !important; }
 }
+
+/* 桌面置顶小窗形态（root 已被搬进 PiP 文档）：内联样式是为应用内浮层写的，
+ * 要用 !important 才盖得过；整窗就是桌宠，去掉悬浮投影、按窗口大小撑满重排。 */
+.pet-desktop {
+    position: static !important;
+    width: 100% !important;
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column;
+    filter: none !important;
+    z-index: auto !important;
+}
+.pet-desktop #petDragHint { display: none; }
+.pet-desktop #petDrag {
+    cursor: default;
+    border-radius: 0;
+    flex: none;
+}
+.pet-desktop #petCard {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border-radius: 0 !important;
+    border: 0 !important;
+}
+.pet-desktop #petBubbles { flex: 1; max-height: none !important; min-height: 0; }
+.pet-desktop #petAvatar { max-height: 160px !important; }
