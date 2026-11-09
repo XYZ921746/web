@@ -27,7 +27,7 @@
       ],
       "videoUrl": "https://www.bilibili.com/video/BV16yYi69EQT/",
       "usage": "project-only",
-      "license": "仅限本项目内个人使用，不得商用 / 转售",
+      "license": "允许商业使用，详细条款查看readme和原作者主页",
       "readmeUrl": "https://github.com/XYZ921746/web/blob/main/store/models/deepseek/README.md",
       "description": "内置的 DeepSeek 鲸鱼娘模型，随 APK 一并分发；这里提供单独的 zip，方便电脑版直接安装。由两位作者共同完成。",
       "zipUrl": "https://github.com/XYZ921746/ElainaChat-mod/releases/download/v1.2.0-open/live2d-deepseek.zip",
