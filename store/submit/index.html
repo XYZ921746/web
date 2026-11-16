@@ -86,7 +86,8 @@
       <p class="eyebrow">插件投稿</p>
       <h1>把你的插件放上来</h1>
       <p class="lede">第三方作者也能投稿 —— <strong>fork 本仓库、加插件、发 PR</strong>，合并即上架
-        web 仓库的 <a href="../">插件商店</a>，应用内「插件市场」就能装。社区投稿进「第三方插件」分区（未审查警告由客户端自动展示）。</p>
+        web 仓库的 <a href="../">插件商店</a>，应用内「插件市场」就能装。<strong>源码进仓库 = 自动「已审核」</strong>（普通列表 + 绿色角标）；
+        只提交 release 下载地址 = 「第三方插件（未审核）」分区（客户端自动显示未审核警告）。</p>
       <div class="hero-actions">
         <a class="btn btn--primary" href="https://github.com/XYZ921746/web#插件投稿指南fork--pr" target="_blank" rel="noopener">投稿指南（README）</a>
         <a class="btn btn--ghost" href="https://github.com/XYZ921746/ElainaChat-mod/blob/main/%E5%BC%80%E5%8F%91%E6%96%87%E6%A1%A3.md" target="_blank" rel="noopener">开发文档</a>
@@ -111,7 +112,7 @@
           <h3>① 填投稿表单</h3>
           <ul class="steps">
             <li>Fork 本仓库，从 main 建分支；插件源码放进 <strong>plugins/&lt;id&gt;/</strong>（id 与 manifest.json 一致）</li>
-            <li>在 <strong>store/index.json</strong> 登记一条；社区投稿<strong>必须标 thirdParty: true</strong>（进「第三方插件」分区）</li>
+            <li>在 <strong>store/index.json</strong> 登记一条；社区投稿<strong>必须标 thirdParty: true</strong>，源码投稿再标 <strong>reviewed: true</strong>（合并即「已审核」，进普通列表）</li>
             <li>发 PR：模板自带检查单，写清<strong>授权方式与源码地址</strong>，合并即上架</li>
           </ul>
         </article>
@@ -127,13 +128,14 @@
           <h3>③ 上架后会怎样</h3>
           <ul class="steps">
             <li>维护者合并 PR 后打包放进 <strong>store/packages/</strong>，Pages 自动重新发布</li>
-            <li>应用里 <strong>设置 → 插件 → ✦ 插件市场</strong> 的「第三方插件」分区可见，点安装即用</li>
-            <li>第三方分区<strong>未经审查</strong>：卡片带「未审查」角标，安装即信任其代码与其注册的 AI 工具</li>
+            <li>源码投稿：应用里普通列表可见，卡片带「第三方·已审核」角标；只交 release 地址：进「第三方插件（未审核）」分区</li>
+            <li>未审核分区<strong>未经审核</strong>：卡片带「未审核」角标，安装即信任其代码与其注册的 AI 工具</li>
           </ul>
         </article>
       </div>
-      <p class="notice">投稿通道是 <strong>fork + PR</strong>（原 GitHub 表单通道已下线）。标了 <code>thirdParty: true</code> 的插件进
-        「第三方插件」分区——<strong>未经审查，请谨慎下载使用</strong>；想进官方列表的插件由维护者多做一轮代码审查后移除该标记。</p>
+      <p class="notice">投稿通道是 <strong>fork + PR</strong>（原 GitHub 表单通道已下线）。审核分级与投稿方式绑定：
+        源码 PR 进仓库 = <strong>自动「第三方·已审核」</strong>；只交 release 下载地址 = <strong>「第三方·未审核」</strong>——
+        <strong>请谨慎下载使用</strong>。未审核的插件随时可以补交源码转已审核（发一个源码 PR 即可）。</p>
       <p class="notice">投稿前请确认：<strong>代码与资源你有权分发</strong>（或已获授权），并愿意公开源码地址。
         <strong>安装插件 = 信任它的代码</strong>（它在页面同源环境里运行），所以上架会看源码；
         另外手机端的内嵌服务是否随包分发取决于构建开关，声明了 <strong>server</strong> 那半边的功能要能在服务缺失时降级。</p>
