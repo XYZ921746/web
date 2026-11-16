@@ -35,6 +35,8 @@
 2. **放入插件源码**：`plugins/<id>/`，其中 `<id>` 与 `manifest.json` 里的 `id` 一致（小写字母 / 数字 / 连字符）。
    - 清单里**显式写 `id`**；不要占用宿主的 API 前缀与静态地址（撞名会被拒绝装载）。
    - 大二进制（Live2D 模型等）不要打进插件目录——它们属于 `store/models.json` 那条线。
+   - 从零写插件：跟着宿主仓库的 [`skills/mod-authoring-guide`](https://github.com/XYZ921746/ElainaChat-mod/tree/main/skills/mod-authoring-guide)
+     走（快速开始、manifest / host API 契约速查、给 AI 注册 Agent 工具、零错误清单）。
 3. **登记索引**：在 `store/index.json` 的 `plugins` 数组加一条：
    - 必填：`id` / `name` / `version` / `kind`（`ui` 界面 / `resource` 资源）/ `author` / `license` / `description`；
    - `thirdParty: true` + `reviewed: true`（社区源码投稿的标准组合）；
