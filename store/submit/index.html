@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>插件投稿 · ElainaChat Mod</title>
-<meta name="description" content="把自己的插件（Mod）投稿到 ElainaChat Mod 插件商店：走 GitHub 表单，不用会 git；审核通过后上架，应用内「插件市场」即可安装。">
+<meta name="description" content="把自己的插件（Mod）投稿到 ElainaChat Mod 插件商店：fork 仓库、加插件、发 PR，合并即上架；社区投稿进「第三方插件」分区。">
 <meta name="theme-color" id="theme-color" content="#f6f1e8">
 <link rel="icon" href="../../assets/favicon.png?v=20261020" type="image/png">
 <link rel="canonical" href="https://xyz921746.github.io/web/store/submit/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ElainaChat Mod">
 <meta property="og:title" content="插件投稿 · ElainaChat Mod">
-<meta property="og:description" content="把自己的插件投稿到插件商店：走 GitHub 表单，不用会 git。">
+<meta property="og:description" content="把自己的插件投稿到插件商店：fork 仓库、加插件、发 PR，合并即上架。">
 <meta property="og:url" content="https://xyz921746.github.io/web/store/submit/">
 <meta property="og:image" content="https://xyz921746.github.io/web/assets/og-cover.jpg">
 <meta property="og:image:width" content="1200">
@@ -19,7 +19,7 @@
 <meta property="og:image:alt" content="ElainaChat Mod · 插件投稿">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="插件投稿 · ElainaChat Mod">
-<meta name="twitter:description" content="走 GitHub 表单投稿插件，不用会 git；审核通过后上架插件商店。">
+<meta name="twitter:description" content="fork 仓库投稿插件，PR 合并即上架；社区投稿进第三方分区。">
 <meta name="twitter:image" content="https://xyz921746.github.io/web/assets/og-cover.jpg">
 <meta name="twitter:image:alt" content="ElainaChat Mod · 伊蕾娜与雪夜街道">
 <link rel="stylesheet" href="../../style.css?v=20261020">
@@ -85,16 +85,16 @@
     <div class="wrap">
       <p class="eyebrow">插件投稿</p>
       <h1>把你的插件放上来</h1>
-      <p class="lede">第三方作者也能投稿 —— 走 GitHub 表单，不用会 git；审核通过后上架
-        web 仓库的 <a href="../">插件商店</a>，应用内「插件市场」就能装。</p>
+      <p class="lede">第三方作者也能投稿 —— <strong>fork 本仓库、加插件、发 PR</strong>，合并即上架
+        web 仓库的 <a href="../">插件商店</a>，应用内「插件市场」就能装。社区投稿进「第三方插件」分区（未审查警告由客户端自动展示）。</p>
       <div class="hero-actions">
-        <a class="btn btn--primary" href="https://github.com/XYZ921746/web/issues/new?template=mod-submission.yml" target="_blank" rel="noopener">打开投稿表单</a>
+        <a class="btn btn--primary" href="https://github.com/XYZ921746/web#插件投稿指南fork--pr" target="_blank" rel="noopener">投稿指南（README）</a>
         <a class="btn btn--ghost" href="https://github.com/XYZ921746/ElainaChat-mod/blob/main/%E5%BC%80%E5%8F%91%E6%96%87%E6%A1%A3.md" target="_blank" rel="noopener">开发文档</a>
       </div>
       <ul class="catalog-tags" aria-label="投稿特点">
-        <li>GitHub 表单</li>
-        <li>不用会 git</li>
-        <li>上架插件商店</li>
+        <li>fork + PR</li>
+        <li>合并即上架</li>
+        <li>第三方分区</li>
       </ul>
     </div>
   </section>
@@ -103,16 +103,16 @@
     <div class="wrap">
       <div class="section-head">
         <h2>怎么投稿</h2>
-        <p>三步：填表单 → 维护者打包上架 → 应用里能装。源码放在 web 仓库的 <strong>plugins/&lt;id&gt;/</strong>，
-          打包产物放在 <strong>store/packages/&lt;id&gt;-&lt;版本&gt;.zip</strong>，索引就是 <a href="../index.json">store/index.json</a>。</p>
+        <p>三步：fork → 加插件发 PR → 合并即上架。源码放在本仓库的 <strong>plugins/&lt;id&gt;/</strong>，
+          索引是 <a href="../index.json">store/index.json</a>，打包产物在 <strong>store/packages/&lt;id&gt;-&lt;版本&gt;.zip</strong>（维护者打包）。完整步骤与字段说明见仓库 <a href="https://github.com/XYZ921746/web#插件投稿指南fork--pr" target="_blank" rel="noopener">README 投稿指南</a>。</p>
       </div>
       <div class="grid">
         <article class="card">
           <h3>① 填投稿表单</h3>
           <ul class="steps">
-            <li>点上面的按钮打开 GitHub 投稿表单（需要一个 GitHub 账号）</li>
-            <li>填插件 id、显示名、版本、依赖，以及<strong>授权方式与源码地址</strong></li>
-            <li>再贴一个<strong>zip 下载地址</strong>：先传到自己的网盘或 Release，<strong>别把 zip 贴在 issue 里</strong></li>
+            <li>Fork 本仓库，从 main 建分支；插件源码放进 <strong>plugins/&lt;id&gt;/</strong>（id 与 manifest.json 一致）</li>
+            <li>在 <strong>store/index.json</strong> 登记一条；社区投稿<strong>必须标 thirdParty: true</strong>（进「第三方插件」分区）</li>
+            <li>发 PR：模板自带检查单，写清<strong>授权方式与源码地址</strong>，合并即上架</li>
           </ul>
         </article>
         <article class="card">
@@ -126,15 +126,14 @@
         <article class="card">
           <h3>③ 上架后会怎样</h3>
           <ul class="steps">
-            <li>维护者把 zip 放进 <strong>store/packages/</strong>，并在 <strong>store/index.json</strong> 登记一条</li>
-            <li>应用里 <strong>设置 → 插件 → ✦ 插件市场</strong> 立刻能看到，点安装即用</li>
-            <li>插件<strong>默认关闭</strong>，装完要自己打开开关 —— 它改动界面，不该在你不知情时生效</li>
+            <li>维护者合并 PR 后打包放进 <strong>store/packages/</strong>，Pages 自动重新发布</li>
+            <li>应用里 <strong>设置 → 插件 → ✦ 插件市场</strong> 的「第三方插件」分区可见，点安装即用</li>
+            <li>第三方分区<strong>未经审查</strong>：卡片带「未审查」角标，安装即信任其代码与其注册的 AI 工具</li>
           </ul>
         </article>
       </div>
-      <p class="notice">站点是 GitHub Pages <strong>静态托管，没有服务端接收文件</strong>，所以做不了「网页里选个文件直接上传」——
-        通道就是上面的表单。要做到网页直传，得另起一个小后端（GitHub App / Worker 代提交），
-        代价是多维护一个服务与一份凭据，暂不做。</p>
+      <p class="notice">投稿通道是 <strong>fork + PR</strong>（原 GitHub 表单通道已下线）。标了 <code>thirdParty: true</code> 的插件进
+        「第三方插件」分区——<strong>未经审查，请谨慎下载使用</strong>；想进官方列表的插件由维护者多做一轮代码审查后移除该标记。</p>
       <p class="notice">投稿前请确认：<strong>代码与资源你有权分发</strong>（或已获授权），并愿意公开源码地址。
         <strong>安装插件 = 信任它的代码</strong>（它在页面同源环境里运行），所以上架会看源码；
         另外手机端的内嵌服务是否随包分发取决于构建开关，声明了 <strong>server</strong> 那半边的功能要能在服务缺失时降级。</p>
