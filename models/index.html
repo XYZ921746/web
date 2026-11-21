@@ -107,7 +107,7 @@
           <li><strong>双端可用</strong><span>电脑版与手机版都能在视频通话里使用。</span></li>
           <li><strong>授权优先</strong><span>卡上的用途标签就是作者声明的范围，商用前先看 README。</span></li>
         </ul>
-        <p class="catalog-note__foot">模型走 Release 分发，不占 git 历史。</p>
+        <p class="catalog-note__foot">模型只登记下载 / 购买链接，文件不进 git 历史。</p>
       </aside>
     </div>
   </section>
@@ -116,7 +116,7 @@
     <div class="wrap">
       <div class="section-head">
         <h2>可用模型</h2>
-        <p>这些模型<strong>仅限本项目（ElainaChat Mod）内个人使用</strong> —— 不得商用、转售或二次分发，详见页末的
+        <p>每个模型的用途标签就是作者声明的使用范围 —— 能否商用看标签与 README，详见页末的
           <a href="#terms">免责声明与使用条款</a>。列表来自 <a href="../store/models.json">store/models.json</a>，
           上架模型只改那份 JSON，本页不用动；作者主页、演示视频、用途与 README 都是那条记录里的可选字段。</p>
       </div>
@@ -139,7 +139,7 @@
       <p class="catalog-empty" id="model-empty" hidden>没有找到匹配的模型，换个关键词或筛选条件试试。</p>
       <noscript><p class="notice">当前浏览器禁用了 JavaScript，无法自动列出模型。可直接到 <a href="https://github.com/XYZ921746/ElainaChat-mod/releases">Releases</a> 下载模型 zip。</p></noscript>
       <p class="notice" id="model-error" hidden></p>
-      <p class="notice">模型是二进制资源，按项目惯例<strong>走 Release 分发、不进 git 历史</strong>（改一次就多存一整份）。
+      <p class="notice">本仓库只登记模型的下载 / 购买链接，模型文件不进 git 历史（二进制文件进库会随每次更新膨胀，后续模型更新只改链接）。
         模型素材的著作权属于各自作者 —— 卡上的「用途」标签就是这条记录声明的使用范围，商用前请按它来。</p>
 
       <!-- 完整条款（插件商店那页的素材说明也指到这里，所以给个锚点） -->
@@ -279,6 +279,8 @@
     if (Array.isArray(m.videoUrls)) videos = videos.concat(m.videoUrls);
 
     var extra = '';
+    /* 链接不指向 zip 时（如原作者发布页）用「获取模型」，避免误以为是直接下载 */
+    var dlLabel = /\.zip(?:[?#]|$)/i.test(m.zipUrl || '') ? '下载 zip' : '获取模型';
     if (m.readmeUrl) {
       extra += '<a class="btn btn--ghost btn--sm" href="' + esc(m.readmeUrl) + '" target="_blank" rel="noopener">README</a>';
     }
@@ -308,7 +310,7 @@
       + '<div class="mod-foot">'
       + '<span class="mod-ver">' + (size(m.sizeBytes) || (m.version ? 'v' + esc(m.version) : '')) + '</span>'
       + '<div class="mod-actions">' + extra
-      + '<a class="btn btn--primary btn--sm" href="' + esc(m.zipUrl) + '" target="_blank" rel="noopener">下载 zip</a>'
+      + '<a class="btn btn--primary btn--sm" href="' + esc(m.zipUrl) + '" target="_blank" rel="noopener">' + dlLabel + '</a>'
       + '</div>'
       + '</div>'
       + '</article>';
