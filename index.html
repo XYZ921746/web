@@ -624,6 +624,24 @@ html[data-theme="dark"] .btn--primary:hover { color: #12170f; }
   font-size: 14.5px;
   line-height: 1.8;
 }
+.tag {
+  display: inline-block;
+  padding: 4px 9px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--ink-soft);
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.tag--ok { background: var(--sage-soft); color: var(--sage-deep); }
+.tag--warn {
+  background: var(--warn-bg);
+  color: var(--warn);
+  border-color: var(--warn-line);
+}
 .notice {
   margin: 18px 0 0;
   padding: 14px 18px 14px 20px;
@@ -2292,6 +2310,7 @@ html[data-theme="dark"] .btn--on-dark:hover {
       <nav class="nav" aria-label="主要导航">
         <a class="nav-link" href="#features">亮点</a>
         <a class="nav-link" href="./store/">插件</a>
+        <a class="nav-link" href="./models/">模型</a>
         <a class="nav-link" href="#platforms">双端</a>
         <a class="nav-link" href="#safety">安全</a>
         <a class="nav-link" href="#faq">问答</a>
@@ -2595,11 +2614,43 @@ html[data-theme="dark"] .btn--on-dark:hover {
     </div>
   </section>
 
-  <!-- ── 03 电脑 / 安卓 ───────────────────────────────────────────── -->
+  <!-- ── 03 模型资源 ──────────────────────────────────────────────── -->
+  <section class="section" id="models">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker"><b>03</b>模型资源</p>
+        <h2>换一张脸，继续旅行</h2>
+        <p>Live2D 模型可装可换：默认的伊蕾娜、鲸鱼娘，还有作者免费发布的新模型。每张卡片都标明作者与用途，能不能商用一眼可见 ——
+          <a href="./models/">逛模型区</a>。</p>
+      </div>
+      <div class="feature-grid">
+        <article class="card">
+          <h3>伊蕾娜·默认</h3>
+          <p>内置默认模型，随 APK 一并分发；电脑版也可以单独下载。</p>
+          <p><span class="tag tag--warn">仅限本项目使用</span></p>
+          <a class="link-arrow" href="./models/">查看模型 <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+        </article>
+        <article class="card">
+          <h3>鲸鱼娘</h3>
+          <p>鲸鱼娘模型，作者：茶坤菜的、氵六青。B 站工房商业授权。</p>
+          <p><span class="tag tag--ok">可商用</span></p>
+          <a class="link-arrow" href="./models/">查看模型 <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+        </article>
+        <article class="card">
+          <h3>缘</h3>
+          <p>可儿！免费发布的可商用模型；需关注作者，公会不可使用。</p>
+          <p><span class="tag tag--ok">可商用</span></p>
+          <a class="link-arrow" href="./models/">查看模型 <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 04 电脑 / 安卓 ───────────────────────────────────────────── -->
   <section class="section" id="platforms">
     <div class="wrap">
       <div class="section-head">
-        <p class="kicker"><b>03</b>电脑 / 安卓</p>
+        <p class="kicker"><b>04</b>电脑 / 安卓</p>
         <h2>书桌旁，或旅途中</h2>
         <p>聊天与界面两端同构，数据可互相备份；「能操作什么」则互为补充。</p>
       </div>
@@ -2666,11 +2717,11 @@ html[data-theme="dark"] .btn--on-dark:hover {
     </div>
   </section>
 
-  <!-- ── 04 安全与数据 ────────────────────────────────────────────── -->
+  <!-- ── 05 安全与数据 ────────────────────────────────────────────── -->
   <section class="section" id="safety">
     <div class="wrap">
       <div class="section-head">
-        <p class="kicker"><b>04</b>安全与数据</p>
+        <p class="kicker"><b>05</b>安全与数据</p>
         <h2>旅途的行李，只放在你手里</h2>
         <p>数据不出你的设备，能力开多少由你决定 —— 这是整个项目的前提，不是附加项。</p>
       </div>
@@ -2710,11 +2761,11 @@ html[data-theme="dark"] .btn--on-dark:hover {
     </div>
   </section>
 
-  <!-- ── 05 常见问题 ──────────────────────────────────────────────── -->
+  <!-- ── 06 常见问题 ──────────────────────────────────────────────── -->
   <section class="section" id="faq">
     <div class="wrap faq-layout">
       <div class="faq-aside">
-        <p class="kicker"><b>05</b>常见问题</p>
+        <p class="kicker"><b>06</b>常见问题</p>
         <h2>旅人常问</h2>
         <p>关于安装、数据和隐私，先把常见的问题替你问完。还有别的，可以到 <a href="https://github.com/XYZ921746/ElainaChat-mod/issues" target="_blank" rel="noopener">项目仓库提 issue</a>。</p>
       </div>
@@ -2762,7 +2813,7 @@ html[data-theme="dark"] .btn--on-dark:hover {
       <div class="cta-card">
         <img class="cta-bg" src="./assets/night-street.webp" width="1200" height="672" alt="" loading="lazy" decoding="async">
         <div class="cta-inner">
-          <p class="kicker"><b>06</b>启程</p>
+          <p class="kicker"><b>07</b>启程</p>
           <h2>下一站，由你决定</h2>
           <p>带上伊蕾娜，从一次下载开始。插件可以慢慢挑，故事可以随时继续。</p>
           <div class="cta-actions">
